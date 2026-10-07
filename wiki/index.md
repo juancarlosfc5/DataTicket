@@ -66,6 +66,26 @@ Catálogo de todas las páginas. **Agentes: leer primero.** Personas: empezar po
 - [[adr-0005-signalr-para-chat]] — SignalR + PostgreSQL para el chat. *Aceptada.*
 - [[adr-0006-urls-publicas-azure-blob]] — URL pública permanente para adjuntos (riesgo aceptado). *Aceptada.*
 - [[adr-0007-entorno-local-compose-watch]] — Compose Watch, Mailpit y Azurite. *Aceptada.*
+- [[adr-0008-portal-cliente-en-fase-1]] — La consulta básica del portal del cliente se entrega en la Fase 1. *Aceptada.*
+
+## Scrum
+
+- [[tablero-scrum]] — Backlog: 13 épicas y 47 HU por fase, sprints sugeridos, cobertura de los CA y decisiones que lo condicionan. Seguimiento en `PLAN-DE-TRABAJO.md` (raíz).
+- [[ep-001-fundaciones-tecnicas]] — EP-001 (Fase 0): CI en cada PR y shell de la app con navegación por rol.
+- [[ep-002-identidad-y-acceso]] — EP-002 (Fase 0): login con cookie, autorización por rol, invitación y restablecimiento.
+- [[ep-003-empresas-usuarios-y-equipos]] — EP-003 (Fase 0): empresas cliente, usuarios cliente e internos, equipos y datos sintéticos.
+- [[ep-004-auditoria-append-only]] — EP-004 (Fase 1): registro append-only y consulta de la bitácora.
+- [[ep-005-radicacion-de-tickets]] — EP-005 (Fase 1): formulario común, prioridad calculada, adjuntos y ajuste manual.
+- [[ep-006-triage-asignacion-y-participantes]] — EP-006 (Fase 1): cola de la PM, cobertura del admin, asignación y participantes.
+- [[ep-007-trabajo-interno-y-estados]] — EP-007 (Fase 1): detalle interno, estados internos y URL de PR.
+- [[ep-008-bandejas-y-portal-del-cliente]] — EP-008 (Fase 1): bandejas internas y consulta del portal del cliente.
+- [[ep-009-chat-interno-en-tiempo-real]] — EP-009 (Fase 2): chat SignalR con historial, lecturas, reconexión y revocación.
+- [[ep-010-respuesta-formal-y-cierre]] — EP-010 (Fase 2): respuesta formal (portal y correo) y cierre manual.
+- [[ep-011-notificaciones]] — EP-011 (Fase 2): notificaciones en la app y correo de vinculación.
+- [[ep-012-dashboard-y-metricas]] — EP-012 (Fase 3): tiempos hábiles, paneles de la PM y del equipo, y resumen del portal.
+- [[ep-013-formularios-configurables]] — EP-013 (Fase 4): constructor, versionado y radicación con formulario por empresa.
+
+Las 47 historias (`hu-001…hu-047`) están en `wiki/scrum/historias-de-usuario/` y se enlazan desde su épica y desde el tablero.
 
 ## Proceso
 

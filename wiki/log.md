@@ -61,3 +61,23 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: la skill pasa del stack de DataHub al de DataTicket (.NET 10 hexagonal, Identity, SignalR, PostgreSQL 18, React 19 MVC); escribe en wiki/scrum/; los criterios de cada historia pasan a CHU-xx y los del PRD se citan como PRD CA-xx.
 - Wiki: ninguna página modificada.
 - Pendiente: agregar `epica` e `historia-de-usuario` al vocabulario de `type` en AGENTS.md §5.3; decidir si la skill se mueve a .claude/skills/.
+## [2026-10-07] setup | Skill using-agent-skills instalada en el proyecto
+- Autor: JuanDavidDev6
+- Cambios: `npx skills add https://github.com/addyosmani/agent-skills --skill using-agent-skills -a claude-code --copy -y` → `.claude/skills/using-agent-skills/SKILL.md` + `skills-lock.json` (instalación por proyecto, copia sin enlaces simbólicos). Contenido revisado: solo instrucciones, sin scripts.
+- Wiki: [[trabajar-con-el-agente]]
+- Pendiente: la meta-skill remite a ~24 skills hermanas no instaladas; decidir si se instalan (`--skill '*'`) o se queda solo esta.
+
+## [2026-10-07] docs | Backlog Scrum (13 épicas, 47 HU) y plan de trabajo por fases
+- Autor: JuanDavidDev6
+- Cambios:
+  - Se verificó el repositorio (estado *walking skeleton*, sin dominio implementado) y el PRD frente a la wiki.
+  - Con la skill `scrum-spec-orchestrator`, tras aprobar el plan, se generaron 13 épicas y 47 HU en `wiki/scrum/` alineadas con las fases 0–4. Cada HU trae contrato propuesto, tareas por capa, criterios CHU en Dado/Cuando/Entonces, DoD específica y matriz de evidencia. Todas quedan en `Pendiente de aprobación`.
+  - Se creó `PLAN-DE-TRABAJO.md` en la raíz, con checkmark, responsable y fecha por fase y por HU.
+  - ADR-0008: la consulta básica del portal del cliente pasa a la Fase 1.
+  - `AGENTS.md` §2, §5.2 y §5.3: nuevos `PLAN-DE-TRABAJO.md`, `scrum-spec-orchestrator/` y `wiki/scrum/`, y tipos `epica` e `historia-de-usuario`. Esto cierra el pendiente del log anterior.
+- Wiki: [[tablero-scrum]], `ep-001`…`ep-013`, `hu-001`…`hu-047`, [[adr-0008-portal-cliente-en-fase-1]], [[fases-y-alcance]], [[pendientes]] (portal resuelto; nuevas contradicciones de dashboard/MVP y roles frente a equipos; V-18…V-25), [[index]].
+- Pendiente:
+  - Aprobar HU por HU para pasarlas a `Aprobada`.
+  - Repartir responsables entre Laura, Juan David y Brayan.
+  - Resolver las decisiones que condicionan el backlog (ver [[tablero-scrum]]).
+  - Decidir si la skill se mueve a `.claude/skills/`.

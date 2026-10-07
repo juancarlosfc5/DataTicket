@@ -59,11 +59,17 @@ No impiden el piloto funcional, pero deben resolverse antes de operar con client
 
 Seguimiento en [[pendientes]].
 
+> [!info] Decisión
+> La consulta básica del portal del cliente (listar los tickets y ver el detalle con el estado resumido) se entrega en la **Fase 1**. El resumen y las métricas del portal se quedan en la Fase 3 ([[adr-0008-portal-cliente-en-fase-1]]).
+
 > [!question] Pendiente
-> La Fase 1 incluye "estados" y "bandejas", pero el "portal con estados resumidos" aparece en la Fase 3; no queda claro si el portal del cliente (consulta de sus tickets) se entrega en Fase 1 o en Fase 3. Ver [[pendientes]].
+> CA-13 (dashboard) forma parte del MVP, pero el dashboard está en la Fase 3 (P1). No se define si el "MVP" abarca las fases 0–2 o las fases 0–3. Ver [[pendientes]].
+
+El plan de construcción por fases, con épicas e historias, está en [[tablero-scrum]]. El seguimiento de la ejecución está en `PLAN-DE-TRABAJO.md`, en la raíz del repositorio.
 
 ## Relacionado
 
 - [[vision-general]] · [[criterios-de-aceptacion]] · [[pendientes]]
 - [[formularios-configurables]] · [[dashboard-y-metricas]] · [[chat-interno]]
 - [[arquitectura-general]] · [[stack-y-versiones]] · [[fuente-prd-v0-1]]
+- [[tablero-scrum]] · [[adr-0008-portal-cliente-en-fase-1]]

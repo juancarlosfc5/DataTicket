@@ -3,7 +3,7 @@ title: Trabajar con el agente
 type: guia
 status: vigente
 tags: [proceso, agente, wiki]
-sources: ["AGENTS.md", ".claude/agents/orchestrator.md", ".claude/settings.json"]
+sources: ["AGENTS.md", ".claude/agents/orchestrator.md", ".claude/settings.json", "skills-lock.json"]
 aliases: [Orquestador, Cómo usar el agente]
 created: 2026-10-07
 updated: 2026-10-07
@@ -46,6 +46,19 @@ Las reglas comunes (esquema de la wiki, protocolo por interacción, invariantes)
 6. **Responder** con lo hecho, lo verificado y las páginas tocadas.
 
 Un hook `Stop` (`.claude/hooks/wiki-guard.mjs`) devuelve el turno una vez si quedan cambios fuera de `wiki/` posteriores a la última entrada del log.
+
+## Skills del proyecto
+
+Skills de terceros instaladas a nivel de proyecto en `.claude/skills/` y registradas en `skills-lock.json` (fuente y hash), para que todo el equipo tenga las mismas.
+
+| Skill | Fuente | Qué aporta |
+|---|---|---|
+| `using-agent-skills` | `addyosmani/agent-skills` | Meta-skill: elegir la skill o el flujo adecuado según la fase del trabajo y normas generales (explicitar supuestos, cuestionar cuando haga falta, mantener el alcance, verificar antes de cerrar) |
+
+Para instalar otra skill: `npx skills add <repo> --skill <nombre> -a claude-code --copy -y` (`--copy` evita enlaces simbólicos en Windows). Para restaurarlas desde el lock: `npx skills experimental_install`.
+
+> [!warning] Alcance limitado
+> `using-agent-skills` remite a unas 24 skills hermanas (`spec-driven-development`, `incremental-implementation`, `code-review-and-quality`…) y a `references/definition-of-done.md`, que **no** están instaladas. Si una de esas skills no existe, manda el flujo de `AGENTS.md` y del orquestador (§3 de precedencia: las instrucciones del proyecto van primero).
 
 ## Ejemplos de peticiones
 

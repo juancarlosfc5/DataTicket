@@ -24,6 +24,7 @@ Este archivo es el **esquema** de la wiki del proyecto (patrón *LLM Wiki*): def
 ├── AGENTS.md              ← este esquema (agnóstico de herramienta)
 ├── CLAUDE.md              ← entrada de Claude Code (importa AGENTS.md)
 ├── PRD.md                 ← fuente cruda principal (inmutable salvo petición explícita)
+├── PLAN-DE-TRABAJO.md     ← seguimiento por fase y HU (checkmark, responsable, fecha)
 ├── docker-compose.yml     ← entorno local completo
 ├── .env.example           ← variables sobrescribibles (copiar a .env, que no se versiona)
 ├── .claude/
@@ -32,6 +33,7 @@ Este archivo es el **esquema** de la wiki del proyecto (patrón *LLM Wiki*): def
 │   └── hooks/             ← wiki-guard.mjs
 ├── backend/               ← solución .NET 10 (DataTicket.slnx), hexagonal
 ├── frontend/              ← SPA React 19 + TS (Vite), MVC
+├── scrum-spec-orchestrator/ ← skill para épicas, HU, DoD y validación Scrum (escribe en wiki/scrum/)
 └── wiki/                  ← bóveda Obsidian: conocimiento del proyecto (la mantiene el LLM)
 ```
 
@@ -82,6 +84,7 @@ wiki/
 ├── decisiones/         ← ADR numerados (adr-NNNN-titulo.md)
 ├── proceso/            ← GitHub, pruebas, cómo trabajar con el agente
 ├── sintesis/           ← respuestas y análisis valiosos archivados desde consultas
+├── scrum/              ← tablero-scrum, epicas/ y historias-de-usuario/ (skill scrum-spec-orchestrator)
 ├── plantillas/         ← plantillas de Obsidian (no son contenido)
 └── raw/                ← fuentes crudas adicionales (inmutables)
 ```
@@ -97,7 +100,7 @@ wiki/
   ```yaml
   ---
   title: Flujo del ticket
-  type: concepto        # vision | concepto | entidad | fuente | arquitectura | decision | guia | sintesis | pendientes | indice | log
+  type: concepto        # vision | concepto | entidad | fuente | arquitectura | decision | guia | sintesis | pendientes | indice | log | epica | historia-de-usuario
   status: vigente       # borrador | vigente | propuesta | aceptada | reemplazada | obsoleta
   tags: [producto, ticket]
   sources: ["PRD.md §6"]

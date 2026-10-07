@@ -21,8 +21,14 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 > [!warning] Contradicción — tipos de adjunto en el chat
 > PRD §7 (objetivo) habla de chat "de texto e imágenes"; PRD §7.8 y §14.9 permiten además PDF, XML y Excel. Se asume lo más amplio (§7.8/§14.9) hasta confirmar → [[chat-interno]], [[archivos-adjuntos]].
 
-> [!warning] Contradicción — fase del portal del cliente
-> PRD §13 ubica el "portal con estados resumidos" en la fase 3 (P1), pero CA-02 lo exige en el MVP y la fase 1 ya incluye "estados" y "bandejas" → [[fases-y-alcance]].
+> [!success] Resuelta 2026-10-07 — fase del portal del cliente
+> ~~PRD §13 ubica el "portal con estados resumidos" en la fase 3 (P1), pero CA-02 lo exige en el MVP y la fase 1 ya incluye "estados" y "bandejas".~~ La consulta básica del portal va en la Fase 1, y el resumen y las métricas en la Fase 3 → [[adr-0008-portal-cliente-en-fase-1]].
+
+> [!warning] Contradicción — fase del dashboard y alcance del "MVP"
+> CA-13 exige el dashboard en el MVP, pero PRD §13 lo ubica en la Fase 3 (P1). El PRD no define si el "MVP" abarca las fases 0–2 o las fases 0–3 → [[fases-y-alcance]], [[ep-012-dashboard-y-metricas]].
+
+> [!warning] Contradicción — roles frente a equipos
+> [[autenticacion-identity]] define `Development` y `Production` como roles de Identity. En cambio, [[glosario]], [[roles-y-permisos]] y [[modelo-de-dominio]] los tratan como equipos (`Team.Development`, `Team.Production`), separados de `Roles[]`. Hay que decidir el modelo antes de [[hu-004-contexto-de-usuario-y-autorizacion]] y [[hu-009-administrar-usuarios-internos-y-equipos]].
 
 > [!warning] Contradicción — métrica "primera respuesta"
 > PRD §13 (fase 3) menciona "medición de primera respuesta", métrica que §4 no define (solo define tiempo hasta respuesta formal) → [[dashboard-y-metricas]].
@@ -57,6 +63,14 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 | V-15 | §5 | Administradores del piloto y responsabilidades de Gerardo | [[equipo-data-global]] |
 | V-16 | §5.5, §6.2 | Formato del número de ticket | [[modelo-de-dominio]] |
 | V-17 | §14.1 | CA-01 protege la descarga "desde el portal", pero las URLs públicas del Blob permiten acceso entre empresas fuera del portal (riesgo aceptado; conviene explicitarlo ante la dirección) | [[adr-0006-urls-publicas-azure-blob]] |
+| V-18 | §4, §10, §14.13 | "Área" se usa para filtrar y agrupar, pero no existe en el modelo: ¿es la categoría o el equipo? | [[dashboard-y-metricas]], [[hu-040-panel-global-de-la-pm]] |
+| V-19 | §6.4, §6.5 | El diagrama inferido no permite `PullRequestReview → SolutionDelivered` (cierre tras PR sin pasar por Producción) | [[estados-del-ticket]], [[hu-021-cambiar-estado-interno]] |
+| V-20 | §8, §5.6 | `Attachment` no indica su contexto (radicación, chat o respuesta) ni si es interno o visible al cliente, y eso hace falta para CA-10 | [[modelo-de-dominio]], [[archivos-adjuntos]] |
+| V-21 | §6.5, §12 | `Ticket` no tiene campos de cierre (quién, cuándo, estado anterior): ¿solo en `AuditEntry` o también en la entidad? | [[modelo-de-dominio]], [[hu-036-cerrar-ticket-manualmente]] |
+| V-22 | §7 | Formato y tamaño de página del cursor del historial; ¿hay paginación hacia atrás? | [[tiempo-real-signalr]], [[hu-026-historial-del-chat-por-cursor]] |
+| V-23 | §9 | Almacenamiento de las respuestas variables de la Fase 4 (jsonb o tablas) y cómo se consultan | [[formularios-configurables]], [[hu-046-radicar-con-formulario-de-empresa]] |
+| V-24 | §12 | ¿Quién puede consultar la bitácora de auditoría de un ticket? | [[auditoria]], [[hu-012-consultar-bitacora-del-ticket]] |
+| V-25 | — | El mapa de puertos y el glosario no tienen casos de uso para reasignar, ajustar la prioridad, cambiar el estado ni registrar la URL del PR, ni los métodos del hub | [[backend-hexagonal]], [[glosario]] |
 
 ## 4. Decisiones técnicas abiertas
 
@@ -87,4 +101,4 @@ Colócalas en `wiki/raw/` y pide su ingesta ([[trabajar-con-el-agente]]).
 
 ## Relacionado
 
-- [[fuente-prd-v0-1]] · [[vision-general]] · [[index]]
+- [[fuente-prd-v0-1]] · [[vision-general]] · [[index]] · [[tablero-scrum]]
