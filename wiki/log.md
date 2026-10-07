@@ -55,3 +55,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - `dotnet` se ejecuta desde `backend/` (ahí está `global.json`; desde la raíz cae en VSTest y falla): documentación corregida.
   - Este equipo tiene un PostgreSQL nativo de Windows en `5432`: `.env` local con `POSTGRES_PORT=5433` (no versionado) y solución documentada.
 - Wiki: [[entorno-docker]], [[backend-hexagonal]], [[autenticacion-identity]], [[estrategia-de-pruebas]], [[pendientes]]
+
+## [2026-10-07] docs | Adaptación de la skill scrum-spec-orchestrator a DataTicket
+- Autor: <git config user.name>
+- Cambios: la skill pasa del stack de DataHub al de DataTicket (.NET 10 hexagonal, Identity, SignalR, PostgreSQL 18, React 19 MVC); escribe en wiki/scrum/; los criterios de cada historia pasan a CHU-xx y los del PRD se citan como PRD CA-xx.
+- Wiki: ninguna página modificada.
+- Pendiente: agregar `epica` e `historia-de-usuario` al vocabulario de `type` en AGENTS.md §5.3; decidir si la skill se mueve a .claude/skills/.

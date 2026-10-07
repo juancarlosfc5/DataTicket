@@ -1,0 +1,7 @@
+interface:
+  display_name: "Scrum Spec Orchestrator"
+  short_description: "Planifica y valida Scrum trazable para DataTicket"
+  default_prompt: "Usa $scrum-spec-orchestrator para proponer la planificación Scrum de DataTicket sin escribirla en wiki/scrum hasta que yo la apruebe."
+
+policy:
+  allow_implicit_invocation: true
