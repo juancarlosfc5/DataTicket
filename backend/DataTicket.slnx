@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DataTicket.Api/DataTicket.Api.csproj" />
+    <Project Path="src/DataTicket.Application/DataTicket.Application.csproj" />
+    <Project Path="src/DataTicket.Domain/DataTicket.Domain.csproj" />
+    <Project Path="src/DataTicket.Infrastructure/DataTicket.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DataTicket.ArchitectureTests/DataTicket.ArchitectureTests.csproj" />
+  </Folder>
+</Solution>

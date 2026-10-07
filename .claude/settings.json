@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "agent": "orchestrator",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/wiki-guard.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

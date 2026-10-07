@@ -1,0 +1,56 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/**/models/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "react", "message": "MVC: los modelos no dependen de React." },
+              { "name": "react-dom", "message": "MVC: los modelos no dependen de React." }
+            ],
+            "patterns": [
+              { "group": ["**/controllers/**", "**/views/**"], "message": "MVC: los modelos no conocen controladores ni vistas." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/**/controllers/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              { "group": ["**/views/**"], "message": "MVC: los controladores exponen estado y acciones; no importan vistas." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/**/views/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "@microsoft/signalr", "message": "MVC: la conexión SignalR vive en modelos/core, no en vistas." }
+            ],
+            "patterns": [
+              { "group": ["**/core/**", "**/*Gateway", "**/*Gateway.ts"], "message": "MVC: las vistas reciben datos del controlador por props; no acceden a APIs." }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

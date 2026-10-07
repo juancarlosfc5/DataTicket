@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Verifica que la regla de dependencias del hexágono se cumpla en cada build. -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DataTicket.Domain\DataTicket.Domain.csproj" />
+    <ProjectReference Include="..\..\src\DataTicket.Application\DataTicket.Application.csproj" />
+    <ProjectReference Include="..\..\src\DataTicket.Infrastructure\DataTicket.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\DataTicket.Api\DataTicket.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

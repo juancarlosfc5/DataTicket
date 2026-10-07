@@ -1,0 +1,74 @@
+/* Tokens base provisionales: se reemplazan cuando llegue el ZIP de diseño. */
+:root {
+  --color-surface: #f6f7f9;
+  --color-panel: #ffffff;
+  --color-text: #1b1f24;
+  --color-muted: #5b6470;
+  --color-ok: #1f7a4d;
+  --color-down: #b42318;
+  --color-border: #d9dde3;
+  --radius: 8px;
+  --space: 1rem;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.shell {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: calc(var(--space) * 3) var(--space);
+}
+
+.shell__header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.shell__header p {
+  margin: 0.25rem 0 calc(var(--space) * 2);
+  color: var(--color-muted);
+}
+
+.health {
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--color-panel);
+}
+
+.health--up {
+  border-left-color: var(--color-ok);
+}
+
+.health--down {
+  border-left-color: var(--color-down);
+}
+
+.health__dependencies {
+  color: var(--color-muted);
+}
+
+.health button {
+  font: inherit;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.health button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}

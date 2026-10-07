@@ -1,0 +1,12 @@
+{
+  "useMarkdownLinks": false,
+  "newLinkFormat": "shortest",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "raw/assets",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "sintesis",
+  "showFrontmatter": true,
+  "userIgnoreFilters": [
+    "plantillas/"
+  ]
+}

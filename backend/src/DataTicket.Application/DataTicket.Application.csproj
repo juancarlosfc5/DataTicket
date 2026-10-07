@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Casos de uso y puertos (Ports/In para adaptadores primarios, Ports/Out para secundarios). -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTicket.Domain\DataTicket.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>

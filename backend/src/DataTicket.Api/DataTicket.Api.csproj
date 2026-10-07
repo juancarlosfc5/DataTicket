@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Adaptadores primarios (HTTP y, más adelante, el hub SignalR /hubs/tickets) y composition root. -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataTicket.Application\DataTicket.Application.csproj" />
+    <ProjectReference Include="..\DataTicket.Infrastructure\DataTicket.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+</Project>

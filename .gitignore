@@ -1,0 +1,37 @@
+# --- Entorno y secretos ---
+.env
+.env.*
+!.env.example
+
+# --- .NET ---
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+.vs/
+**/appsettings.*.local.json
+
+# --- Node / Vite ---
+node_modules/
+dist/
+coverage/
+.vite/
+*.log
+
+# --- IDE y sistema operativo ---
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# --- Obsidian: el estado de la interfaz es personal; app.json y templates.json sí se comparten ---
+wiki/.obsidian/workspace.json
+wiki/.obsidian/workspace-mobile.json
+wiki/.obsidian/cache
+wiki/.trash/
+
+# --- Claude Code: configuración personal ---
+.claude/settings.local.json
+CLAUDE.local.md

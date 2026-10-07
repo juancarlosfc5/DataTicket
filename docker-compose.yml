@@ -1,0 +1,143 @@
+# DataTicket — entorno local de desarrollo. NO es una configuración productiva.
+#
+#   docker compose up --build --watch   # todo el stack con hot reload (Compose Watch)
+#   docker compose up -d --build        # todo el stack sin sincronizar cambios de código
+#   docker compose up -d db             # solo PostgreSQL (para correr backend/frontend en el host)
+#
+# Navegador -> http://localhost:5173 (Vite). Vite reenvía /api y /hubs (WebSocket de SignalR)
+# al backend, así el navegador ve un único origen: cookies de Identity same-origin y sin CORS.
+# Valores por defecto sobrescribibles con un archivo .env (ver .env.example).
+# Los puertos se publican solo en 127.0.0.1: las credenciales de desarrollo no quedan expuestas en la red.
+
+name: dataticket
+
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION:-18.6}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dataticket}
+      POSTGRES_USER: ${POSTGRES_USER:-dataticket}
+      # Credenciales solo para desarrollo local. Cámbialas antes de cualquier uso compartido.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dataticket_local_only}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # PostgreSQL 18 usa este volumen raíz para persistir el directorio de datos versionado.
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # API ASP.NET Core (.NET 10): hexágono + Identity + SignalR (/hubs/tickets).
+  backend:
+    build:
+      context: ./backend
+      target: dev
+      args:
+        DOTNET_VERSION: ${DOTNET_VERSION:-10.0}
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DataTicket: "Host=db;Port=5432;Database=${POSTGRES_DB:-dataticket};Username=${POSTGRES_USER:-dataticket};Password=${POSTGRES_PASSWORD:-dataticket_local_only}"
+      # Contrato de configuración para los adaptadores de correo (invitaciones y restablecimiento de
+      # contraseña de Identity) y de archivos (Azure Blob). Los consumirá el código cuando se implementen.
+      Email__Smtp__Host: mailpit
+      Email__Smtp__Port: "1025"
+      Email__FromAddress: no-reply@dataticket.local
+      Storage__Blob__ConnectionString: "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://azurite"
+      Storage__Blob__PublicBaseUrl: "http://localhost:${AZURITE_BLOB_PORT:-10000}/devstoreaccount1"
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    develop:
+      watch:
+        # dotnet watch aplica hot reload; cambios en .csproj se restauran dentro del contenedor.
+        - action: sync
+          path: ./backend/src
+          target: /src/src
+          ignore:
+            - "**/bin/"
+            - "**/obj/"
+        - action: rebuild
+          path: ./backend/Directory.Packages.props
+        - action: rebuild
+          path: ./backend/Directory.Build.props
+        - action: rebuild
+          path: ./backend/global.json
+
+  # SPA React 19 + TypeScript servida por Vite (Node 24).
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+      args:
+        NODE_VERSION: ${NODE_VERSION:-24}
+    restart: unless-stopped
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8080
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+        - action: sync
+          path: ./frontend/public
+          target: /app/public
+        - action: sync
+          path: ./frontend/index.html
+          target: /app/index.html
+        - action: sync
+          path: ./frontend/vite.config.ts
+          target: /app/vite.config.ts
+        - action: sync
+          path: ./frontend/tsconfig.json
+          target: /app/tsconfig.json
+        - action: sync
+          path: ./frontend/tsconfig.app.json
+          target: /app/tsconfig.app.json
+        - action: sync
+          path: ./frontend/tsconfig.node.json
+          target: /app/tsconfig.node.json
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/package-lock.json
+
+  # Bandeja SMTP local: captura los correos de Identity (invitación, restablecimiento) y de asignación.
+  # UI: http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:${MAILPIT_VERSION:-v1.31}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+
+  # Emulador de Azure Blob Storage para adjuntos (PRD §8). Solo el servicio Blob.
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:${AZURITE_VERSION:-3.37.0}
+    restart: unless-stopped
+    command: ["azurite-blob", "--blobHost", "0.0.0.0", "--blobPort", "10000", "--location", "/data", "--skipApiVersionCheck"]
+    ports:
+      - "127.0.0.1:${AZURITE_BLOB_PORT:-10000}:10000"
+    volumes:
+      - azurite_data:/data
+
+volumes:
+  postgres_data:
+  azurite_data:

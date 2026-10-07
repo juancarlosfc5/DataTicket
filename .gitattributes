@@ -1,0 +1,21 @@
+# Finales de línea LF en el repositorio y en la copia de trabajo: los contenedores Linux
+# y los scripts del hook los necesitan, y evita diffs fantasma entre Windows, macOS y Linux.
+* text=auto eol=lf
+
+# Scripts propios de Windows conservan CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binarios.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
+
+# La bitácora de la wiki es append-only: al fusionar ramas se conservan las entradas de ambas.
+wiki/log.md merge=union
