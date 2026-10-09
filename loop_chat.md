@@ -25,7 +25,10 @@ Archivo de control del `/loop` que construye **EP-009 (HU-026 a HU-032)**, una r
 ## 2. Protocolo de cada iteración
 
 1. **Estado.** Relee este archivo completo, `git status -sb` y las 5 últimas entradas de `wiki/log.md` (`grep "^## \[" wiki/log.md | tail -5`).
-2. **Rama.** Trabaja en `feature/chat-signalr`. Si no existe, créala desde `main` si `feature/auth-login` ya está fusionada; si no, desde `feature/auth-login`.
+2. **Rama y sincronización.**
+   - Trabaja en `feature/chat-signalr`, en la carpeta principal del repo. Si no existe, créala desde `main` si `feature/auth-login` ya está fusionada; si no, desde `feature/auth-login`.
+   - En cada iteración, si `main` avanzó, `git merge main` (fusión local autorizada por este archivo). Así entran el login y el núcleo del core. Ante conflictos, aplica las reglas de la sección 3 de `loop_core.md`. Si no se resuelven con seguridad, `git merge --abort` y **detén el loop**.
+   - `loop_core.md` corre en paralelo en el worktree `DataGlobal2-core` (rama `feature/core`) con su propio stack de Docker (`dataticket-core`). El stack principal `dataticket` es de este loop. Respeta la tabla de propiedad del código de `loop_core.md` §3: el chat no crea `Ticket`, `TicketParticipant` ni `Assignment`.
 3. **Precondición (solo si la rebanada P0 no está marcada).** Ejecuta las comprobaciones de P0. Si alguna falla, márcala `[!]` con el motivo y **detén el loop**.
 4. **Rebanada.** Toma la primera rebanada sin `[x]` ni `[!]` y márcala `[~]`. Lee su HU (Contrato, Tareas, CHU y DoD), `tiempo-real-signalr` y `sistema-de-diseno` si toca el frontend.
 5. **Construcción.**
@@ -63,11 +66,15 @@ Archivo de control del `/loop` que construye **EP-009 (HU-026 a HU-032)**, una r
 - [ ] En el código existen `GET /api/auth/me`, `ICurrentUser` y `DataTicket.IntegrationTests`; `dotnet test` en verde · Evidencia:
 - [ ] Rama `feature/chat-signalr` creada · Evidencia:
 
-### R0 — Dominio mínimo habilitante (adelanto parcial de HU-018/HU-019)
-- [ ] `Ticket` y `TicketParticipant` (vigente/retirado), solo lo que exige el chat; si HU-018/019 ya existen en `main`, se reutilizan y se marca «no aplica» · Evidencia:
-- [ ] Repositorio EF, configuración y migración coherentes con `db.sql` · Evidencia:
+### R0 — Núcleo de tickets (lo construye `loop_core`, hito N1)
+
+El núcleo (`Ticket`, `TicketParticipant`, `Assignment`, regla de acceso y puerto `IChatConnectionRevoker`) lo entrega `loop_core` con la etiqueta `core-nucleo-v1`.
+- Si la etiqueta existe (`git tag -l core-nucleo-v1`) y no está en esta rama, fusiónala (`git merge core-nucleo-v1`) y marca las casillas de R0 como `[-]` («integrado desde loop_core»).
+- Si todavía no existe, anota «esperando N1» en el registro, no construyas un núcleo propio y programa la siguiente iteración en unos 30 minutos. Solo si la persona líder lo autoriza en el chat, se construye R0 aquí.
+- [ ] Núcleo `core-nucleo-v1` integrado en `feature/chat-signalr` (`Ticket` y `TicketParticipant` vigente/retirado disponibles) · Evidencia:
+- [ ] Migraciones combinadas sin conflicto y `dotnet test` en verde tras la integración · Evidencia:
 - [ ] Fixtures de prueba y sembrador de Development replicando `db.sql` §13 (T03 con Laura y Juan David vigentes, Brayan retirado, Kevin no participante, Elizabeth, `ana.perez`; mensajes e…01–e…06 con el par de marca de tiempo igual) · Evidencia:
-- [ ] Nota en HU-018/019 y en PLAN-DE-TRABAJO: «adelanto parcial, sin UI ni endpoints de triage» · Evidencia:
+- [ ] La regla de acceso del chat (HU-026 T-03) reutiliza la del núcleo en lugar de duplicarla · Evidencia:
 
 ### R1 — HU-026 · Contrato (T-01)
 - [ ] Cursor opaco base64url (`CreatedAt` µs + `Id` Guid v7), `limit` 50/100, `ChatMessageDto` y errores (404 para no visible, `invalid_cursor`) · Evidencia:

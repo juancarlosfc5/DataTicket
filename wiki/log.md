@@ -241,3 +241,28 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - confirmar P-21 (nombres reales del equipo con correos `@dataticket.local`);
   - los binarios de los adjuntos semilla no existen en Azurite;
   - nada está en commit.
+
+## [2026-10-09] docs | Loop del core en paralelo con el chat (`loop_core.md`)
+- Autor: juancarlosfc5
+- Cambios:
+  - Nuevo `loop_core.md` en la raíz del worktree `../DataGlobal2-core` (rama `feature/core`, creada desde `main`). Se creó ahí para no interferir con el goal del login, que corre en la carpeta principal. Construye una HU por iteración, 35 en total: EP-001 (HU-001), EP-003, HU-005/006, EP-004 a EP-008, EP-010, EP-011, EP-012 y EP-013. Los hitos N1 (núcleo compartido `core-nucleo-v1`), F1 y F2 marcan los momentos de fusionar.
+  - Reglas de paralelismo:
+    - worktree propio;
+    - stack de Docker aislado `dataticket-core` con otros puertos (`.env.core`);
+    - tabla de propiedad del código entre loops y cambios aditivos en los archivos compartidos;
+    - `git merge main` en cada iteración;
+    - resolución de conflictos de migraciones.
+  - `loop_chat.md`: R0 ya no construye un núcleo propio; integra `core-nucleo-v1` y espera si aún no existe. Se añade la sincronización con `main` en cada iteración.
+  - [[plan-goal-login-y-loop-chat]] (sección «Loop del core» y riesgos), [[trabajar-con-el-agente]], `AGENTS.md` §2 y `PLAN-DE-TRABAJO.md`.
+- Verificación: `git worktree list` muestra los dos árboles; la carpeta principal (goal en curso en `feature/auth-login`) no se modificó; enlaces y frontmatter de la wiki del worktree validados.
+- Wiki: [[plan-goal-login-y-loop-chat]], [[trabajar-con-el-agente]].
+- Pendiente: ninguno; ver la corrección siguiente.
+
+## [2026-10-09] fix | `loop_core.md` va en `main`; sin rama `feature/core` previa
+- Autor: juancarlosfc5
+- Cambios:
+  - La persona líder no quería una rama nueva: `loop_core.md` y los ajustes anteriores (`loop_chat.md`, wiki, `AGENTS.md`, `PLAN-DE-TRABAJO.md`) se registran directamente en `main`.
+  - Se eliminan el worktree `../DataGlobal2-core` y la rama `feature/core` creados antes.
+  - `loop_core.md` explica cómo crear el worktree y la rama de trabajo desde `main` al lanzar el loop, después de fusionar `feature/auth-login`. La iteración P0 comprueba la carpeta, la rama y que el login esté en `main`.
+- Verificación: `git worktree list` y `git branch` sin `feature/core`. La carpeta principal (goal en curso en `feature/auth-login`) no se modificó.
+- Wiki: [[plan-goal-login-y-loop-chat]], [[trabajar-con-el-agente]].

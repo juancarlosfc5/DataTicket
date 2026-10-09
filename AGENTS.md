@@ -29,6 +29,7 @@ Este archivo es el **esquema** de la wiki del proyecto (patrón *LLM Wiki*): def
 ├── db.sql                 ← diseño de referencia del esquema (ADR-0009)
 ├── goal_login.md          ← archivo de control del /goal del login (lista de chequeo)
 ├── loop_chat.md           ← archivo de control del /loop del chat SignalR (lista de chequeo)
+├── loop_core.md           ← archivo de control del /loop del core (tickets → cierre, dashboard, formularios), en paralelo
 ├── docker-compose.yml     ← entorno local completo
 ├── .env.example           ← variables sobrescribibles (copiar a .env, que no se versiona)
 ├── .claude/

@@ -26,6 +26,7 @@ El 2026-10-09 la persona líder del proyecto aprobó todas las épicas y HU: su 
 |---|---|---|
 | [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | Listo para ejecutar |
 | [loop_chat.md](loop_chat.md) | EP-009: HU-026 a HU-032 (`/loop`, después del goal) | Listo para ejecutar |
+| [loop_core.md](loop_core.md) | 35 HU restantes de las fases 0 a 4 (`/loop` en paralelo con el chat; se ejecuta en un worktree creado desde `main`) | Listo para ejecutar |
 
 Plan y decisiones: [wiki/sintesis/plan-goal-login-y-loop-chat.md](wiki/sintesis/plan-goal-login-y-loop-chat.md). El loop incluye la rebanada R0, un adelanto parcial de HU-018/019 (solo `Ticket` y `TicketParticipant`, sin UI de triage).
 

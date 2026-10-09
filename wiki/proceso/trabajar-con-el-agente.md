@@ -140,6 +140,7 @@ Las construcciones largas se lanzan desde archivos de control de la raíz, con u
 |---|---|---|
 | `goal_login.md` | `/goal …` (texto exacto en el archivo) | HU-002, HU-003 y HU-004 (Sprint 0) |
 | `loop_chat.md` | `/loop …` (texto exacto en el archivo) | EP-009, HU-026 a HU-032, una rebanada por iteración |
+| `loop_core.md` | `/loop …` (texto exacto en el archivo), en el worktree `DataGlobal2-core` que se crea desde `main` al lanzarlo | El resto del software (35 HU de las fases 0 a 4), una HU por iteración, en paralelo con el chat |
 
 - Ejecútalos en modo auto. El stack de Compose ya está levantado y Claude ejecuta aquí todos los comandos de Docker. Para probar algo que el stack no tiene, crea contenedores desechables (`dt-*-check`) y los elimina al terminar.
 - El avance se sigue en las casillas, en el «Registro» de cada archivo y en `git log`.

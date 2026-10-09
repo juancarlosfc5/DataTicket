@@ -4,7 +4,7 @@ type: sintesis
 status: vigente
 tags: [sintesis, proceso, scrum, identity, signalr]
 sources: ["PLAN-DE-TRABAJO.md", "wiki/scrum/tablero-scrum.md", "Decisiones D1–D6 de la persona líder del proyecto (2026-10-09)", "https://code.claude.com/docs/en/goal", "https://code.claude.com/docs/en/scheduled-tasks"]
-aliases: [Plan goal y loop, goal_login, loop_chat]
+aliases: [Plan goal y loop, goal_login, loop_chat, loop_core]
 created: 2026-10-09
 updated: 2026-10-09
 ---
@@ -55,6 +55,24 @@ loop_chat.md   P0 → R0 dominio mínimo → R1–R3 HU-026 → R4–R5 HU-027 �
 
 En paralelo, otra persona puede tomar HU-001 (CI): da evidencia en los PR y no choca con estos archivos.
 
+## Loop del core (`loop_core.md`, 2026-10-09)
+
+A petición de la persona líder, un tercer archivo de control construye **el resto del software**: auditoría, empresas y cuentas, radicación, triage, participantes, detalle, estados, PR, bitácora, bandejas, portal, respuesta formal, cierre, notificaciones, dashboard y formularios. Son 35 HU, una por iteración. Corre **en paralelo** con el loop del chat:
+
+| | Goal / loop del chat | Loop del core |
+|---|---|---|
+| Archivo de control | `main` | `main` |
+| Carpeta de ejecución | principal del repo | worktree `../DataGlobal2-core`, creado desde `main` al lanzar el loop |
+| Rama de trabajo | `feature/auth-login` → `feature/chat-signalr` | `feature/core` (creada al lanzar el loop) |
+| Stack de Docker | `dataticket` (puertos 5432/8080/5173) | `dataticket-core` (55432/18080/15173, `.env.core`) |
+| Pruebas de integración | Testcontainers | Testcontainers |
+
+- **Arranque:** cuando `feature/auth-login` se fusiona en `main`, se crea el worktree del core desde `main` (paso 2 de `loop_core.md`) y se lanza el loop en esa carpeta.
+- **Núcleo compartido:** el core construye primero `Ticket`, `TicketParticipant`, `Assignment`, la regla de acceso y el puerto `IChatConnectionRevoker`, y los marca con la etiqueta `core-nucleo-v1` (hito N1). El chat lo fusiona en su R0, sin duplicarlo.
+- **Propiedad del código:** una tabla en `loop_core.md` §3 fija qué áreas son de cada loop. Los archivos compartidos (`Program.cs`, `DependencyInjection.cs`, `DbContext`, rutas, glosario) solo reciben cambios aditivos.
+- **Integración:** cada loop fusiona `main` al empezar cada iteración. La persona líder fusiona hacia `main` en los hitos N1, F1 (Fase 1) y F2 (entrega y cierre). Los conflictos de migraciones se resuelven regenerando las de la rama que no está en `main`.
+- **Etapas:** A fundaciones (HU-001, 011, N1, 007, 005, 008, 009, 010, 006) → B radicación y triage (013, 014, 016, 020, 018, 019, 017, 015) → C trazabilidad y portal (021, 022, 012, 023, 024, 025) → D entrega y cierre (033–036, 038, 037) → E dashboard (039–042) → F formularios (043–047).
+
 ## Riesgos
 
 | Riesgo | Mitigación |
@@ -64,7 +82,9 @@ En paralelo, otra persona puede tomar HU-001 (CI): da evidencia en los PR y no c
 | El evaluador del goal no ve archivos | La condición exige la evidencia pegada en la conversación |
 | Contexto largo en el loop | Estado en `loop_chat.md` y en las matrices de cada HU |
 | HU-029 depende de HU-014 (`IFileStorage`) | R11 se marca bloqueada sin detener el resto |
-| Sin CI | Verificación local obligatoria en cada bloque; HU-001 en paralelo |
+| Sin CI | Verificación local obligatoria en cada bloque; HU-001 es la primera HU de `loop_core` |
+| Los dos loops editan los mismos archivos | Tabla de propiedad del código, cambios aditivos en los compartidos, `git merge main` en cada iteración y `log.md` fusionado por unión |
+| Choque de puertos o de datos entre stacks | Stack `dataticket-core` con otros puertos; el stack principal no lo toca el core |
 
 ## Relacionado
 
