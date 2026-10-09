@@ -280,3 +280,96 @@ describe('core/http — errores', () => {
     expect(second).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('core/http — token antiforgery obsoleto', () => {
+  function stubWithTokens(respond: (url: string, token: string | null, call: number) => Response) {
+    let tokens = 0
+    let calls = 0
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init: RequestInit = {}) => {
+      const url = String(input)
+      if (url === '/api/auth/antiforgery') {
+        tokens += 1
+        return json({ headerName: 'X-XSRF-TOKEN', token: `t-${tokens}` })
+      }
+      calls += 1
+      return respond(url, headersOf(init).get('X-XSRF-TOKEN'), calls)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    return fetchMock
+  }
+
+  const antiforgeryInvalid = () =>
+    problem({ title: 'La solicitud no es válida.', status: 400, code: 'antiforgery_invalid' }, 400)
+
+  it('ante antiforgery_invalid pide un token nuevo y reintenta una sola vez', async () => {
+    const fetchMock = stubWithTokens((_url, _token, call) =>
+      call === 1 ? antiforgeryInvalid() : json({ ok: true }),
+    )
+
+    await expect(postJson('/x', { a: 1 })).resolves.toEqual({ ok: true })
+
+    expect(callsTo(fetchMock, '/api/auth/antiforgery')).toHaveLength(2)
+    expect(callsTo(fetchMock, '/api/x').map(([, init]) => headersOf(init).get('X-XSRF-TOKEN'))).toEqual(['t-1', 't-2'])
+    expect(callsTo(fetchMock, '/api/x').map(([, init]) => init?.body)).toEqual([
+      JSON.stringify({ a: 1 }),
+      JSON.stringify({ a: 1 }),
+    ])
+  })
+
+  it('si el reintento vuelve a fallar propaga el error sin más intentos', async () => {
+    const fetchMock = stubWithTokens(() => antiforgeryInvalid())
+
+    const error = (await postJson('/x', {}).catch((caught: unknown) => caught)) as HttpError
+
+    expect(error.status).toBe(400)
+    expect(error.problem?.code).toBe('antiforgery_invalid')
+    expect(callsTo(fetchMock, '/api/x')).toHaveLength(2)
+  })
+
+  it('no reintenta otros 400', async () => {
+    const fetchMock = stubWithTokens(() => problem({ status: 400, errors: { email: ['x'] } }, 400))
+
+    await expect(postJson('/x', {})).rejects.toBeInstanceOf(HttpError)
+
+    expect(callsTo(fetchMock, '/api/x')).toHaveLength(1)
+    expect(callsTo(fetchMock, '/api/auth/antiforgery')).toHaveLength(1)
+  })
+
+  it('una petición fallida de antiforgery no queda en caché', async () => {
+    let antiforgeryCalls = 0
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      if (String(input) === '/api/auth/antiforgery') {
+        antiforgeryCalls += 1
+        return antiforgeryCalls === 1
+          ? new Response('<html></html>', { status: 503, headers: { 'Content-Type': 'text/html' } })
+          : json(ANTIFORGERY)
+      }
+      return new Response(null, { status: 204 })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(postJson('/x', {})).rejects.toBeInstanceOf(HttpError)
+    await expect(postJson('/x', {})).resolves.toBeUndefined()
+
+    expect(antiforgeryCalls).toBe(2)
+  })
+})
+
+describe('core/http — validación de la ruta', () => {
+  it('rechaza segmentos .. o . (también codificados) antes de llamar a fetch', async () => {
+    const fetchMock = mockFetch(() => json({}))
+
+    await expect(getJson('/tickets/../admin')).rejects.toThrow(TypeError)
+    await expect(getJson('/tickets/%2e%2e/admin')).rejects.toThrow(TypeError)
+    await expect(postJson('/./x', {})).rejects.toThrow(TypeError)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('solo valida el path: la query puede contener URL o barras invertidas', async () => {
+    const fetchMock = mockFetch(() => json({ ok: true }))
+
+    await getJson('/tickets?origen=https://ejemplo.test/a\b#seccion')
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('/api/tickets?origen=https://ejemplo.test/a\b#seccion')
+  })
+})

@@ -48,4 +48,9 @@ describe('signInPathFor', () => {
     expect(signInPathFor('/')).toBe('/ingresar')
     expect(signInPathFor('//evil.example')).toBe('/ingresar')
   })
+
+  it('no recuerda la vista sin permiso como destino', () => {
+    expect(signInPathFor('/sin-permiso')).toBe('/ingresar')
+    expect(sanitizeReturnUrl('/sin-permiso', FALLBACK)).toBe(FALLBACK)
+  })
 })

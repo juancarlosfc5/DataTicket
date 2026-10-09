@@ -1,0 +1,265 @@
+/*
+ * Entrada (/ingresar). Lenguaje visual de sistema-de-diseno: fondo claro con el azul y el verde de
+ * marca, título grande con font-stretch, campos de 46 px y botón de 48 px. Siempre en tema claro
+ * (.theme-light). Solo tokens. Sin desplazamiento horizontal desde 320 px.
+ */
+
+.signin {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(90% 60% at 0% 0%, var(--accent-soft), transparent 62%),
+    radial-gradient(70% 55% at 100% 100%, var(--brand-green-soft), transparent 70%),
+    var(--ground);
+  color: var(--ink);
+}
+
+.signin__frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: var(--signin-frame-max);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-8);
+}
+
+/* ===== Marca ===== */
+.signin__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.signin__brand {
+  font-size: var(--text-md);
+  font-weight: var(--weight-heavy);
+  font-stretch: var(--stretch-brand);
+  letter-spacing: var(--tracking-title);
+}
+
+.signin__org {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+/* ===== Composición ===== */
+.signin__grid {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--signin-card-width));
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.signin__title {
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: var(--weight-heavy);
+  font-stretch: var(--stretch-title);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-display);
+}
+
+.signin__title-accent {
+  color: var(--brand-blue);
+}
+
+.signin__lead {
+  max-width: 44ch;
+  margin: var(--space-4) 0 0;
+  color: var(--ink-2);
+  font-size: var(--text-lead);
+  line-height: var(--leading-body);
+}
+
+/* Filete de marca: azul y verde Data Global */
+.signin__intro::after {
+  content: '';
+  display: block;
+  width: var(--space-16);
+  height: var(--indicator-width);
+  margin-top: var(--space-6);
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--brand-blue) 0 62%, var(--brand-green) 62% 100%);
+}
+
+/* ===== Tarjeta del formulario ===== */
+.signin__card {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-8);
+  overflow: hidden;
+  border: var(--border-width) solid var(--line);
+  border-radius: var(--r-2xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+  transition:
+    opacity var(--dur-view) var(--ease-out),
+    transform var(--dur-view) var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(var(--space-2));
+  }
+}
+
+.signin__card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--indicator-width);
+  background: linear-gradient(90deg, var(--brand-blue) 0 72%, var(--brand-green) 72% 100%);
+}
+
+.signin__card-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  font-stretch: var(--stretch-title);
+  letter-spacing: var(--tracking-title);
+  line-height: var(--leading-tight);
+}
+
+.signin__alert {
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-radius: var(--r-l);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  box-shadow: inset var(--indicator-width) 0 0 var(--danger);
+  color: var(--danger);
+  font-weight: var(--weight-semibold);
+  transition:
+    opacity var(--dur-enter) var(--ease-out),
+    transform var(--dur-enter) var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-1)));
+  }
+}
+
+/* ===== Campos ===== */
+.signin-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.signin-field__label-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.signin-field__label {
+  font-weight: var(--weight-semibold);
+}
+
+.signin-field__input {
+  width: 100%;
+  height: var(--field-height-lg);
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--line-strong);
+  border-radius: var(--r-l);
+  background: var(--surface);
+  color: var(--ink);
+  /* 16 px evita el zoom automático de iOS al enfocar */
+  font-size: var(--text-lead);
+  caret-color: var(--accent);
+  transition:
+    border-color var(--dur-hover) ease,
+    box-shadow var(--dur-hover) ease;
+}
+
+.signin-field__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.signin-field--invalid .signin-field__input {
+  border-color: var(--danger);
+}
+
+.signin-field--invalid .signin-field__input:focus {
+  box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--danger) 22%, transparent);
+}
+
+.signin-field__error {
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.signin__link {
+  border-radius: var(--r-s);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .signin-field__input:hover:not(:focus) {
+    border-color: var(--ink-3);
+  }
+
+  .signin__link:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ===== Acción ===== */
+.signin__submit {
+  width: 100%;
+  height: var(--control-height-lg);
+  border-radius: var(--r-l);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+}
+
+.signin__submit:disabled {
+  cursor: progress;
+}
+
+.signin__foot {
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+}
+
+/* ===== Adaptación ===== */
+@media (max-width: 900px) {
+  .signin__frame {
+    gap: var(--space-6);
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .signin__grid {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: var(--space-6);
+  }
+
+  .signin__card {
+    width: 100%;
+    max-width: var(--signin-card-width);
+  }
+}
+
+@media (max-width: 480px) {
+  .signin__card {
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .signin__lead {
+    font-size: var(--text-md);
+  }
+}

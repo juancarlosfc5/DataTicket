@@ -275,3 +275,17 @@
     white-space: nowrap;
   }
 }
+
+/* ===== Aviso del shell (p. ej. no se pudo cerrar la sesión) ===== */
+.shell-alert {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid color-mix(in srgb, var(--danger) 35%, transparent);
+  border-radius: var(--r-l);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  box-shadow: inset var(--indicator-width) 0 0 var(--danger);
+  color: var(--danger);
+  font-weight: var(--weight-semibold);
+}

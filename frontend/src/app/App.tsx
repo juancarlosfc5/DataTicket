@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router'
+import { useLogoutController } from '../modules/auth/controllers/useLogoutController'
 import { useSessionController } from '../modules/session/controllers/useSessionController'
 import { FORBIDDEN_PATH } from '../modules/session/models/navigation'
 import { AppRoutes } from './AppRoutes'
@@ -9,9 +10,9 @@ export function App() {
   const session = useSessionController({
     onForbidden: () => navigate(FORBIDDEN_PATH, { replace: true }),
   })
+  // «Cerrar sesión»: POST /api/auth/logout y, después, descartar la sesión en memoria
+  // (la guarda lleva a /ingresar sin returnUrl).
+  const signOut = useLogoutController({ onSignedOut: session.endSession })
 
-  // Punto de conexión del cierre de sesión. B5 solo descarta la sesión en memoria (la guarda lleva
-  // a /ingresar); HU-003 (bloque B6) lo sustituye por el controlador de `auth`, que llama antes a
-  // POST /api/auth/logout y expone `isSigningOut`.
-  return <AppRoutes session={session} onSignOut={session.endSession} isSigningOut={false} />
+  return <AppRoutes session={session} signOut={signOut} />
 }

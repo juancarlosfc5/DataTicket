@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { BrandMark } from '../../../shared/ui/BrandMark'
-import { InternalLink } from '../../../shared/ui/InternalLink'
 import type { NavigationItem, SectionId } from '../models/navigation'
+import { ShellNavigation } from './ShellNavigation'
+import { ShellUser } from './ShellUser'
 import './AppLayout.css'
 
 export type AppLayoutVariant = 'internal' | 'portal'
@@ -19,6 +20,8 @@ export interface AppLayoutProps {
   readonly onNavigate: (to: string) => void
   readonly onSignOut: () => void
   readonly isSigningOut: boolean
+  /** Fallo al cerrar sesión (la sesión sigue abierta). */
+  readonly signOutError?: string | null
   readonly children: ReactNode
 }
 
@@ -28,38 +31,16 @@ const NAVIGATION_LABEL: Record<AppLayoutVariant, string> = {
 }
 
 /** Shell autenticado: cabecera (marca, usuario, «Cerrar sesión»), navegación y contenido. */
-export function AppLayout({
-  variant,
-  surfaceLabel,
-  userName,
-  userDetail,
-  userInitials,
-  navigation,
-  currentItemId,
-  onNavigate,
-  onSignOut,
-  isSigningOut,
-  children,
-}: AppLayoutProps) {
-  const nav =
-    navigation.length > 0 ? (
-      <nav className="shell-nav" aria-label={NAVIGATION_LABEL[variant]}>
-        <ul className="shell-nav__list">
-          {navigation.map((item) => (
-            <li key={item.id}>
-              <InternalLink
-                className="shell-nav__link"
-                to={item.to}
-                onNavigate={onNavigate}
-                aria-current={item.id === currentItemId ? 'page' : undefined}
-              >
-                {item.label}
-              </InternalLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    ) : null
+export function AppLayout(props: AppLayoutProps) {
+  const { variant, navigation, currentItemId, onNavigate, signOutError, children } = props
+  const nav = (
+    <ShellNavigation
+      label={NAVIGATION_LABEL[variant]}
+      items={navigation}
+      currentItemId={currentItemId}
+      onNavigate={onNavigate}
+    />
+  )
 
   return (
     <div className={`shell shell--${variant}`}>
@@ -71,25 +52,25 @@ export function AppLayout({
           <BrandMark />
           <div className="shell-brand__text">
             <span className="shell-brand__name">DataTicket</span>
-            <span className="shell-brand__surface">{surfaceLabel}</span>
+            <span className="shell-brand__surface">{props.surfaceLabel}</span>
           </div>
         </div>
         {variant === 'portal' ? nav : null}
-        <div className="shell-user">
-          <span className="avatar" aria-hidden="true">
-            {userInitials}
-          </span>
-          <div className="shell-user__text">
-            <span className="shell-user__name">{userName}</span>
-            <span className="shell-user__detail">{userDetail}</span>
-          </div>
-          <button type="button" className="btn btn--quiet" onClick={onSignOut} disabled={isSigningOut}>
-            {isSigningOut ? 'Cerrando sesión…' : 'Cerrar sesión'}
-          </button>
-        </div>
+        <ShellUser
+          name={props.userName}
+          detail={props.userDetail}
+          initials={props.userInitials}
+          onSignOut={props.onSignOut}
+          isSigningOut={props.isSigningOut}
+        />
       </header>
       {variant === 'internal' ? nav : null}
       <main id="contenido" className="shell-main" tabIndex={-1}>
+        {signOutError ? (
+          <p className="shell-alert" role="alert">
+            {signOutError}
+          </p>
+        ) : null}
         {children}
       </main>
     </div>

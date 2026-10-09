@@ -107,7 +107,7 @@ Respuesta de `/me` (ejemplo con los IDs de `db.sql` §13):
 
 ### Comportamiento común de la API
 
-- Toda mutación (`POST`, `PUT`, `PATCH`, `DELETE`) bajo `/api` valida la cabecera antiforgery con un filtro de endpoint: si falta o no es válida → `400` ProblemDetails «La solicitud no es válida.».
+- Toda mutación (`POST`, `PUT`, `PATCH`, `DELETE`) bajo `/api` valida la cabecera antiforgery con un filtro de endpoint: si falta o no es válida → `400` ProblemDetails «La solicitud no es válida.» con la extensión `"code": "antiforgery_invalid"` (añadida tras la revisión de B5: el SPA invalida su token cacheado y reintenta **una** vez).
 - Sin sesión → `401` `application/problem+json` «Se requiere iniciar sesión.», **sin** `Location` (nunca `302`).
 - Autenticado sin permiso → `403` `application/problem+json` «No tienes permiso para realizar esta acción.».
 - **Endpoints públicos** (lista explícita, verificada por prueba): `GET /api/health`, `GET /api/health/live`, `GET /api/auth/antiforgery`, `POST /api/auth/login` y `GET /openapi/v1.json` solo en Development. HU-005 y HU-006 añadirán `POST /api/auth/invitations/accept`, `POST /api/auth/password/forgot` y `POST /api/auth/password/reset`.
@@ -126,6 +126,15 @@ Respuesta de `/me` (ejemplo con los IDs de `db.sql` §13):
 | Cualquier otra | — | Redirige a `/` |
 
 Un `401` de cualquier petición a `/api` lleva a `/ingresar?returnUrl=<ruta actual>`; un `403`, o abrir la superficie ajena, a la vista «sin permiso». La navegación por rol es ayuda de interfaz: la barrera es el backend (PRD §5 regla 2).
+
+### Implementación en el SPA (B5–B6, 2026-10-09)
+
+- El token antiforgery vive solo en memoria; `login` y `logout` lo invalidan (en `finally`). Ante `code: "antiforgery_invalid"` la mutación pide un token nuevo y reintenta **una** vez; ningún otro `400` se reintenta.
+- `/me`, `login` y `logout` no disparan el manejador global de `401` (`notifyAuthErrors: false`).
+- Ante cualquier `401` del login la vista muestra su texto fijo «Correo o contraseña incorrectos.» (no usa el `title` del servidor), conserva el correo, vacía la contraseña y lleva el foco a ella.
+- La validación local del correo (una `@`, sin espacios, ≤ 256) es deliberadamente más laxa que la del servidor.
+- `returnUrl` nunca apunta a `/ingresar` ni a `/sin-permiso`; tras un cierre de sesión explícito no se recuerda la ruta anterior.
+- La entrada se muestra siempre en tema claro ([[sistema-de-diseno]]).
 
 ### Otros endpoints previstos (HU posteriores)
 

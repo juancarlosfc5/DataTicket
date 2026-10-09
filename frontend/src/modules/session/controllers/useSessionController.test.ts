@@ -89,3 +89,53 @@ describe('useSessionController', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 })
+
+describe('useSessionController — carrera de /me', () => {
+  it('endSession aborta el /me en curso: una respuesta tardía no restaura la sesión', async () => {
+    let release: (response: Response) => void = () => undefined
+    let aborted = false
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        (_input: RequestInfo | URL, init?: RequestInit) =>
+          new Promise<Response>((resolve) => {
+            init?.signal?.addEventListener('abort', () => {
+              aborted = true
+            })
+            release = resolve
+          }),
+      ),
+    )
+    const { result } = renderHook(() => useSessionController())
+
+    act(() => result.current.endSession())
+    await act(async () => {
+      release(Response.json(ME))
+    })
+
+    expect(aborted).toBe(true)
+    expect(result.current.state).toEqual({ kind: 'anonymous', reason: 'signedOut' })
+  })
+
+  it('un 401 global aborta el /me en curso', async () => {
+    let releaseMe: (response: Response) => void = () => undefined
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) =>
+        String(input) === '/api/auth/me'
+          ? new Promise<Response>((resolve) => (releaseMe = resolve))
+          : Promise.resolve(problemResponse(401)),
+      ),
+    )
+    const { result } = renderHook(() => useSessionController())
+
+    await act(async () => {
+      await getJson('/tickets').catch(() => undefined)
+    })
+    await act(async () => {
+      releaseMe(Response.json(ME))
+    })
+
+    expect(result.current.state).toEqual({ kind: 'anonymous', reason: 'expired' })
+  })
+})

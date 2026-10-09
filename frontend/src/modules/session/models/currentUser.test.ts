@@ -87,3 +87,58 @@ describe('userInitials', () => {
     expect(userInitials('ñandú')).toBe('Ñ')
   })
 })
+
+/** CHU-10 de HU-004: los dos ejemplos literales de la HU y un `surface` desconocido. */
+describe('contrato de /me (HU-004 CHU-10)', () => {
+  const HU004_CLIENT = {
+    id: '6f1c2a9e-4c1d-4b8e-9a51-1f0e2d3c4b5a',
+    displayName: 'Ana Pérez',
+    email: 'ana.perez@empresa-sintetica-01.test',
+    surface: 'client',
+    roles: ['Requester'],
+    teams: [],
+    company: { id: '0b7d6c1e-2f3a-4b5c-8d9e-0a1b2c3d4e5f', name: 'Empresa Sintética 01' },
+  }
+
+  const HU004_INTERNAL = {
+    id: '9a2e4f60-7b1c-4d2e-8f3a-5b6c7d8e9f01',
+    displayName: 'Elizabeth',
+    email: 'elizabeth@dataticket.local',
+    surface: 'internal',
+    roles: ['ProductManager'],
+    teams: ['Production'],
+    company: null,
+  }
+
+  it('el ejemplo de cliente produce un CurrentUser del portal con su empresa', () => {
+    expect(toCurrentUser(HU004_CLIENT)).toEqual({
+      id: '6f1c2a9e-4c1d-4b8e-9a51-1f0e2d3c4b5a',
+      displayName: 'Ana Pérez',
+      email: 'ana.perez@empresa-sintetica-01.test',
+      surface: 'client',
+      roles: ['Requester'],
+      teams: [],
+      company: { id: '0b7d6c1e-2f3a-4b5c-8d9e-0a1b2c3d4e5f', name: 'Empresa Sintética 01' },
+    })
+  })
+
+  it('el ejemplo interno produce un CurrentUser interno sin empresa', () => {
+    expect(toCurrentUser(HU004_INTERNAL)).toEqual({
+      id: '9a2e4f60-7b1c-4d2e-8f3a-5b6c7d8e9f01',
+      displayName: 'Elizabeth',
+      email: 'elizabeth@dataticket.local',
+      surface: 'internal',
+      roles: ['ProductManager'],
+      teams: ['Production'],
+      company: null,
+    })
+  })
+
+  it('surface "partner" produce un usuario sin acceso', () => {
+    const user = toCurrentUser({ ...HU004_CLIENT, surface: 'partner' })
+
+    expect(user?.surface).toBe('none')
+    expect(user?.roles).toEqual([])
+    expect(user?.company).toBeNull()
+  })
+})

@@ -272,3 +272,15 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: `react-router` 8.4.0, Testing Library + jsdom, `tokens.css` claro/oscuro y Archivo autoalojada; `core/http` con mutaciones, antiforgery y `HttpError`; módulo `session` (modelo, navegación por rol, `sanitizeReturnUrl`, controlador, guardas, layouts, «sin permiso»). lint 0/0, 89 pruebas, build OK. CHU-10 verificado en el navegador integrado (375 px oscuro y 1440 px claro, sin desbordamiento) con un doble del contrato.
 - Wiki: [[frontend-mvc]], [[estrategia-de-pruebas]], [[stack-y-versiones]], [[sistema-de-diseno]], [[glosario]], [[hu-002-shell-y-navegacion-por-rol]]
 - Pendiente: B3 (backend) en curso. Revisión de B5: 0 CRÍTICO, 0 ALTO; 4 MEDIO pasan a B6.
+
+## [2026-10-09] decision | Contrato: código estable del error antiforgery
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: el `400` por antiforgery inválido incluye `"code": "antiforgery_invalid"` para que el SPA invalide su token y reintente una vez (hallazgo MEDIO de la revisión de B5). B5 commiteado (`81dcbab`); B6 en curso con las correcciones MEDIO.
+- Wiki: [[autenticacion-identity]]
+
+## [2026-10-09] feature | Goal del login — B6 entrada y sesión (frontend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `frontend-engineer`)
+- Cambios: módulo `auth` (`/ingresar`, validación local, mensaje genérico, logout real), guarda por sección declarada, reintento único ante `antiforgery_invalid`, aborto del `/me` en curso. lint 0/0, 147 pruebas, build OK; `/ingresar` revisada en el navegador (claro forzado, 375 y 1440 px).
+- Incidencia: el disco C: se llenó (≈3 MB libres); se vaciaron los cachés de npm (9,2 GB) y HTTP de NuGet con sus comandos propios. Docker (`Docker\wsl`, 21,7 GB) es el mayor consumidor.
+- Wiki: [[frontend-mvc]], [[autenticacion-identity]], [[estrategia-de-pruebas]], [[sistema-de-diseno]]
+- Pendiente: B3 (backend) en curso. Revisión de B6: 0 CRÍTICO, 0 ALTO (3 BAJO a B7).

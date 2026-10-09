@@ -35,7 +35,7 @@ Desarrollo guiado por pruebas: primero la prueba que falla, luego la implementac
 
 ## Frontend (React 19)
 
-jsdom se activa por archivo (`// @vitest-environment jsdom` + `import '…/test/domSetup'`); los modelos siguen en `node`. Tras B5 del goal del login hay 89 pruebas Vitest.
+jsdom se activa por archivo (`// @vitest-environment jsdom` + `import '…/test/domSetup'`); los modelos siguen en `node`. Tras B6 del goal del login hay 147 pruebas Vitest en 17 archivos; las de `app/` cubren login, logout, la carrera de `/me` y los intentos de saltar la guarda con rutas codificadas. Los controladores se prueban con `renderHook` en jsdom.
 
 | Nivel | Herramientas | Qué cubre |
 |---|---|---|

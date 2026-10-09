@@ -1,4 +1,5 @@
 export const SIGN_IN_PATH = '/ingresar'
+const NON_RETURNABLE_PATHS: readonly string[] = [SIGN_IN_PATH, '/sin-permiso']
 
 const MAX_RETURN_URL_LENGTH = 2048
 const FIRST_PRINTABLE = 0x20
@@ -17,9 +18,9 @@ function isSafeInternalPath(value: string): boolean {
   if (!value.startsWith('/') || value.startsWith('//')) return false
   // `\` lo normalizan los navegadores a `/` (`/\host` → `//host`); los controles se eliminan (`/\t/host`).
   if (value.includes('\\') || hasControlCharacters(value)) return false
-  // Evita bucles: volver a la entrada no tiene sentido tras iniciar sesión.
-  const pathname = value.split(/[?#]/, 1)[0]
-  return pathname !== SIGN_IN_PATH && !pathname.startsWith(`${SIGN_IN_PATH}/`)
+  // Ni la entrada (bucle) ni «sin permiso» son destinos útiles tras iniciar sesión.
+  const pathname = value.split(/[?#]/, 1)[0].toLowerCase()
+  return !NON_RETURNABLE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))
 }
 
 /**

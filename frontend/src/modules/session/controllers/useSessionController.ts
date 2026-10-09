@@ -26,6 +26,8 @@ export function useSessionController(options: SessionControllerOptions = {}): Se
   const [state, dispatch] = useReducer(sessionReducer, INITIAL_SESSION_STATE)
   const [attempt, setAttempt] = useState(0)
   const onForbiddenRef = useRef(options.onForbidden)
+  /** `/me` en curso: se aborta si la sesión termina antes, para que no la restaure. */
+  const loadRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     onForbiddenRef.current = options.onForbidden
@@ -33,24 +35,29 @@ export function useSessionController(options: SessionControllerOptions = {}): Se
 
   useEffect(() => {
     const controller = new AbortController()
+    loadRef.current = controller
 
     fetchCurrentUser(controller.signal)
-      .then((user) => dispatch({ type: 'loaded', user }))
+      .then((user) => {
+        if (!controller.signal.aborted) dispatch({ type: 'loaded', user })
+      })
       .catch((error: unknown) => {
         if (!controller.signal.aborted) dispatch({ type: 'loadFailed', message: userMessageFor(error) })
       })
 
-    return () => controller.abort()
+    return () => {
+      controller.abort()
+      if (loadRef.current === controller) loadRef.current = null
+    }
   }, [attempt])
 
-  useEffect(
-    () =>
-      setUnauthorizedHandler(() => {
-        invalidateAntiforgeryToken()
-        dispatch({ type: 'sessionExpired' })
-      }),
-    [],
-  )
+  const discardSession = useCallback((event: 'sessionExpired' | 'signedOut') => {
+    loadRef.current?.abort()
+    invalidateAntiforgeryToken()
+    dispatch({ type: event })
+  }, [])
+
+  useEffect(() => setUnauthorizedHandler(() => discardSession('sessionExpired')), [discardSession])
 
   useEffect(() => setForbiddenHandler(() => onForbiddenRef.current?.()), [])
 
@@ -59,10 +66,7 @@ export function useSessionController(options: SessionControllerOptions = {}): Se
     setAttempt((current) => current + 1)
   }, [])
 
-  const endSession = useCallback(() => {
-    invalidateAntiforgeryToken()
-    dispatch({ type: 'signedOut' })
-  }, [])
+  const endSession = useCallback(() => discardSession('signedOut'), [discardSession])
 
   return { state, refresh, endSession }
 }

@@ -29,6 +29,8 @@ const INTERNAL_ME = {
   company: null,
 }
 
+const ANTIFORGERY = { headerName: 'X-XSRF-TOKEN', token: 'token-sintetico' }
+
 const ok = (body: unknown): Handler => () => Response.json(body)
 const problem = (status: number, title: string): Handler => () =>
   new Response(JSON.stringify({ status, title }), { status, headers: { 'Content-Type': 'application/problem+json' } })
@@ -102,8 +104,8 @@ describe('Shell: superficie por usuario (CHU-01)', () => {
     await waitFor(() => expect(currentLocation()).toBe('/portal'))
   })
 
-  it('un surface desconocido se trata como sin acceso', async () => {
-    mockApi({ '/api/auth/me': ok({ ...INTERNAL_ME, surface: 'otro' }) })
+  it('un surface desconocido (partner) se trata como sin acceso y muestra sin permiso (HU-004 CHU-10)', async () => {
+    mockApi({ '/api/auth/me': ok({ ...INTERNAL_ME, surface: 'partner' }) })
 
     renderAt('/')
 
@@ -181,6 +183,29 @@ describe('Shell: sin permiso (CHU-06)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('No tienes permiso para ver esta página.')
   })
 
+  it('un miembro de Development no evita la guarda codificando la ruta', async () => {
+    const developer = { ...INTERNAL_ME, roles: [], teams: ['Development'] }
+
+    for (const path of ['/interno/%61dministracion', '/interno/%74riage', '/INTERNO/ADMINISTRACION']) {
+      mockApi({ '/api/auth/me': ok(developer) })
+      const { unmount } = renderAt(path)
+
+      expect(await screen.findByRole('alert')).toHaveTextContent('No tienes permiso para ver esta página.')
+      expect(screen.queryByRole('heading', { name: 'Administración' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Cola de triage' })).not.toBeInTheDocument()
+      unmount()
+      vi.unstubAllGlobals()
+    }
+  })
+
+  it('el Administrator abre Administración aunque la ruta llegue en mayúsculas', async () => {
+    mockApi({ '/api/auth/me': ok({ ...INTERNAL_ME, roles: ['Administrator'] }) })
+
+    renderAt('/Interno/Administracion')
+
+    expect(await screen.findByRole('heading', { name: 'Administración' })).toBeInTheDocument()
+  })
+
   it('un 403 de la API lleva a la vista sin permiso', async () => {
     mockApi({
       '/api/auth/me': ok(INTERNAL_ME),
@@ -223,23 +248,47 @@ describe('Shell: errores y rutas públicas', () => {
     expect(currentLocation()).toBe('/olvide-mi-contrasena')
   })
 
-  it('/ingresar sin sesión muestra la entrada', async () => {
+  it('/ingresar sin sesión muestra el formulario de entrada', async () => {
     mockApi({ '/api/auth/me': problem(401, 'Se requiere iniciar sesión.') })
 
     renderAt('/ingresar?returnUrl=%2Fportal')
 
-    expect(await screen.findByRole('heading', { name: 'Ingresar' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Ingresar' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Correo')).toBeInTheDocument()
     expect(currentLocation()).toBe('/ingresar?returnUrl=%2Fportal')
   })
 
-  it('Cerrar sesión descarta la sesión en memoria y lleva a /ingresar', async () => {
-    mockApi({ '/api/auth/me': ok(CLIENT_ME) })
+  it('Cerrar sesión llama a POST /api/auth/logout, descarta la sesión y lleva a /ingresar', async () => {
+    const fetchMock = mockApi({
+      '/api/auth/me': ok(CLIENT_ME),
+      '/api/auth/antiforgery': ok(ANTIFORGERY),
+      '/api/auth/logout': () => new Response(null, { status: 204 }),
+    })
     renderAt('/portal')
 
     await userEvent.click(await screen.findByRole('button', { name: 'Cerrar sesión' }))
 
     await waitFor(() => expect(currentLocation()).toBe('/ingresar'))
     expect(screen.queryByText('Ana Pérez')).not.toBeInTheDocument()
+    const logoutCall = fetchMock.mock.calls.find(([input]) => String(input) === '/api/auth/logout')
+    expect(logoutCall?.[1]?.method).toBe('POST')
+    expect(new Headers(logoutCall?.[1]?.headers).get('X-XSRF-TOKEN')).toBe(ANTIFORGERY.token)
+  })
+
+  it('si el cierre de sesión falla con 5xx conserva la sesión y avisa', async () => {
+    mockApi({
+      '/api/auth/me': ok(CLIENT_ME),
+      '/api/auth/antiforgery': ok(ANTIFORGERY),
+      '/api/auth/logout': () =>
+        new Response('<html></html>', { status: 503, headers: { 'Content-Type': 'text/html' } }),
+    })
+    renderAt('/portal')
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Cerrar sesión' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos completar la operación. Inténtalo de nuevo.')
+    expect(currentLocation()).toBe('/portal')
+    expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeEnabled()
   })
 
   it('el módulo system sigue accesible en /interno/estado', async () => {
@@ -251,5 +300,111 @@ describe('Shell: errores y rutas públicas', () => {
     renderAt('/interno/estado')
 
     expect(await screen.findByText('Operativo', { selector: 'strong' })).toBeInTheDocument()
+  })
+})
+
+describe('Entrada /ingresar (HU-003 CHU-11)', () => {
+  function loginApi(loginResponses: Handler[]) {
+    let signedIn = false
+    let attempt = 0
+    return mockApi({
+      '/api/auth/me': (init) => (signedIn ? Response.json(CLIENT_ME) : problem(401, 'Se requiere iniciar sesión.')(init)),
+      '/api/auth/antiforgery': ok(ANTIFORGERY),
+      '/api/auth/login': (init) => {
+        const response = loginResponses[Math.min(attempt, loginResponses.length - 1)](init)
+        attempt += 1
+        if (response.status === 204) signedIn = true
+        return response
+      },
+    })
+  }
+
+  async function fillAndSubmit(user: ReturnType<typeof userEvent.setup>, email: string, password: string) {
+    await user.type(await screen.findByLabelText('Correo'), email)
+    await user.type(screen.getByLabelText('Contraseña'), password)
+    await user.click(screen.getByRole('button', { name: 'Ingresar' }))
+  }
+
+  it('un 401 muestra el mensaje genérico, conserva el correo, vacía la contraseña y rehabilita Ingresar', async () => {
+    const user = userEvent.setup()
+    loginApi([problem(401, 'Correo o contraseña incorrectos.')])
+    renderAt('/ingresar')
+
+    await fillAndSubmit(user, 'ana.perez@empresa-sintetica-01.test', 'clave-incorrecta')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Correo o contraseña incorrectos.')
+    expect(screen.getByLabelText('Correo')).toHaveValue('ana.perez@empresa-sintetica-01.test')
+    expect(screen.getByLabelText('Contraseña')).toHaveValue('')
+    expect(screen.getByLabelText('Contraseña')).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Ingresar' })).toBeEnabled()
+    expect(currentLocation()).toBe('/ingresar')
+  })
+
+  it('el botón está deshabilitado mientras la petición está en curso', async () => {
+    const user = userEvent.setup()
+    let release: (response: Response) => void = () => undefined
+    const pending = new Promise<Response>((resolve) => (release = resolve))
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      const url = String(input)
+      if (url === '/api/auth/me') return problem(401, 'Se requiere iniciar sesión.')({})
+      if (url === '/api/auth/antiforgery') return Response.json(ANTIFORGERY)
+      return pending
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    renderAt('/ingresar')
+
+    await fillAndSubmit(user, 'ana@empresa.test', 'secreta')
+
+    expect(await screen.findByRole('button', { name: 'Ingresando…' })).toBeDisabled()
+    release(problem(401, 'Correo o contraseña incorrectos.')({}))
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ingresar' })).toBeEnabled()
+  })
+
+  it('ante 204 navega a la superficie del usuario', async () => {
+    const user = userEvent.setup()
+    loginApi([() => new Response(null, { status: 204 })])
+    renderAt('/ingresar')
+
+    await fillAndSubmit(user, 'ana.perez@empresa-sintetica-01.test', 'Clave-Sintetica-2026')
+
+    await waitFor(() => expect(currentLocation()).toBe('/portal'))
+    expect(within(screen.getByRole('banner')).getByText('Ana Pérez')).toBeInTheDocument()
+  })
+
+  it('ante 204 vuelve al returnUrl saneado, también tras un 401 previo', async () => {
+    const user = userEvent.setup()
+    loginApi([problem(401, 'Correo o contraseña incorrectos.'), () => new Response(null, { status: 204 })])
+    renderAt('/portal/tickets')
+
+    await waitFor(() => expect(currentLocation()).toBe('/ingresar?returnUrl=%2Fportal%2Ftickets'))
+    await fillAndSubmit(user, 'ana.perez@empresa-sintetica-01.test', 'mala')
+    await screen.findByRole('alert')
+    await user.type(screen.getByLabelText('Contraseña'), 'Clave-Sintetica-2026')
+    await user.click(screen.getByRole('button', { name: 'Ingresar' }))
+
+    await waitFor(() => expect(currentLocation()).toBe('/portal/tickets'))
+  })
+
+  it('un returnUrl externo no se sigue tras iniciar sesión', async () => {
+    const user = userEvent.setup()
+    loginApi([() => new Response(null, { status: 204 })])
+    renderAt('/ingresar?returnUrl=https%3A%2F%2Fevil.example')
+
+    await fillAndSubmit(user, 'ana.perez@empresa-sintetica-01.test', 'Clave-Sintetica-2026')
+
+    await waitFor(() => expect(currentLocation()).toBe('/portal'))
+  })
+
+  it('la validación local no llama al backend y enfoca el campo', async () => {
+    const user = userEvent.setup()
+    const fetchMock = loginApi([() => new Response(null, { status: 204 })])
+    renderAt('/ingresar')
+
+    await user.click(await screen.findByRole('button', { name: 'Ingresar' }))
+
+    expect(screen.getByLabelText('Correo')).toHaveAccessibleDescription('Escribe tu correo.')
+    expect(screen.getByLabelText('Correo')).toHaveFocus()
+    expect(requestedUrls(fetchMock)).toEqual(['/api/auth/me'])
   })
 })

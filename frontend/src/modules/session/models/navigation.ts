@@ -60,20 +60,23 @@ const SECTIONS: readonly Section[] = [
   { id: 'internal-status', path: '/interno/estado', surface: 'internal', label: () => 'Estado del sistema' },
 ]
 
+/**
+ * Ruta comparable con las secciones: decodificada y en minúsculas, como la resuelve el enrutador
+ * (que decodifica y no distingue mayúsculas). Solo se usa para resaltar la navegación.
+ */
 function normalizePath(pathname: string): string {
-  return pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+  let decoded = pathname
+  try {
+    decoded = decodeURIComponent(pathname)
+  } catch {
+    // Codificación inválida: se compara tal cual.
+  }
+  const lower = decoded.toLowerCase()
+  return lower.length > 1 && lower.endsWith('/') ? lower.slice(0, -1) : lower
 }
 
 function isWithin(pathname: string, base: string): boolean {
   return pathname === base || pathname.startsWith(`${base}/`)
-}
-
-/** Sección más específica que contiene la ruta (la de prefijo más largo). */
-function sectionFor(pathname: string): Section | null {
-  const path = normalizePath(pathname)
-  return SECTIONS
-    .filter((section) => isWithin(path, section.path))
-    .reduce<Section | null>((best, section) => (!best || section.path.length > best.path.length ? section : best), null)
 }
 
 function isAllowed(user: CurrentUser, section: Section): boolean {
@@ -86,10 +89,13 @@ export function homePathFor(user: CurrentUser): string {
   return user.surface === 'none' ? FORBIDDEN_PATH : SURFACE_HOME[user.surface]
 }
 
-/** Niega por defecto: rutas fuera de las secciones conocidas o de otra superficie → `false`. */
-export function canAccessPath(user: CurrentUser, pathname: string): boolean {
-  const section = sectionFor(pathname)
-  return section !== null && isAllowed(user, section)
+/**
+ * ¿Puede el usuario abrir esta sección? La guarda recibe la sección de la ruta declarada,
+ * nunca la deduce de la URL (evita rodeos con `%61dministracion` o mayúsculas).
+ */
+export function canAccessSection(user: CurrentUser, id: SectionId): boolean {
+  const section = SECTIONS.find((candidate) => candidate.id === id)
+  return section !== undefined && isAllowed(user, section)
 }
 
 /** Navegación del usuario según su superficie y roles (función pura). */

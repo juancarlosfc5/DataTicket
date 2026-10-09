@@ -1,4 +1,6 @@
 import { Navigate, useNavigate, useSearchParams } from 'react-router'
+import { useLoginController } from '../modules/auth/controllers/useLoginController'
+import { LoginView } from '../modules/auth/views/LoginView'
 import type { SessionController } from '../modules/session/controllers/useSessionController'
 import type { CurrentUser } from '../modules/session/models/currentUser'
 import { homePathFor, SURFACE_HOME, sectionTitle, type SectionId } from '../modules/session/models/navigation'
@@ -66,9 +68,23 @@ export function PublicPlaceholderPage({ title }: { readonly title: string }) {
   return <PublicPlaceholderView title={title} />
 }
 
+function LoginPage({ onSignedIn }: { readonly onSignedIn: () => void }) {
+  const navigate = useNavigate()
+  const login = useLoginController({ onSignedIn })
+  return (
+    <LoginView
+      state={login.state}
+      onEmailChange={login.changeEmail}
+      onPasswordChange={login.changePassword}
+      onSubmit={login.submit}
+      onNavigate={navigate}
+    />
+  )
+}
+
 /**
- * `/ingresar`. Con sesión activa vuelve al `returnUrl` saneado (o a la superficie por defecto).
- * Sin sesión muestra la entrada: HU-003 (bloque B6) sustituye este marcador por la vista real.
+ * `/ingresar` (HU-003). Sin sesión muestra la entrada; tras el 204 el login refresca la sesión y,
+ * ya autenticado, esta página lleva al `returnUrl` saneado o a la superficie del usuario.
  */
 export function SignInPage({ session }: { readonly session: SessionController }) {
   const [searchParams] = useSearchParams()
@@ -79,5 +95,5 @@ export function SignInPage({ session }: { readonly session: SessionController })
     const target = sanitizeReturnUrl(searchParams.get('returnUrl'), homePathFor(state.user))
     return <Navigate to={target} replace />
   }
-  return <PublicPlaceholderView title="Ingresar" />
+  return <LoginPage onSignedIn={session.refresh} />
 }

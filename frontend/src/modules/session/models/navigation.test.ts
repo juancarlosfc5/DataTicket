@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canAccessPath, currentNavigationId, homePathFor, navigationFor } from './navigation'
+import { canAccessSection, currentNavigationId, homePathFor, navigationFor } from './navigation'
 import { clientUser, internalUser } from './testUsers'
 
 const INTERNAL_TEXTS = ['Triage', 'Chat', 'Administración', 'Equipo']
@@ -73,9 +73,17 @@ describe('currentNavigationId', () => {
     expect(currentNavigationId(items, '/interno/administracion/usuarios')).toBe('internal-admin')
     expect(currentNavigationId(items, '/sin-permiso')).toBeNull()
   })
+
+  it('tolera rutas codificadas o en mayúsculas como las resuelve el enrutador', () => {
+    const items = navigationFor(internalUser({ roles: ['Administrator'] }))
+
+    expect(currentNavigationId(items, '/interno/%61dministracion')).toBe('internal-admin')
+    expect(currentNavigationId(items, '/INTERNO/Administracion')).toBe('internal-admin')
+    expect(currentNavigationId(items, '/interno/%E0%A4%A')).toBe('internal-home')
+  })
 })
 
-describe('homePathFor y canAccessPath', () => {
+describe('homePathFor y canAccessSection', () => {
   it('cada superficie tiene su inicio', () => {
     expect(homePathFor(clientUser())).toBe('/portal')
     expect(homePathFor(internalUser())).toBe('/interno')
@@ -83,24 +91,23 @@ describe('homePathFor y canAccessPath', () => {
   })
 
   it('un cliente no accede a la superficie interna ni un interno al portal', () => {
-    expect(canAccessPath(clientUser(), '/portal/tickets')).toBe(true)
-    expect(canAccessPath(clientUser(), '/interno/administracion')).toBe(false)
-    expect(canAccessPath(clientUser(), '/interno')).toBe(false)
-    expect(canAccessPath(internalUser(), '/interno/bandeja')).toBe(true)
-    expect(canAccessPath(internalUser(), '/portal')).toBe(false)
+    expect(canAccessSection(clientUser(), 'portal-tickets')).toBe(true)
+    expect(canAccessSection(clientUser(), 'internal-admin')).toBe(false)
+    expect(canAccessSection(clientUser(), 'internal-home')).toBe(false)
+    expect(canAccessSection(internalUser(), 'internal-inbox')).toBe(true)
+    expect(canAccessSection(internalUser(), 'portal-home')).toBe(false)
   })
 
   it('las secciones restringidas por rol se niegan a quien no tiene el rol', () => {
     const developer = internalUser({ roles: [], teams: ['Development'] })
 
-    expect(canAccessPath(developer, '/interno/triage')).toBe(false)
-    expect(canAccessPath(developer, '/interno/administracion')).toBe(false)
-    expect(canAccessPath(internalUser({ roles: ['Administrator'] }), '/interno/administracion')).toBe(true)
+    expect(canAccessSection(developer, 'internal-triage')).toBe(false)
+    expect(canAccessSection(developer, 'internal-admin')).toBe(false)
+    expect(canAccessSection(internalUser({ roles: ['Administrator'] }), 'internal-admin')).toBe(true)
   })
 
-  it('niega por defecto rutas desconocidas y usuarios sin superficie', () => {
-    expect(canAccessPath(internalUser(), '/otra-cosa')).toBe(false)
-    expect(canAccessPath(clientUser({ surface: 'none' }), '/portal')).toBe(false)
-    expect(canAccessPath(clientUser(), '/portalfalso')).toBe(false)
+  it('un usuario sin superficie no accede a ninguna sección', () => {
+    expect(canAccessSection(clientUser({ surface: 'none' }), 'portal-home')).toBe(false)
+    expect(canAccessSection(internalUser({ surface: 'none' }), 'internal-home')).toBe(false)
   })
 })

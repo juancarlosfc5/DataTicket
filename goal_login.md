@@ -91,10 +91,10 @@ Archivo de control del `/goal` que construye **HU-002, HU-003 y HU-004**. Claude
 - [x] CHU-01 a CHU-10 de HU-002 en verde · Evidencia: lint 0/0 (43 archivos), Vitest 11 archivos / 89 pruebas, build ✓ (exit 0 los tres); CHU-01…09 con pruebas nombradas y CHU-10 en el navegador integrado (Vite :5180 + doble del contrato). `quality-reviewer`: 0 CRÍTICO, 0 ALTO (4 MEDIO → B6).
 
 ### B6 — Frontend HU-003/HU-004: entrada y sesión
-- [ ] Módulo `src/modules/auth` (models, controllers, views) con la vista `/ingresar` de HU-003, con el lenguaje visual de `sistema-de-diseno` · Evidencia:
-- [ ] Validación local, mensaje genérico en `role="alert"`, botón deshabilitado durante el envío y logout · Evidencia:
-- [ ] Prueba de contrato de `/me` (CHU-10 de HU-004) y CHU-11 de HU-003 en verde · Evidencia:
-- [ ] `oxlint` en verde con las fronteras MVC · Evidencia:
+- [x] Módulo `src/modules/auth` (models, controllers, views) con la vista `/ingresar` de HU-003, con el lenguaje visual de `sistema-de-diseno` · Evidencia: `modules/auth` con `loginForm`, `loginState`, `authGateway` · `useLoginController`, `useLogoutController` · `LoginView`, `LoginField`; `/ingresar` revisada en el navegador integrado: entrada en claro aunque el sistema esté en oscuro (decisión de `sistema-de-diseno`), dos columnas a 1440 px y una a 375 px sin desbordamiento, campos de 16 px con `autocomplete` correcto.
+- [x] Validación local, mensaje genérico en `role="alert"`, botón deshabilitado durante el envío y logout · Evidencia: validación (requerido, formato, ≤ 256) sin llamar al backend; 401 → «Correo o contraseña incorrectos.» en `role="alert"`, conserva correo, vacía contraseña y la enfoca; botón «Ingresando…» deshabilitado y sin doble envío; logout real `POST /api/auth/logout` con `X-XSRF-TOKEN` e `isSigningOut` (pruebas `Cerrar sesión llama a POST /api/auth/logout…`, `useLogoutController` 3/3).
+- [x] Prueba de contrato de `/me` (CHU-10 de HU-004) y CHU-11 de HU-003 en verde · Evidencia: HU-004 CHU-10: `currentUser.test.ts` › «contrato de /me» (dos JSON de la HU y `surface: "partner"` → sin acceso) + `App.test.tsx` (partner → «sin permiso»); HU-003 CHU-11: 6 pruebas de `App.test.tsx` › «Entrada /ingresar», `LoginView.test.tsx` 7/7, `useLoginController.test.ts` 6/6 — 147/147 en verde.
+- [x] `oxlint` en verde con las fronteras MVC · Evidencia: `oxlint --format=default src`: «Found 0 warnings and 0 errors» en 58 archivos (exit 0); build exit 0. `quality-reviewer`: 0 CRÍTICO, 0 ALTO; los 4 MEDIO de B5 verificados como resueltos con prueba.
 
 ### B7 — Integración y verificación manual
 - [ ] Sembrador solo de Development con el subconjunto mínimo de cuentas de `db.sql` §13.2–13.4 (Elizabeth, un interno, `ana.perez`, una `Invited` y una `Deactivated`), con los mismos IDs, sin contraseñas en el chat · Evidencia:
@@ -120,3 +120,4 @@ Una fila por turno que cambie algo. La añade Claude; no se borran filas.
 | 2026-10-09 | B1 | Hecho | ver `git log` (`docs(auth): B1 …`) | Contrato T-01 ratificado con los valores por defecto; equipos = roles de Identity expuestos en `teams` |
 | 2026-10-09 | B2 | Hecho | ver `git log` (`test(auth): B2 …`) | Infraestructura de integración con Testcontainers; revisión 0 CRÍTICO / 0 ALTO |
 | 2026-10-09 | B5 | Hecho | ver `git log` (`feat(shell): B5 …`) | Shell, navegación por rol y `core/http`; revisión 0/0; MEDIO trasladados a B6 |
+| 2026-10-09 | B6 | Hecho | ver `git log` (`feat(auth): B6 …`) | Módulo `auth`, `/ingresar`, logout real y MEDIO de B5 corregidos; revisión 0/0. Disco lleno resuelto vaciando cachés de npm/NuGet |

@@ -3,7 +3,8 @@
  * Color y forma: copiados del `:root` de DataTicket.html (marca Data Global #004098 / #7DBF00).
  * Espaciado, tipografía y movimiento: escala propia de la guía. Ningún componente usa valores sueltos.
  */
-:root {
+:root,
+.theme-light {
   color-scheme: light dark;
 
   /* Superficies */
@@ -94,6 +95,8 @@
   --text-lg: 20px;
   --text-xl: 24px;
   --text-display: clamp(28px, 3.2vw, 44px);
+  --text-lead: 16px;
+  --leading-display: 1.06;
   --leading-tight: 1.15;
   --leading-snug: 1.3;
   --leading-body: 1.45;
@@ -126,6 +129,11 @@
   --control-height: 30px;
   --control-height-sm: 26px;
   --field-height: 32px;
+  --field-height-lg: 46px;
+  --control-height-lg: 48px;
+  --ring-width: 3px;
+  --signin-card-width: 420px;
+  --signin-frame-max: 1180px;
   --nav-item-height: 30px;
   --touch-target: 40px;
   --avatar-size: 28px;
@@ -253,4 +261,10 @@
     --material-bar: var(--surface);
     --material-blur: none;
   }
+}
+
+/* La entrada se ve siempre en tema claro (sistema-de-diseno): el bloque claro de arriba se aplica también
+   a `.theme-light`, y el oscuro solo afecta a `:root`. */
+.theme-light {
+  color-scheme: light;
 }

@@ -1,6 +1,6 @@
-import { getAntiforgeryToken } from './antiforgery'
+import { getAntiforgeryToken, invalidateAntiforgeryToken } from './antiforgery'
 import { notifyForbidden, notifyUnauthorized } from './authEvents'
-import { ResponseFormatError, toHttpError } from './httpError'
+import { ResponseFormatError, toHttpError, type HttpError } from './httpError'
 
 export { HttpError, GENERIC_ERROR_MESSAGE, userMessageFor } from './httpError'
 export type { ProblemDetails } from './problemDetails'
@@ -8,6 +8,9 @@ export type { ProblemDetails } from './problemDetails'
 const API_BASE_PATH = '/api'
 const UNAUTHORIZED = 401
 const FORBIDDEN = 403
+const BAD_REQUEST = 400
+/** Extensión `code` del ProblemDetails cuando la cabecera antiforgery falta o caducó. */
+const ANTIFORGERY_INVALID = 'antiforgery_invalid'
 
 export interface RequestOptions {
   readonly signal?: AbortSignal
@@ -25,9 +28,28 @@ export interface GetJsonOptions extends RequestOptions {
 
 type MutationMethod = 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
-/** Solo rutas relativas a `/api` (`/tickets`, no `http://…` ni `//host`): todo es same-origin. */
+function decodeSegment(segment: string): string {
+  try {
+    return decodeURIComponent(segment)
+  } catch {
+    return segment
+  }
+}
+
+/** Valida solo el path (lo anterior a `?`/`#`): la query puede llevar cualquier valor. */
+function isSafeApiPath(pathname: string): boolean {
+  if (!pathname.startsWith('/') || pathname.startsWith('//')) return false
+  if (pathname.includes('\\') || pathname.includes('://')) return false
+  return pathname.split('/').every((segment) => {
+    const decoded = decodeSegment(segment)
+    return decoded !== '..' && decoded !== '.'
+  })
+}
+
+/** Solo rutas relativas a `/api` (`/tickets`, no `http://…`, `//host` ni `..`): todo es same-origin. */
 function toApiUrl(path: string): string {
-  if (!path.startsWith('/') || path.startsWith('//') || path.includes('://') || path.includes('\\')) {
+  const pathname = path.split(/[?#]/, 1)[0]
+  if (!isSafeApiPath(pathname)) {
     throw new TypeError(`Ruta de API no válida: debe ser relativa a ${API_BASE_PATH} y empezar por "/".`)
   }
   return `${API_BASE_PATH}${path}`
@@ -43,13 +65,20 @@ async function readJson<T>(response: Response): Promise<T> {
   }
 }
 
+function notifyAuthError(error: HttpError, options: RequestOptions): void {
+  if (options.notifyAuthErrors === false) return
+  if (error.status === UNAUTHORIZED) notifyUnauthorized()
+  if (error.status === FORBIDDEN) notifyForbidden()
+}
+
 async function failWith(response: Response, options: RequestOptions): Promise<never> {
   const error = await toHttpError(response)
-  if (options.notifyAuthErrors !== false) {
-    if (response.status === UNAUTHORIZED) notifyUnauthorized()
-    if (response.status === FORBIDDEN) notifyForbidden()
-  }
+  notifyAuthError(error, options)
   throw error
+}
+
+function isAntiforgeryRejection(error: HttpError): boolean {
+  return error.status === BAD_REQUEST && error.problem?.code === ANTIFORGERY_INVALID
 }
 
 /**
@@ -78,22 +107,30 @@ async function sendMutation<T>(
   options: RequestOptions,
 ): Promise<T> {
   const url = toApiUrl(path)
-  const antiforgery = await getAntiforgeryToken()
-  const headers: Record<string, string> = {
-    Accept: 'application/json',
-    [antiforgery.headerName]: antiforgery.token,
+  const payload = body === undefined ? undefined : JSON.stringify(body)
+
+  const send = async (): Promise<Response> => {
+    const antiforgery = await getAntiforgeryToken()
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      [antiforgery.headerName]: antiforgery.token,
+    }
+    if (payload !== undefined) headers['Content-Type'] = 'application/json'
+    return fetch(url, { method, headers, credentials: 'same-origin', body: payload, signal: options.signal })
   }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
 
-  const response = await fetch(url, {
-    method,
-    headers,
-    credentials: 'same-origin',
-    body: body === undefined ? undefined : JSON.stringify(body),
-    signal: options.signal,
-  })
-
-  if (!response.ok) return failWith(response, options)
+  let response = await send()
+  if (!response.ok) {
+    const error = await toHttpError(response)
+    if (!isAntiforgeryRejection(error)) {
+      notifyAuthError(error, options)
+      throw error
+    }
+    // Token obsoleto (p. ej. cambió la identidad en otra pestaña): token nuevo y un único reintento.
+    invalidateAntiforgeryToken()
+    response = await send()
+    if (!response.ok) return failWith(response, options)
+  }
   return readJson<T>(response)
 }
 

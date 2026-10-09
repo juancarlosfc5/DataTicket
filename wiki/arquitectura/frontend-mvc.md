@@ -27,7 +27,9 @@ frontend/src/
 │   ├── models/              tipos, normalización de datos externos, gateways (xxxGateway.ts)
 │   ├── controllers/         hooks useXController: estado + acciones
 │   └── views/               componentes puros (props → JSX)
-├── modules/session/         CurrentUser, navigationFor, sanitizeReturnUrl, useSessionController, AppLayout, ForbiddenView
+├── modules/session/         CurrentUser, navigationFor, canAccessSection, sanitizeReturnUrl, useSessionController,
+│                            AppLayout (+ ShellNavigation, ShellUser), ForbiddenView
+├── modules/auth/            loginForm, loginState, authGateway · useLoginController, useLogoutController · LoginView, LoginField
 ├── shared/ui/               InternalLink, BrandMark, LoadingView (genéricos, sin router ni core)
 ├── styles/tokens.css        tokens claro/oscuro de [[sistema-de-diseno]]
 └── styles/global.css        base y primitivas sobre los tokens
@@ -82,8 +84,10 @@ Configuradas con `no-restricted-imports` por carpeta en `frontend/.oxlintrc.json
 ## Shell y navegación (HU-002, desde 2026-10-09)
 
 - Al cargar, `useSessionController` pide `/api/auth/me` (sin disparar el manejador global de 401) y expone `loading | anonymous | authenticated | error`, `refresh()` y `endSession()`.
-- Guardas en `src/app`: `RequireSession` (sin sesión → `/ingresar?returnUrl=`) y `RequireAccess` (superficie o sección ajena → «sin permiso» en la misma URL, dentro del layout del usuario). Un `403` de la API navega a `/sin-permiso`.
-- `navigationFor(user)` sale de una única tabla de secciones (`navigation.ts`), de la que también derivan `canAccessPath` y `homePathFor`. Un interno sin `ProductManager`/`Administrator` que abre a mano `/interno/triage` o `/interno/administracion` ve «sin permiso» (*propuesta*, extensión de UX del contrato; la barrera real es el backend).
+- Guardas en `src/app`: `RequireSession` (sin sesión → `/ingresar?returnUrl=`) y `RequireAccess section=…` (superficie o sección ajena → «sin permiso» en la misma URL, dentro del layout del usuario). Cada ruta protegida **declara** su `SectionId` en `SECTION_ROUTES` y la guarda decide con `canAccessSection`: nunca se deduce la sección de la URL (así `/interno/%61dministracion` no la evita). Un `403` de la API navega a `/sin-permiso`.
+- Entrada (HU-003, B6): `useLoginController` (estado `idle | submitting | error`; el reductor emite a qué campo va el foco tras un fallo) y navegación tras el login derivada del estado de sesión en `SignInPage` (al `returnUrl` saneado o a la superficie). `useLogoutController` (en el módulo `auth`, no en el controlador de sesión como sugería T-08 de HU-003, para que `session` no dependa de `auth`) llama `POST /api/auth/logout` y expone `isSigningOut`; con `401` descarta igualmente la sesión local, con otros errores la conserva y avisa.
+- `useSessionController` aborta el `/me` en curso al cerrar sesión o ante un `401` global (una respuesta tardía no restaura la sesión).
+- `navigationFor(user)` sale de una única tabla de secciones (`navigation.ts`), de la que también derivan `canAccessSection` y `homePathFor`. Un interno sin `ProductManager`/`Administrator` que abre a mano `/interno/triage` o `/interno/administracion` ve «sin permiso» (*propuesta*, extensión de UX del contrato; la barrera real es el backend).
 - El módulo `system` (salud) vive en `/interno/estado` («Estado del sistema»), solo en el espacio interno.
 
 ## Relacionado
