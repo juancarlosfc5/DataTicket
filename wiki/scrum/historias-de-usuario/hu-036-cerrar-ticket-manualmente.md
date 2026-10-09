@@ -60,7 +60,7 @@ Hallazgo del plan de backlog: el `Ticket` del [[modelo-de-dominio]] no tiene cam
 - El cliente ve el estado resumido "Cerrado" (PRD §6.4).
 - El cierre manual es un evento auditable con actor y fecha/hora (PRD §12, §14.14).
 - Propuesta (V-01): solo se cierra desde `SolutionDelivered`; desde otros estados → 409.
-- Propuesta: el administrador debe ser participante vigente para cerrar (coherente con PRD §5.5 y con [[hu-033-emitir-respuesta-formal|HU-033]]).
+- Propuesta: el administrador debe ser participante vigente para cerrar; si no lo es, recibe 404 (coherente con PRD §5.5, [[hu-020-detalle-interno-del-ticket|HU-020]] y [[hu-033-emitir-respuesta-formal|HU-033]]).
 - Propuesta: un ticket cerrado no admite nueva respuesta formal ni un segundo cierre (409).
 
 ## Invariantes en juego
@@ -122,8 +122,8 @@ Respuesta `200 OK`:
 |---|---|---|
 | 400 | La petición trae cuerpo con campos (p. ej. `notes`) | `urn:dataticket:validation` |
 | 401 | Sin sesión | — |
-| 403 | Desarrollador, Producción, cliente, o administrador no participante | `urn:dataticket:forbidden` |
-| 404 | Ticket inexistente | `urn:dataticket:not-found` |
+| 403 | Usuario cliente, o participante de Desarrollo o Producción (rol insuficiente) | `urn:dataticket:forbidden` |
+| 404 | Ticket inexistente o no visible: interno no participante, administrador no asociado o retirado (convención de [[hu-020-detalle-interno-del-ticket\|HU-020]]) | `urn:dataticket:not-found` |
 | 409 | Estado distinto de `SolutionDelivered` (incluido `Closed`); conflicto de concurrencia | `urn:dataticket:invalid-ticket-transition` |
 
 ## Tareas de desarrollo
@@ -133,11 +133,11 @@ Respuesta `200 OK`:
 - [ ] **T-02 — Dominio** · Capa: Backend (Domain) · Dificultad: Bajo  
   Descripción: primero pruebas: `Close_FromSolutionDelivered_SetsClosedWithActorAndTime`, `Close_FromInProduction_Throws`, `Close_WhenAlreadyClosed_Throws`, `DeliverFormalResponse_WhenClosed_Throws`. Luego `Ticket.Close(actorId, now)` que devuelve el estado anterior; `Status` sin *setter* público.
 - [ ] **T-03 — Caso de uso `CloseTicket`** · Capa: Backend (Application) · Dificultad: Medio  
-  Descripción: primero pruebas: `CloseTicket_ByDeveloper_ReturnsForbidden`, `CloseTicket_ByUnassociatedAdmin_ReturnsForbidden`, `CloseTicket_ByPm_WritesAuditWithPreviousStatus`, `CloseTicket_UsesClockForClosedAt`. Implementar con `ICurrentUser`, `IClock` e `IAuditLog` (`TicketClosed`, anterior `SolutionDelivered`, nuevo `Closed`) en una unidad de trabajo.
+  Descripción: primero pruebas: `CloseTicket_ByDeveloper_ReturnsForbidden`, `CloseTicket_ByUnassociatedAdmin_ReturnsNotFound`, `CloseTicket_ByPm_WritesAuditWithPreviousStatus`, `CloseTicket_UsesClockForClosedAt`. Implementar con `ICurrentUser`, `IClock` e `IAuditLog` (`TicketClosed`, anterior `SolutionDelivered`, nuevo `Closed`) en una unidad de trabajo.
 - [ ] **T-04 — Persistencia y migración** · Capa: Backend (Infrastructure) · Dificultad: Bajo  
   Descripción: columnas `closed_at` (`timestamptz`) y `closed_by`; migración `AddTicketClosure`; prueba de integración.
 - [ ] **T-05 — Endpoint y ausencia de cierre automático** · Capa: Backend (Api) · Dificultad: Medio  
-  Descripción: primero pruebas de integración (200, 403, 409, 400 con cuerpo). Añadir a `DataTicket.ArchitectureTests` una prueba `NoHostedService_DependsOnCloseTicket` (ningún `IHostedService`/`BackgroundService` referencia `CloseTicket` ni `Ticket.Close`) e inspección documentada de que no hay *jobs* programados.
+  Descripción: primero pruebas de integración (200, 403 por rol, 404 para administrador no asociado, 409, 400 con cuerpo). Añadir a `DataTicket.ArchitectureTests` una prueba `NoHostedService_DependsOnCloseTicket` (ningún `IHostedService`/`BackgroundService` referencia `CloseTicket` ni `Ticket.Close`) e inspección documentada de que no hay *jobs* programados.
 - [ ] **T-06 — Frontend** · Capa: Frontend (models/controllers/views) · Dificultad: Bajo  
   Descripción: Vitest del modelo (normalización del DTO, estado desconocido); `useCloseTicketController` con `confirming/closing/closed/error`; vista con botón visible solo para `ProductManager`/`Administrator` en `SolutionDelivered` y diálogo "¿Confirmaste por teléfono con el cliente que el caso quedó resuelto? Esta acción cierra el ticket."
 
@@ -153,7 +153,7 @@ Respuesta `200 OK`:
 
 **Dado** un ticket en `SolutionDelivered`  
 **Cuando** lo cierra un administrador participante vigente  
-**Entonces** recibe `200`; **y cuando** lo intenta un administrador no asociado, recibe `403` y el ticket sigue en `SolutionDelivered` (propuesta).
+**Entonces** recibe `200`; **y cuando** lo intenta un administrador no asociado, recibe `404` sin datos del ticket y este sigue en `SolutionDelivered` (propuesta; convención de [[hu-020-detalle-interno-del-ticket|HU-020]]).
 
 ### CHU-03 — Roles no autorizados
 

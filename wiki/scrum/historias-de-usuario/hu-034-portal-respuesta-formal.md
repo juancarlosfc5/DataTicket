@@ -92,36 +92,40 @@ El PRD prohíbe mostrar al cliente nombres de colaboradores internos (PRD §5.6)
 
 ## Contrato backend ↔ frontend
 
-Propuesta; se ratifica en T-01 sobre el contrato de HU-024.
+Propuesta; se ratifica en T-01 sobre el contrato de [[hu-024-portal-solicitante-consulta-tickets|HU-024]], que ya prevé añadir `formalResponse` a su lista blanca.
 
-**`GET /api/portal/tickets/{ticketId}`** (roles `Requester`, `CompanyCoordinator`) → `200`:
+**`GET /api/portal/tickets/{ticketId}`** (roles `Requester`, `CompanyCoordinator`) → `200` (campos de HU-024 más `formalResponse`):
 
 ```json
 {
-  "ticketId": "1b0e7c52-8d4a-4f0e-b3a9-5c2d6e7f8a90",
+  "id": "6f1c2b9e-0d4a-4c1e-9a51-3c2f8e7b1a20",
   "number": "DT-000123",
-  "title": "Error al generar factura electrónica",
-  "category": "Facturación",
+  "title": "No genera la factura electrónica",
+  "description": "Desde el lunes el módulo de facturación…",
+  "category": { "id": "c-01", "name": "Error en módulo" },
   "urgency": "High",
   "impact": "Medium",
-  "createdAt": "2026-10-01T14:03:11Z",
+  "calculatedPriority": "High",
   "clientStatus": "SolutionDelivered",
-  "submissionAttachments": [
-    { "fileName": "captura.png", "contentType": "image/png", "sizeBytes": 80211, "url": "http://localhost:10000/devstoreaccount1/attachments/…/captura.png" }
+  "requester": { "id": "9a7d…", "displayName": "Solicitante A1" },
+  "createdAt": "2026-10-01T14:03:11Z",
+  "attachments": [
+    { "id": "a1b2…", "fileName": "error.png", "contentType": "image/png", "sizeBytes": 245760, "url": "http://localhost:10000/devstoreaccount1/attachments/…/error.png" }
   ],
   "formalResponse": {
     "body": "Se corrigió el cálculo de retenciones en el módulo de facturación…",
     "deliveredAt": "2026-10-07T20:15:42Z",
     "issuedBy": "Data Global",
     "attachments": [
-      { "fileName": "acta-de-solucion.pdf", "contentType": "application/pdf", "sizeBytes": 248331, "url": "http://localhost:10000/devstoreaccount1/attachments/…/acta-de-solucion.pdf" }
+      { "id": "a4e1…", "fileName": "acta-de-solucion.pdf", "contentType": "application/pdf", "sizeBytes": 248331, "url": "http://localhost:10000/devstoreaccount1/attachments/…/acta-de-solucion.pdf" }
     ]
   }
 }
 ```
 
+- `attachments` (raíz) son solo los de radicación, como en HU-024; los de la respuesta van anidados en `formalResponse.attachments`.
 - `formalResponse` es `null` mientras no exista. `number` es un ejemplo: el formato está pendiente (V-16).
-- Lista blanca: el DTO del portal **no** contiene `status`, `previousStatus`, `deliveredBy`, `participants`, `assignees`, `pullRequestUrl`, `messages`, ni adjuntos con `context = Chat`.
+- Lista blanca: además de lo que prohíbe HU-024, el DTO **no** contiene `previousStatus`, `deliveredBy`, `emailDelivery` ni adjuntos con `context = Chat`.
 
 Errores (ProblemDetails):
 

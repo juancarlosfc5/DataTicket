@@ -72,6 +72,36 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 | V-24 | §12 | ¿Quién puede consultar la bitácora de auditoría de un ticket? | [[auditoria]], [[hu-012-consultar-bitacora-del-ticket]] |
 | V-25 | — | El mapa de puertos y el glosario no tienen casos de uso para reasignar, ajustar la prioridad, cambiar el estado ni registrar la URL del PR, ni los métodos del hub | [[backend-hexagonal]], [[glosario]] |
 
+## 3b. Propuestas del backlog Scrum por ratificar (2026-10-07)
+
+Las HU de [[tablero-scrum]] cubren los vacíos del PRD con **propuestas** marcadas como tales. Cada una se ratifica o se cambia en la tarea T-01 de su HU, y si se acepta pasa al glosario o a un ADR. Las de mayor impacto:
+
+| # | Propuesta | HU | Página |
+|---|---|---|---|
+| P-01 | **Recurso no visible:** 404 para internos no asociados, administradores no asociados y retirados, para no revelar que el ticket existe; 403 por rol insuficiente (p. ej. un cliente en rutas internas). La [[estrategia-de-pruebas]] admite "404/403" | HU-020, HU-024, HU-026, HU-033 | [[roles-y-permisos]] |
+| P-02 | **Cuentas y plantillas:** solo `Administrator` invita y administra cuentas y plantillas; [[autenticacion-identity]] dice "PM/administrador" | HU-005, HU-007 a HU-009, HU-043 | [[roles-y-permisos]] |
+| P-03 | **Administrador en respuesta y cierre:** debe estar asociado para emitir la respuesta formal o cerrar | HU-033, HU-036 | [[flujo-del-ticket]] |
+| P-04 | **Respuesta formal (V-13):** una sola por ticket; la segunda devuelve 409 | HU-033 | [[flujo-del-ticket]] |
+| P-05 | **Transiciones (V-01):** la respuesta se emite desde `InDevelopment`, `PullRequestReview` o `InProduction`; `Closed` exige `SolutionDelivered`; un ticket cerrado devuelve 409 ante cualquier acción; la URL del PR no es obligatoria para pasar a `PullRequestReview` | HU-021, HU-033, HU-036 | [[estados-del-ticket]] |
+| P-06 | **Prioridad en el portal:** el cliente ve la calculada; no ve el ajuste ni su motivo | HU-015, HU-024 | [[matriz-de-prioridad]] |
+| P-07 | **Correos (V-07, V-08):** la respuesta formal se envía al solicitante. Sin reenvío del correo de vinculación al reasociar y sin correo a quien se asocia a sí mismo. Si el correo falla, la respuesta no se revierte: queda un estado de entrega con reintento manual | HU-035, HU-038 | [[notificaciones]] |
+| P-08 | **Adjuntos (V-06):** lista blanca pdf, png, jpg/jpeg, gif, webp, xml, xlsx y xls, con firma; se excluyen svg y xlsm. Se rechazan los archivos de 0 bytes. 10 MB = 10 485 760 bytes. `AttachmentContext` {`Submission`, `Chat`, `FormalResponse`} resuelve V-20 | HU-014, HU-029, HU-033 | [[archivos-adjuntos]] |
+| P-09 | **Límites de cuerpo:** Kestrel admite unos 28,6 MiB por defecto frente a 50 MB en nginx; alinearlos al decidir el máximo de archivos por solicitud | HU-014, HU-033 | [[entorno-docker]] |
+| P-10 | **Auditoría append-only:** con un trigger, porque `REVOKE` no sirve mientras la aplicación sea dueña del esquema. Chocará con la política de retención (§16.3). Las acciones administrativas también se auditan (extiende §12). Los mensajes del chat no se auditan uno por uno | HU-007, HU-011, HU-028 | [[auditoria]], [[persistencia-postgresql]] |
+| P-11 | **Bitácora (V-24):** la consultan la PM, los participantes internos vigentes y el administrador asociado; nunca el cliente | HU-012 | [[auditoria]] |
+| P-12 | **Cursor del chat (V-22):** token opaco base64url de (`CreatedAt`, `Id`); `limit` 50 por defecto y 100 como máximo. Tras cada `JoinTicket` se hace una consulta `after` para cubrir el hueco historial→unión del flujo del PRD §7 | HU-026, HU-031 | [[tiempo-real-signalr]] |
+| P-13 | **Revocación:** sin cerrar la conexión; sale del grupo y recibe el evento `TicketAccessRevoked`. Se valida `Origin` en la negociación del hub como defensa contra el secuestro de WebSocket entre sitios. ¿Qué pasa con las conexiones al desactivar un usuario? Depende del intervalo del *security stamp* | HU-027, HU-032, HU-008 | [[tiempo-real-signalr]], [[autenticacion-identity]] |
+| P-14 | **Lecturas:** se registran las de Elizabeth aunque no sea participante; el autor no genera lectura de su propio mensaje | HU-030 | [[chat-interno]] |
+| P-15 | **Notificaciones in-app:** Elizabeth solo las recibe de los tickets donde es participante explícita; notificar a un usuario concreto exigirá backplane si hay varias instancias | HU-037 | [[notificaciones]] |
+| P-16 | **Métricas:** "activo" = `New`, `InDevelopment`, `PullRequestReview` o `InProduction`; "sin asignar" = `New` sin ninguna `Assignment` vigente; tiempo medido en minutos hábiles de 24 h mientras V-09 siga abierta; el cliente no ve tiempos. Un administrador recibe 403 en el panel global. Hay que comprobar que las imágenes Docker incluyan datos de zona horaria (`America/Bogota`) | HU-039 a HU-042 | [[dashboard-y-metricas]] |
+| P-17 | **Cierre (V-21):** `ClosedAt` y `ClosedBy` en `Ticket`, además de la auditoría; `Assignment` con `EndedAt` y `EndedBy`; `AuditEntry` con `ObjectType`, `ObjectId` y `TicketId` | HU-011, HU-019, HU-036 | [[modelo-de-dominio]] |
+| P-18 | **Cuentas:** contraseña de mínimo 12 caracteres y bloqueo tras 5 intentos fallidos. Desactivar una empresa bloquea el acceso de sus usuarios; no está definido qué pasa con sus tickets abiertos | HU-003, HU-007 | [[autenticacion-identity]] |
+| P-19 | **Radicación:** los internos no radican en nombre de un cliente (403); descripción de hasta 10 000 caracteres; categorías semilla provisionales ("Incidente", "Requerimiento", "Consulta") sujetas a V-12 | HU-013 | [[flujo-del-ticket]] |
+| P-20 | **Formularios configurables:** hasta 30 campos y de 2 a 50 opciones; tipos `ShortText`, `LongText`, `Number`, `Date`, `SingleChoice` y `MultipleChoice`; solo los campos marcados como consultables se filtran en las bandejas internas. Almacenamiento: ver V-23 | HU-043 a HU-047 | [[formularios-configurables]] |
+| P-21 | **Datos sintéticos:** la semilla usa los nombres reales del equipo interno con correos ficticios `@dataticket.local`; hay que confirmarlo | HU-010 | [[equipo-del-repositorio]] |
+
+Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DTO, acciones de auditoría, eventos del hub) se agregan a [[glosario]] cuando se ratifiquen en la T-01 de cada HU, antes de usarlos en código.
+
 ## 4. Decisiones técnicas abiertas
 
 - [ ] Aceptar o cambiar [[adr-0004-autenticacion-cookie-mismo-origen]] (cookie same-origin) antes de implementar el login.

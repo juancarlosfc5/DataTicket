@@ -10,7 +10,7 @@ epica: "[[ep-004-auditoria-append-only]]"
 criterios_prd: ["PRD CA-14", "PRD CA-04"]
 componentes: ["Backend (Domain)", "Backend (Application)", "Backend (Infrastructure)", "Persistencia PostgreSQL"]
 dificultad: "Medio"
-sprint_sugerido: "Sprint 2"
+sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-001-integracion-continua]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-012-consultar-bitacora-del-ticket]]", "[[hu-013-radicar-ticket]]", "[[hu-015-ajustar-prioridad-manualmente]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-033-emitir-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]"]
 created: 2026-10-07

@@ -81,3 +81,12 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - Repartir responsables entre Laura, Juan David y Brayan.
   - Resolver las decisiones que condicionan el backlog (ver [[tablero-scrum]]).
   - Decidir si la skill se mueve a `.claude/skills/`.
+
+## [2026-10-07] docs | Cierre del backlog Scrum: verificación e integración de notas
+- Autor: JuanDavidDev6
+- Cambios:
+  - Se verificó con un script de solo lectura: 13 épicas y 47 HU, frontmatter completo, 418 CHU (de 7 a 13 por HU), sin wikilinks rotos, épicas e HU enlazadas en ambos sentidos, 47 HU en `PLAN-DE-TRABAJO.md` sin duplicados, y CA-01…CA-15 cubiertos.
+  - HU-011 (auditoría) se adelantó al Sprint 1 porque HU-007, HU-008 y HU-009 la necesitan.
+  - La cobertura de CA del tablero se recalculó a partir del frontmatter de las HU.
+- Wiki: [[tablero-scrum]], [[pendientes]] (nueva §3b con las propuestas P-01…P-21 de las HU por ratificar), `hu-007`, `hu-008`, `hu-009`, `hu-011`.
+- Pendiente: ratificar las propuestas P-01…P-21 en la T-01 de cada HU y llevar los términos nuevos al [[glosario]] al ratificarlos.

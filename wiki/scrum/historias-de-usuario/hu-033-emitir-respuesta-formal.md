@@ -60,7 +60,7 @@ Hallazgo del plan de backlog: el [[modelo-de-dominio]] propone `Attachment` sin 
 - El binario va a Azure Blob (Azurite en local) y PostgreSQL guarda metadatos y referencia (PRD §8, [[adr-0006-urls-publicas-azure-blob]]).
 - Emitir la respuesta lleva el ticket a `SolutionDelivered` (PRD §6.4).
 - La respuesta formal es un evento auditable (PRD §12).
-- Un administrador no obtiene acceso al contenido por serlo (PRD §5.5). Propuesta: para emitir, el administrador debe ser participante vigente del ticket (asociado vía [[hu-017-cola-de-cobertura-y-tomar-ticket|HU-017]] o [[hu-018-asignar-y-agregar-participantes|HU-018]]). El PRD no lo exige expresamente; se registra en pendientes.
+- Un administrador no obtiene acceso al contenido por serlo (PRD §5.5). Propuesta: para emitir, el administrador debe ser participante vigente del ticket (asociado vía [[hu-017-cola-de-cobertura-y-tomar-ticket|HU-017]] o [[hu-018-asignar-y-agregar-participantes|HU-018]]). El PRD no lo exige expresamente; se registra en pendientes. Si no está asociado recibe 404, como en el detalle interno ([[hu-020-detalle-interno-del-ticket|HU-020]]).
 - Estados de origen permitidos (propuesta, V-01): `InDevelopment`, `PullRequestReview` e `InProduction`. Desde `New`, `SolutionDelivered` o `Closed` → 409.
 - Cuerpo: entre 1 y 10 000 caracteres sin contar espacios iniciales y finales (límite superior propuesto).
 - Máximo de archivos por solicitud: decisión abierta ([[pendientes]] §4). Se implementa como valor configurable (`Attachments:MaxFilesPerRequest`, nombre propuesto) y se fija en T-01.
@@ -147,8 +147,8 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 |---|---|---|
 | 400 | `body` vacío, solo espacios o > 10 000 caracteres; supera el máximo de archivos | `urn:dataticket:validation` (con `errors`) |
 | 401 | Sin sesión | — |
-| 403 | Rol distinto de `ProductManager`/`Administrator` (desarrollador, Producción, cliente) o administrador no participante | `urn:dataticket:forbidden` |
-| 404 | El ticket no existe | `urn:dataticket:not-found` |
+| 403 | Usuario cliente, o interno que ve el ticket pero no tiene rol `ProductManager`/`Administrator` (participante de Desarrollo o Producción) | `urn:dataticket:forbidden` |
+| 404 | Ticket inexistente o no visible para el usuario: interno no participante, administrador no asociado o participante retirado (convención de [[hu-020-detalle-interno-del-ticket\|HU-020]]) | `urn:dataticket:not-found` |
 | 409 | Estado de origen no permitido (`New`, `SolutionDelivered`, `Closed`) o ya existe respuesta formal (V-13); conflicto de concurrencia | `urn:dataticket:invalid-ticket-transition` |
 | 413 | Algún archivo supera 10 MB | `urn:dataticket:file-too-large` |
 | 415 | Tipo no admitido o firma que no coincide con la extensión | `urn:dataticket:unsupported-file-type` |
@@ -160,15 +160,15 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 - [ ] **T-02 — Dominio: emisión de la respuesta** · Capa: Backend (Domain) · Dificultad: Medio  
   Descripción: primero pruebas xUnit (`Deliver_FromInProduction_SetsSolutionDelivered`, `Deliver_FromNew_Throws`, `Deliver_WhenAlreadyDelivered_Throws`, `Deliver_WithBlankBody_Throws`, `Deliver_With10001Chars_Throws`). Luego `Ticket.DeliverFormalResponse(...)` que crea `FormalResponse`, valida estado de origen y devuelve el estado anterior; `Attachment` con `AttachmentContext` (`Submission`, `Chat`, `FormalResponse`).
 - [ ] **T-03 — Caso de uso `DeliverFormalResponse`** · Capa: Backend (Application) · Dificultad: Alto  
-  Descripción: primero pruebas con dobles de puertos: desarrollador → `Forbidden`; administrador no participante → `Forbidden`; PM no participante → permitido; archivo de 10 485 761 bytes → rechazo; firma PDF falsa → rechazo; si falla la persistencia no se registra auditoría ni queda la respuesta. Implementar: autorizar con `ICurrentUser`, validar adjuntos con el validador común, subir con `IFileStorage`, persistir respuesta + estado + `AuditEntry` (`FormalResponseDelivered`, valores anterior/nuevo) en una sola unidad de trabajo, usando `IClock`.
+  Descripción: primero pruebas con dobles de puertos: desarrollador participante → `Forbidden`; administrador no asociado → `NotFound` (convención de HU-020); PM no participante → permitido; archivo de 10 485 761 bytes → rechazo; firma PDF falsa → rechazo; si falla la persistencia no se registra auditoría ni queda la respuesta. Implementar: autorizar con `ICurrentUser`, validar adjuntos con el validador común, subir con `IFileStorage`, persistir respuesta + estado + `AuditEntry` (`FormalResponseDelivered`, valores anterior/nuevo) en una sola unidad de trabajo, usando `IClock`.
 - [ ] **T-04 — Persistencia y migración** · Capa: Backend (Infrastructure) · Dificultad: Medio  
-  Descripción: configuración EF Core de `FormalResponse` (1 por ticket mientras V-13 siga abierta, índice único en `TicketId`) y columna `context` en `Attachment`; token de concurrencia en `Ticket`; migración `AddFormalResponse`. Prueba de integración con PostgreSQL real.
+  Descripción: configuración EF Core de `FormalResponse` (1 por ticket mientras V-13 siga abierta, índice único en `TicketId`) y vínculo opcional `Attachment` → `FormalResponse` (la columna `context` la crea [[hu-014-adjuntos-en-radicacion|HU-014]] en `AddAttachments`); token de concurrencia en `Ticket`; migración `AddFormalResponse`. Prueba de integración con PostgreSQL real.
 - [ ] **T-05 — Endpoint** · Capa: Backend (Api) · Dificultad: Medio  
-  Descripción: primero pruebas de integración con `WebApplicationFactory<Program>`: 201 (PM), 201 (admin participante), 403 (desarrollador participante), 403 (admin no participante), 409 (`New`), 413, 415, 400. Implementar el endpoint minimal API con límite de cuerpo coherente con nginx (`client_max_body_size 50m`) y mapeo a ProblemDetails.
+  Descripción: primero pruebas de integración con `WebApplicationFactory<Program>`: 201 (PM), 201 (admin participante), 403 (desarrollador participante), 403 (cliente), 404 (admin no asociado), 409 (`New`), 413, 415, 400. Implementar el endpoint minimal API con límite de cuerpo coherente con nginx (`client_max_body_size 50m`) y mapeo a ProblemDetails.
 - [ ] **T-06 — Modelo y gateway** · Capa: Frontend (models) · Dificultad: Bajo  
   Descripción: primero Vitest: validación local (cuerpo vacío, > 10 000, extensión no permitida, > 10 MB) y normalización del DTO. Luego `formalResponse.ts` y `formalResponseGateway.ts` sobre `core/http`, en el módulo interno de tickets (nombre de módulo a alinear con HU-020).
 - [ ] **T-07 — Controlador** · Capa: Frontend (controllers) · Dificultad: Medio  
-  Descripción: `useFormalResponseController` con estados `editing/confirming/submitting/delivered/error`, mapeo de 403/409/413/415 a mensajes en español; visible solo para `ProductManager`/`Administrator`. Pruebas de controlador cuando se incorpore Testing Library ([[estrategia-de-pruebas]]).
+  Descripción: `useFormalResponseController` con estados `editing/confirming/submitting/delivered/error`, mapeo de 403/404/409/413/415 a mensajes en español; visible solo para `ProductManager`/`Administrator`. Pruebas de controlador cuando se incorpore Testing Library ([[estrategia-de-pruebas]]).
 - [ ] **T-08 — Vista** · Capa: Frontend (views) · Dificultad: Bajo  
   Descripción: `FormalResponseFormView` (texto, selector de archivos con tipos aceptados, lista con tamaños, diálogo de confirmación "Esta respuesta se enviará al cliente y no podrá corregirse") y `FormalResponseSummaryView` para el detalle interno.
 
@@ -184,7 +184,7 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 
 **Dado** un administrador que tomó el ticket (es participante vigente) en estado `InDevelopment`  
 **Cuando** emite la respuesta con un cuerpo válido sin adjuntos  
-**Entonces** recibe `201` y el ticket pasa a `SolutionDelivered`; **y dado** un administrador **no** asociado, la misma petición devuelve `403` y el ticket no cambia (propuesta).
+**Entonces** recibe `201` y el ticket pasa a `SolutionDelivered`; **y dado** un administrador **no** asociado, la misma petición devuelve `404` sin datos del ticket y el ticket no cambia (propuesta; convención de [[hu-020-detalle-interno-del-ticket|HU-020]]).
 
 ### CHU-03 — Rechazo a roles no autorizados
 
@@ -231,10 +231,10 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 ## Definition of Done
 
 - [ ] **DoD-01** — CHU-01 a CHU-09 validados con evidencia en la matriz.
-- [ ] **DoD-02** — Pruebas escritas primero y en verde: dominio (`Deliver_*`), caso de uso (`DeliverFormalResponse_ByDeveloper_ReturnsForbidden`, `DeliverFormalResponse_ByUnassociatedAdmin_ReturnsForbidden`, `DeliverFormalResponse_WhenPersistenceFails_DoesNotAudit`) e integración del endpoint con PostgreSQL real; `cd backend && dotnet test` sin fallos.
+- [ ] **DoD-02** — Pruebas escritas primero y en verde: dominio (`Deliver_*`), caso de uso (`DeliverFormalResponse_ByDeveloper_ReturnsForbidden`, `DeliverFormalResponse_ByUnassociatedAdmin_ReturnsNotFound`, `DeliverFormalResponse_WhenPersistenceFails_DoesNotAudit`) e integración del endpoint con PostgreSQL real; `cd backend && dotnet test` sin fallos.
 - [ ] **DoD-03** — `DataTicket.ArchitectureTests` en verde: `Application` no referencia EF Core, ASP.NET Core ni el SDK de Azure.
 - [ ] **DoD-04** — Validación de adjuntos en backend probada para tipo, firma y el límite exacto de 10 485 760 bytes.
-- [ ] **DoD-05** — Migración EF Core `AddFormalResponse` creada, aplicada en el entorno local y revisada (índice único por ticket, columna `context` en adjuntos).
+- [ ] **DoD-05** — Migración EF Core `AddFormalResponse` creada, aplicada en el entorno local y revisada (índice único por ticket, vínculo de adjuntos con la respuesta).
 - [ ] **DoD-06** — Entrada `FormalResponseDelivered` en la auditoría con valores anterior/nuevo, verificada por prueba.
 - [ ] **DoD-07** — Frontend: Vitest del modelo en verde (`npm --prefix frontend test`), `npm --prefix frontend run lint` sin errores (fronteras MVC) y `npm --prefix frontend run build` correcto.
 - [ ] **DoD-08** — Contrato ratificado en T-01 coincide con OpenAPI (`/openapi/v1.json`) y con el gateway del frontend.
@@ -275,7 +275,8 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 
 ## Notas y decisiones
 
-- **Propuesta:** el administrador debe ser participante vigente para emitir; el PRD solo dice "Elizabeth o un administrador" (PRD §5.7). Confirmar con el dueño del producto.
+- **Propuesta:** el administrador debe ser participante vigente para emitir (si no, 404 como en HU-020); el PRD solo dice "Elizabeth o un administrador" (PRD §5.7). Confirmar con el dueño del producto.
+- `AttachmentContext` y su columna los introduce [[hu-014-adjuntos-en-radicacion|HU-014]]; esta HU usa el valor `FormalResponse` y comparte el validador y la clave `attachmentId` con [[hu-029-adjuntos-e-imagenes-en-chat|HU-029]].
 - **Propuesta (V-01):** estados de origen `InDevelopment`, `PullRequestReview`, `InProduction`.
 - **Propuesta (V-13):** una sola respuesta formal por ticket; segunda emisión → 409.
 - **Propuesta:** límite de 10 000 caracteres y cuerpo en texto plano.

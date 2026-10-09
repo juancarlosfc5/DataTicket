@@ -38,7 +38,7 @@ La respuesta formal "se envía completa por correo" (PRD §6.5) "al contacto de 
 - Archivos como adjuntos MIME del correo; si el total supera el límite configurado del proveedor, enlaces públicos por archivo ([[adr-0006-urls-publicas-azure-blob]]) (propuesta).
 - Estado de entrega del correo en la respuesta (`Pending`, `Sent`, `Failed`; nombre propuesto `EmailDeliveryStatus`) y reintento manual por la PM o un administrador.
 - Regla de destinatarios encapsulada en un único punto, con valor provisional mientras V-07 siga abierta.
-- Configurar `App:PublicBaseUrl` en `docker-compose.yml` y `.env.example` si [[hu-005-invitar-y-activar-cuentas|HU-005]] no lo hizo.
+- Reutilizar `App:PublicBaseUrl`, que añade [[hu-005-invitar-y-activar-cuentas|HU-005]] a `docker-compose.yml`; completarlo solo si no existe al iniciar esta HU.
 
 ## Fuera de alcance
 
@@ -107,8 +107,8 @@ Propuesta; se ratifica en T-01.
 | Código | Caso |
 |---|---|
 | 401 | Sin sesión |
-| 403 | Rol no autorizado (desarrollador, Producción, cliente) o administrador no participante |
-| 404 | Ticket inexistente o sin respuesta formal |
+| 403 | Usuario cliente, o participante de Desarrollo o Producción (rol insuficiente) |
+| 404 | Ticket inexistente o no visible (interno no participante, administrador no asociado; convención de [[hu-020-detalle-interno-del-ticket\|HU-020]]) o sin respuesta formal |
 | 409 | El correo ya figura como `Sent` |
 | 502 | El servidor de correo rechazó el envío (el estado queda `Failed`) |
 
@@ -141,7 +141,7 @@ El detalle interno (`GET /api/tickets/{ticketId}/formal-response`) incluye `emai
 - [ ] **T-05 — Esquema y configuración** · Capa: Backend (Infrastructure) + Docker/Compose · Dificultad: Bajo  
   Descripción: migración `AddFormalResponseEmailDelivery` (estado y `LastAttemptAt`); `App__PublicBaseUrl: http://localhost:5173` en `docker-compose.yml` y variable en `.env.example` si no existen; opciones tipadas validadas al arrancar.
 - [ ] **T-06 — Endpoint de reintento** · Capa: Backend (Api) · Dificultad: Bajo  
-  Descripción: primero pruebas de integración: 202 (PM), 403 (desarrollador), 409 (ya enviado), 404 (sin respuesta). Luego el endpoint.
+  Descripción: primero pruebas de integración: 202 (PM), 403 (desarrollador participante), 403 (solicitante), 404 (administrador no asociado), 409 (ya enviado), 404 (sin respuesta). Luego el endpoint.
 - [ ] **T-07 — Frontend interno** · Capa: Frontend (models/controllers/views) · Dificultad: Bajo  
   Descripción: Vitest del modelo (`emailDelivery` desconocido → `Failed`); el controlador expone `retryEmail()`; la vista muestra "Correo enviado", "Envío pendiente" o "No se pudo enviar el correo · Reintentar".
 

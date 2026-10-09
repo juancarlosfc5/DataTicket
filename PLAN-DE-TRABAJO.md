@@ -67,7 +67,7 @@ Resultado esperado: formulario común, radicación, adjuntos, triage, participan
 
 ### EP-004 — Auditoría append-only · [épica](wiki/scrum/epicas/ep-004-auditoria-append-only.md)
 
-- [ ] [HU-011 — Registrar eventos auditables](wiki/scrum/historias-de-usuario/hu-011-registrar-eventos-auditables.md) · Sprint 2 · Responsable: ______ · Fecha: ______
+- [ ] [HU-011 — Registrar eventos auditables](wiki/scrum/historias-de-usuario/hu-011-registrar-eventos-auditables.md) · Sprint 1 · Responsable: ______ · Fecha: ______
 - [ ] [HU-012 — Consultar la bitácora de un ticket](wiki/scrum/historias-de-usuario/hu-012-consultar-bitacora-del-ticket.md) · Sprint 4 · Responsable: ______ · Fecha: ______
 
 ### EP-005 — Radicación de tickets · [épica](wiki/scrum/epicas/ep-005-radicacion-de-tickets.md)

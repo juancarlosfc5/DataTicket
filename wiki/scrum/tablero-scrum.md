@@ -42,13 +42,15 @@ Stack y restricciones: [[stack-y-versiones]] · [[backend-hexagonal]] · [[front
 
 ## Sprints sugeridos
 
+HU-011 pertenece a la Fase 1 pero se adelanta al Sprint 1: las acciones administrativas de HU-007, HU-008 y HU-009 se auditan con `IAuditLog`.
+
 Los sprints son incrementos ordenados por dependencias. No estiman duración ni capacidad y no asignan personas. Una vez fijado el contrato (tarea T-01 de cada HU), las tareas de backend y frontend pueden avanzar en paralelo.
 
 | Sprint | Fase | HU | Incremento |
 |---|---|---|---|
 | 0 | 0 | [[hu-001-integracion-continua\|HU-001]], [[hu-002-shell-y-navegacion-por-rol\|HU-002]], [[hu-003-iniciar-y-cerrar-sesion\|HU-003]], [[hu-004-contexto-de-usuario-y-autorizacion\|HU-004]] | CI, shell, login y autorización base |
-| 1 | 0 | [[hu-005-invitar-y-activar-cuentas\|HU-005]], [[hu-006-restablecer-contrasena\|HU-006]], [[hu-007-administrar-empresas-cliente\|HU-007]], [[hu-008-administrar-usuarios-cliente\|HU-008]], [[hu-009-administrar-usuarios-internos-y-equipos\|HU-009]], [[hu-010-datos-sinteticos-de-desarrollo\|HU-010]] | Cuentas, empresas, equipos y datos sintéticos |
-| 2 | 1 | [[hu-011-registrar-eventos-auditables\|HU-011]], [[hu-013-radicar-ticket\|HU-013]], [[hu-014-adjuntos-en-radicacion\|HU-014]], [[hu-016-cola-global-de-triage\|HU-016]] | Radicar con adjuntos y verlo en la cola de la PM, con auditoría |
+| 1 | 0 (+ HU-011 de la Fase 1) | [[hu-005-invitar-y-activar-cuentas\|HU-005]], [[hu-006-restablecer-contrasena\|HU-006]], [[hu-007-administrar-empresas-cliente\|HU-007]], [[hu-008-administrar-usuarios-cliente\|HU-008]], [[hu-009-administrar-usuarios-internos-y-equipos\|HU-009]], [[hu-010-datos-sinteticos-de-desarrollo\|HU-010]], [[hu-011-registrar-eventos-auditables\|HU-011]] | Cuentas, empresas, equipos, datos sintéticos y puerto de auditoría |
+| 2 | 1 | [[hu-013-radicar-ticket\|HU-013]], [[hu-014-adjuntos-en-radicacion\|HU-014]], [[hu-016-cola-global-de-triage\|HU-016]] | Radicar con adjuntos y verlo en la cola de la PM |
 | 3 | 1 | [[hu-015-ajustar-prioridad-manualmente\|HU-015]], [[hu-017-cola-de-cobertura-y-tomar-ticket\|HU-017]], [[hu-018-asignar-y-agregar-participantes\|HU-018]], [[hu-019-reasignar-y-retirar-participantes\|HU-019]], [[hu-020-detalle-interno-del-ticket\|HU-020]] | Triage completo y detalle interno |
 | 4 | 1 | [[hu-012-consultar-bitacora-del-ticket\|HU-012]], [[hu-021-cambiar-estado-interno\|HU-021]], [[hu-022-registrar-url-de-pr\|HU-022]], [[hu-023-bandeja-de-mis-tickets-y-equipo\|HU-023]], [[hu-024-portal-solicitante-consulta-tickets\|HU-024]], [[hu-025-portal-coordinador-consulta-tickets\|HU-025]] | Estados, bandejas y portal del cliente (piloto operativo) |
 | 5 | 2 | [[hu-026-historial-del-chat-por-cursor\|HU-026]], [[hu-027-unirse-al-chat-del-ticket\|HU-027]], [[hu-028-enviar-y-recibir-mensajes\|HU-028]], [[hu-032-revocar-acceso-al-retirar-participante\|HU-032]] | Chat seguro en tiempo real |
@@ -61,21 +63,21 @@ Los sprints son incrementos ordenados por dependencias. No estiman duración ni 
 
 | PRD CA | HU que lo cubren |
 |---|---|
-| CA-01 Aislamiento A↔B | HU-004, HU-024, HU-025, HU-034 |
-| CA-02 Solicitante y coordinador | HU-024, HU-025, HU-034 |
-| CA-03 Cola de la PM y cobertura del admin | HU-016, HU-017 |
-| CA-04 Asignar, reasignar y participantes | HU-018, HU-019 |
-| CA-05 Tiempo real y recuperación | HU-028, HU-031 |
-| CA-06 No participante y revocación | HU-026, HU-027, HU-028, HU-030, HU-032 |
+| CA-01 Aislamiento A↔B | HU-004, HU-008, HU-013, HU-014, HU-024, HU-025, HU-034, HU-042, HU-044, HU-046, HU-047 |
+| CA-02 Solicitante y coordinador | HU-015, HU-024, HU-025, HU-034, HU-036, HU-042, HU-046 |
+| CA-03 Cola de la PM y cobertura del admin | HU-016, HU-017, HU-020, HU-023 |
+| CA-04 Asignar, reasignar y participantes | HU-011, HU-012, HU-018, HU-019 |
+| CA-05 Tiempo real y recuperación | HU-026, HU-027, HU-028, HU-031 |
+| CA-06 No participante y revocación | HU-019, HU-026, HU-027, HU-028, HU-030, HU-031, HU-032, HU-037 |
 | CA-07 Confirmaciones de lectura | HU-030 |
-| CA-08 Historial para incorporados y retirados | HU-026, HU-032 |
-| CA-09 Tipos y tamaño de adjuntos | HU-014, HU-029, HU-033 |
-| CA-10 Nada interno al cliente | HU-022, HU-024, HU-025, HU-034 |
+| CA-08 Historial para incorporados y retirados | HU-018, HU-019, HU-026, HU-029, HU-031, HU-032 |
+| CA-09 Tipos y tamaño de adjuntos | HU-014, HU-028, HU-029, HU-033 |
+| CA-10 Nada interno al cliente | HU-012, HU-013, HU-015, HU-018, HU-020, HU-021, HU-022, HU-024, HU-025, HU-029, HU-034, HU-035, HU-042 |
 | CA-11 Respuesta formal | HU-033, HU-034, HU-035 |
-| CA-12 Cierre manual | HU-036 |
+| CA-12 Cierre manual | HU-021, HU-036 |
 | CA-13 Dashboard interno sin SLA | HU-039, HU-040, HU-041, HU-042 |
-| CA-14 Auditoría con actor y fecha | HU-011, HU-015, HU-018, HU-019, HU-021, HU-036 |
-| CA-15 Formulario común y fase separada | HU-013, EP-013 |
+| CA-14 Auditoría con actor y fecha | HU-011, HU-012, HU-013, HU-015, HU-017, HU-018, HU-019, HU-021, HU-033, HU-036 |
+| CA-15 Formulario común y fase separada | HU-013, HU-043 a HU-047 |
 
 Un CA se marca en [[criterios-de-aceptacion]] solo con evidencia: la prueba o el PR que lo demuestra.
 

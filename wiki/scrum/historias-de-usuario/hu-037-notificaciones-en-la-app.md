@@ -124,7 +124,7 @@ Propuesta; se ratifica en T-01 junto con el contrato del hub de [[hu-028-enviar-
 - `limit`: 1–50 (por defecto 20); fuera de rango → 400.
 - `POST /api/notifications/{notificationId}/read` → `204`; notificación de otro usuario o inexistente → `404`.
 - `POST /api/notifications/read-all` → `204`.
-- `POST /api/tickets/{ticketId}/notifications/read` → `204` (marca las del ticket; no participante → `403`).
+- `POST /api/tickets/{ticketId}/notifications/read` → `204` (marca las del ticket; interno no participante o retirado → `404`, convención de [[hu-020-detalle-interno-del-ticket|HU-020]]).
 
 **Hub `/hubs/tickets`** — evento nuevo (nombre propuesto) dirigido a `Clients.User(recipientUserId)`:
 
@@ -190,7 +190,7 @@ Sin métodos nuevos invocables desde el cliente: marcar como leída va por REST.
 
 **Dado** un solicitante autenticado y un desarrollador que no es participante del ticket  
 **Cuando** el solicitante llama `GET /api/notifications` y el desarrollador llama `POST /api/tickets/{ticketId}/notifications/read`  
-**Entonces** ambos reciben `403`.
+**Entonces** el solicitante recibe `403` (rol cliente) y el desarrollador recibe `404` sin datos del ticket (convención de [[hu-020-detalle-interno-del-ticket|HU-020]]).
 
 ### CHU-07 — Marcado de leídas y sincronización con el chat
 
@@ -256,6 +256,7 @@ Sin métodos nuevos invocables desde el cliente: marcar como leída va por REST.
 - **Propuesta:** notificaciones persistidas por destinatario (no solo eventos efímeros), para sobrevivir a cierres de sesión y reconexiones.
 - **Propuesta:** evento `NotificationCreated` dirigido al usuario, no al grupo del ticket.
 - **Propuesta:** Elizabeth solo recibe avisos de tickets donde es participante explícita.
+- **Alinear con [[hu-028-enviar-y-recibir-mensajes|HU-028]] en T-01:** HU-028 prevé que la notificación in-app se enganche después de persistir y que un fallo de publicación no invalide el envío. Aquí se propone guardar las notificaciones en la misma unidad de trabajo que el mensaje y publicar `NotificationCreated` después del commit; un fallo al publicar el evento solo se registra en logs (la lista se recupera por REST).
 - **Riesgo:** con varias instancias, la entrega por usuario requiere backplane (decisión abierta; el MVP es de una instancia).
 
 ## Relacionado
