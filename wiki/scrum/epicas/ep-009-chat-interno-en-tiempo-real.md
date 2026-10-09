@@ -1,8 +1,8 @@
 ---
 title: "EP-009 — Chat interno en tiempo real"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/chat, signalr]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §8", "PRD.md §11", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-009", "Chat interno en tiempo real"]
@@ -23,7 +23,7 @@ dependencias:
   - "[[ep-006-triage-asignacion-y-participantes]]"
   - "[[ep-007-trabajo-interno-y-estados]]"
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-009 — Chat interno en tiempo real

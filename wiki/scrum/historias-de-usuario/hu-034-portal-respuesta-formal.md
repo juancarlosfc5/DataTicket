@@ -1,8 +1,8 @@
 ---
 title: "HU-034 — Consultar la respuesta formal en el portal"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/portal, producto/respuesta-formal, producto/seguridad]
 sources: ["PRD.md §5", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §8", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-034", "Consultar la respuesta formal en el portal", "Portal: respuesta formal"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 7"
 dependencias: ["[[hu-033-emitir-respuesta-formal]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]"]
 relacionadas: ["[[hu-035-correo-de-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]", "[[hu-042-resumen-de-estados-en-portal]]", "[[hu-022-registrar-url-de-pr]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-034 — Consultar la respuesta formal en el portal
@@ -242,6 +242,7 @@ Errores (ProblemDetails):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

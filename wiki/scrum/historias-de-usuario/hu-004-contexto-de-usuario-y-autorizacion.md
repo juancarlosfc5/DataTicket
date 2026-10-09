@@ -1,8 +1,8 @@
 ---
 title: "HU-004 — Contexto del usuario y autorización por rol"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, seguridad, identity, producto/roles, arquitectura/backend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-004", "Contexto del usuario y autorización por rol"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]"]
 relacionadas: ["[[hu-002-shell-y-navegacion-por-rol]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-004 — Contexto del usuario y autorización por rol
@@ -262,6 +262,8 @@ No admite parámetros: cualquier `?userId=` o cabecera adicional se ignora.
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
+- 2026-10-09 — Se ejecuta en el goal de `goal_login.md` (bloques B1, B4, B6).
 
 ## Notas y decisiones
 

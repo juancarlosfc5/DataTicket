@@ -1,8 +1,8 @@
 ---
 title: "HU-017 — Cola de cobertura y tomar ticket"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/roles, producto/seguridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-017", "Cola de cobertura y tomar ticket", "TakeTicket"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 3"
 dependencias: ["[[hu-016-cola-global-de-triage]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-014-adjuntos-en-radicacion]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-027-unirse-al-chat-del-ticket]]", "[[hu-038-correo-de-vinculacion]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-017 — Cola de cobertura y tomar ticket
@@ -259,6 +259,7 @@ El chat no viaja en esta respuesta: se carga con su API ([[hu-026-historial-del-
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

@@ -1,8 +1,8 @@
 ---
 title: "HU-011 — Registrar eventos auditables"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/auditoria, arquitectura/backend, arquitectura/datos]
 sources: ["PRD.md §12", "PRD.md §6.1", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §5", "PRD.md §14"]
 aliases: ["HU-011", "Registrar eventos auditables"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-001-integracion-continua]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-012-consultar-bitacora-del-ticket]]", "[[hu-013-radicar-ticket]]", "[[hu-015-ajustar-prioridad-manualmente]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-033-emitir-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-011 — Registrar eventos auditables
@@ -231,6 +231,7 @@ No aplica a REST ni al hub: esta HU no expone endpoints. El contrato que fija es
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

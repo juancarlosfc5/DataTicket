@@ -6,7 +6,7 @@ tags: [arquitectura/frontend, mvc, react]
 sources: ["PRD.md §7, §10", "frontend/"]
 aliases: [Frontend, MVC en React]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Frontend MVC
@@ -67,7 +67,8 @@ Configuradas con `no-restricted-imports` por carpeta en `frontend/.oxlintrc.json
 
 ## Decisiones abiertas
 
-- Enrutador (p. ej. React Router) y librería de estado de servidor (p. ej. TanStack Query): ver [[pendientes]].
+- Enrutador: `react-router` 8.4.0 en modo librería, con rutas y guardas en `src/app` y sin `loader`/`action` para datos ([[adr-0010-enrutador-react-router]]). Librería de estado de servidor: no se adopta por ahora ([[pendientes]] §4).
+- Estilo visual: tokens y componentes según [[sistema-de-diseno]] (inspiración `DataTicket.html`, [[adr-0011-estilo-visual-inspirado-en-el-prototipo]]).
 - Testing Library + jsdom para pruebas de componentes cuando haya vistas con lógica de interacción.
 
 ## Relacionado

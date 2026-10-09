@@ -1,8 +1,8 @@
 ---
 title: "EP-008 — Bandejas internas y portal del cliente"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/portal, producto/dashboard, producto/seguridad]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-008", "Bandejas internas y portal del cliente", "Bandejas y portal del cliente"]
@@ -11,7 +11,7 @@ criterios_prd: [CA-01, CA-02, CA-10]
 historias: ["[[hu-023-bandeja-de-mis-tickets-y-equipo]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-003-empresas-usuarios-y-equipos]]", "[[ep-005-radicacion-de-tickets]]", "[[ep-006-triage-asignacion-y-participantes]]", "[[ep-007-trabajo-interno-y-estados]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-008 — Bandejas internas y portal del cliente

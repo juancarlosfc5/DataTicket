@@ -1,8 +1,8 @@
 ---
 title: "HU-047 — Consultar tickets por campos variables"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/formularios, producto/dashboard, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §9", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-047", "Consultar tickets por campos variables"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 9"
 dependencias: ["[[hu-046-radicar-con-formulario-de-empresa]]", "[[hu-043-constructor-de-plantillas]]", "[[hu-045-versionar-plantillas]]", "[[hu-016-cola-global-de-triage]]", "[[hu-023-bandeja-de-mis-tickets-y-equipo]]"]
 relacionadas: ["[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-040-panel-global-de-la-pm]]", "[[hu-041-panel-del-equipo-interno]]", "[[hu-010-datos-sinteticos-de-desarrollo]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-047 — Consultar tickets por campos variables
@@ -235,6 +235,7 @@ Para un administrador, el filtro no falla: los resultados excluyen los tickets d
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

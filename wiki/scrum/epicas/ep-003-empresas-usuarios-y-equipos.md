@@ -1,8 +1,8 @@
 ---
 title: "EP-003 — Empresas, usuarios y equipos"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/roles, dominio]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §12", "PRD.md §13", "PRD.md §16"]
 aliases: ["EP-003", "Empresas, usuarios y equipos"]
@@ -11,7 +11,7 @@ criterios_prd: ["CA-01"]
 historias: ["[[hu-007-administrar-empresas-cliente]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-010-datos-sinteticos-de-desarrollo]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-004-auditoria-append-only]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-003 — Empresas, usuarios y equipos

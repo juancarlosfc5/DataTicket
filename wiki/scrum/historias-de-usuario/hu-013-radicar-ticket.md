@@ -1,8 +1,8 @@
 ---
 title: "HU-013 — Radicar ticket"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/ticket, producto/prioridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §6.1", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §5", "PRD.md §9", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-013", "Radicar ticket", "Radicar ticket con formulario común"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 2"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-002-shell-y-navegacion-por-rol]]"]
 relacionadas: ["[[hu-014-adjuntos-en-radicacion]]", "[[hu-016-cola-global-de-triage]]", "[[hu-015-ajustar-prioridad-manualmente]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-046-radicar-con-formulario-de-empresa]]", "[[hu-010-datos-sinteticos-de-desarrollo]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-013 — Radicar ticket
@@ -289,6 +289,7 @@ Respuesta `201 Created` (encabezado `Location` hacia el recurso de consulta del 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

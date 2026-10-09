@@ -1,8 +1,8 @@
 ---
 title: "HU-008 — Administrar usuarios de empresas cliente"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/roles, seguridad, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.1", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-008", "Administrar usuarios de empresas cliente", "Administrar usuarios cliente"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-007-administrar-empresas-cliente]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-011-registrar-eventos-auditables]]"]
 relacionadas: ["[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-010-datos-sinteticos-de-desarrollo]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]", "[[hu-032-revocar-acceso-al-retirar-participante]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-008 — Administrar usuarios de empresas cliente
@@ -262,6 +262,7 @@ Reenvío de invitación: `POST /api/auth/invitations` de [[hu-005-invitar-y-acti
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

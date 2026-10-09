@@ -1,8 +1,8 @@
 ---
 title: "HU-012 — Consultar la bitácora del ticket"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/auditoria, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §12", "PRD.md §5", "PRD.md §6.4", "PRD.md §10", "PRD.md §14"]
 aliases: ["HU-012", "Consultar la bitácora del ticket"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 4"
 dependencias: ["[[hu-011-registrar-eventos-auditables]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-024-portal-solicitante-consulta-tickets]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-012 — Consultar la bitácora del ticket
@@ -245,6 +245,7 @@ Respuesta `200 OK`:
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

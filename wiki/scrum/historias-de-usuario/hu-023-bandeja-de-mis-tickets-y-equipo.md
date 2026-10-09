@@ -1,8 +1,8 @@
 ---
 title: "HU-023 — Bandeja de mis tickets y de equipo"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/dashboard, producto/seguridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §10", "PRD.md §11"]
 aliases: ["HU-023", "Bandeja de mis tickets y de equipo", "Inbox"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 4"
 dependencias: ["[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-016-cola-global-de-triage]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-041-panel-del-equipo-interno]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-023 — Bandeja de mis tickets y de equipo
@@ -226,6 +226,7 @@ Errores (ProblemDetails):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

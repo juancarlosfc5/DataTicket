@@ -90,3 +90,154 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - La cobertura de CA del tablero se recalculó a partir del frontmatter de las HU.
 - Wiki: [[tablero-scrum]], [[pendientes]] (nueva §3b con las propuestas P-01…P-21 de las HU por ratificar), `hu-007`, `hu-008`, `hu-009`, `hu-011`.
 - Pendiente: ratificar las propuestas P-01…P-21 en la T-01 de cada HU y llevar los términos nuevos al [[glosario]] al ratificarlos.
+
+## [2026-10-09] setup | backend-engineer preparado para HU de Sprint 0 y EP-009
+- Autor: juancarlosfc5
+- Cambios:
+  - `.claude/agents/backend-engineer.md` reescrito (166 líneas). Conserva `name`, `description`, `tools`, `model` y `color`, y añade `memory: project` y `effort: high`, campos documentados en la referencia oficial de subagentes. Incluye:
+    - lecturas por HU y comprobación del estado real del código con Glob/Grep;
+    - flujo por HU: leer la nota → confirmar el contrato T-01 → rojo con los nombres del DoD → implementar → verde → evidencia por CHU;
+    - convenciones: RFC 9457, 404 para recursos no visibles (P-01), códigos `HubException`, `IClock`/`TimeProvider`, Guid v7, microsegundos, `no-store`;
+    - Identity: antiforgery por filtro, 401/403 sin `Location`, bloqueo (P-18), *fallback* autenticado, recorrido de anónimos, `ICurrentUser` en `Ports/Out`, sin `MapIdentityApi`;
+    - SignalR: tracker, `IChatConnectionRevoker`, `TicketAccessRevoked`, revalidación en cada método, validación de `Origin` (P-13), cursor (P-12);
+    - `DataTicket.IntegrationTests` con PostgreSQL real aislado y clientes SignalR autenticados;
+    - verificación de paquetes en NuGet;
+    - formato de retorno con la tabla «Evidencia CHU/DoD».
+  - Nuevo `backend/CLAUDE.md` (36 líneas): `dotnet` desde `backend/`, capas, comandos, prohibiciones. Enlaza `AGENTS.md` sin duplicarlo.
+  - Sin cambios en el código de producción.
+- Verificación:
+  - Frontmatter validado con el parser `yaml` de Node en los cinco agentes; solo campos documentados; sin `permissionMode` ni `isolation`.
+  - Confirmado que .NET 10 genera `public partial class Program` (requisito de `WebApplicationFactory<Program>`).
+- Wiki: [[trabajar-con-el-agente]] (nueva sección «Ejecutar una HU de backend»).
+- Pendiente: la memoria del agente (`.claude/agent-memory/backend-engineer/`) se versiona con el repo. Valores propuestos de `Resultado` en la evidencia: `Validado`, `Falla`, `Pendiente`, `Bloqueado`; ratificarlos en la skill Scrum si el equipo los adopta.
+
+## [2026-10-09] docs | Aprobación de todas las épicas e historias de usuario
+- Autor: juancarlosfc5
+- Cambios:
+  - La persona líder del proyecto aprobó explícitamente, en bloque, las 13 épicas y las 47 HU. Las 60 notas pasan a `estado: Aprobada` y `status: vigente`, con `updated: 2026-10-09`.
+  - Cada HU registra la aprobación en su `## Historial`.
+  - Se actualizaron el aviso del tablero y `PLAN-DE-TRABAJO.md`.
+  - Las decisiones abiertas siguen vigentes y se ratifican en la T-01 de cada HU.
+- Wiki: [[tablero-scrum]], `wiki/scrum/epicas/*`, `wiki/scrum/historias-de-usuario/*`.
+
+## [2026-10-09] feature | Script DB-first de la base de datos (`db.sql`)
+- Autor: juancarlosfc5
+- Cambios:
+  - Nuevo `db.sql` en la raíz para PostgreSQL 18.6, base del scaffolding con EF Core 10 + Npgsql.
+  - Esquema `identity` (ASP.NET Core Identity en snake_case + claves de Data Protection) y esquema `dataticket` (14 tablas de dominio).
+  - Funciones de matriz de prioridad y de número de ticket; trigger append-only de auditoría; siembra de 6 roles y 3 categorías provisionales.
+- Verificación: aplicado sin errores en un `postgres:18.6` desechable con `ON_ERROR_STOP`. Las pruebas de humo rechazan lo que deben: prioridad incoherente, título de más de 120, `Closed` sin `closed_at`, participación vigente duplicada, adjunto de 10 MB + 1 B, `UPDATE`/`DELETE`/`TRUNCATE` en auditoría y empresa duplicada. El número de ticket no se trunca por encima de 6 dígitos.
+- Wiki: [[persistencia-postgresql]] (nueva sección «Esquema DB-first»), [[pendientes]] (contradicción DB-first frente a migraciones; actualización de roles frente a equipos).
+- Pendiente: ADR que fije el flujo DB-first frente a migraciones; paquete de convención snake_case para mapear Identity; RLS y roles de base de datos; V-06, V-12, V-13 y V-16.
+
+## [2026-10-09] setup | frontend-engineer preparado para HU-002 a HU-004 y EP-009
+- Autor: juancarlosfc5
+- Cambios:
+  - `.claude/agents/frontend-engineer.md` reescrito (184 líneas). Conserva `name`, `description`, `tools`, `model` y `color`, y añade `memory: project` y `effort: high`. Incluye:
+    - lecturas por HU y estado actual comprobado (hoy: `httpClient` solo con GET; sin enrutador, Testing Library, jsdom ni `core/realtime`);
+    - decisiones vigentes: sin ADR del enrutador → detenerse y preguntar; Testing Library + jsdom por archivo con `// @vitest-environment jsdom`;
+    - flujo por HU y tabla del MVC estricto;
+    - `core/http`: mutaciones, antiforgery en memoria, `HttpError` con ProblemDetails, 401 con `returnUrl` saneado, 403;
+    - `core/realtime`: conexión única, resincronización `after`, `mergeMessages`, `parseHubError`, `TicketAccessRevoked`;
+    - seguridad y UX, y verificación de dependencias en npm con `--save-exact`;
+    - retorno con evidencia CHU/DoD y pasos de verificación manual en el navegador.
+  - Nuevo `frontend/CLAUDE.md` (34 líneas): comandos, MVC y prohibiciones. Enlaza `AGENTS.md`.
+  - Sin cambios en el código de producción.
+- Verificación:
+  - Frontmatter de los cinco agentes validado con el parser `yaml` de Node.
+  - Sintaxis por archivo de Vitest 5.0.3 comprobada en su documentación.
+  - Versiones candidatas consultadas en npm: `@microsoft/signalr` 10.0.11, `@testing-library/react` 16.3.3 (requiere `@testing-library/dom` ^10), `@testing-library/user-event` 14.6.7, `jsdom` 30.1.2.
+- Wiki: [[trabajar-con-el-agente]] (nueva sección «Ejecutar una HU de frontend»).
+- Pendiente: el término «D2» no aparece en ningún documento. Se interpretó como la decisión «Enrutador y librería de estado del frontend» ([[tablero-scrum]], [[pendientes]] §4), que sigue sin ADR y bloquea HU-002 T-02.
+
+## [2026-10-09] fix | Correcciones de la revisión de `db.sql`
+- Autor: juancarlosfc5
+- Cambios (hallazgos de quality-reviewer: 0 críticos, 1 alto):
+  - ALTO: FK compuesta `tickets(requester_id, company_id)` → `identity.users(id, company_id)`. El solicitante tiene que ser de la empresa del ticket y un usuario con tickets no puede cambiar de empresa.
+  - FK compuestas con `ticket_id` en adjuntos (mensaje y respuesta formal) y en notificaciones.
+  - Un adjunto `FormalResponse` exige `formal_response_id`.
+  - El contexto `ChatMessage` pasa a `Chat`, como en HU-029/033.
+  - Las versiones de formulario quedan inmutables (trigger y `ON DELETE RESTRICT`).
+  - La URL de PR solo admite `https`; la descripción tiene un máximo de 10 000 caracteres; `number` pasa a `varchar(24)`.
+  - Nuevo índice de auditoría por objeto; el comentario de la acción pasa a `FormalResponseDelivered`.
+  - La cabecera documenta las limitaciones del scaffolding y el riesgo del superusuario.
+- Verificación: el script se reaplica sin errores en un `postgres:18.6` desechable. Las 9 pruebas de regresión rechazan y aceptan lo esperado.
+- Wiki: [[persistencia-postgresql]].
+- Pendiente:
+  - Separar los roles de BD (app frente a migraciones) antes de un entorno compartido.
+  - Riesgo del cursor `(created_at, id)` del chat frente al orden de commit: reconectar con margen y deduplicar (HU-031).
+  - Registrar `AttachmentContext` e `InAppNotification` frente a `Notification` en [[glosario]].
+  - El GIN `jsonb_path_ops` solo cubre `@>`; definirlo en el ADR de respuestas variables.
+  - `leads` de equipos (HU-009) sin columna mientras los equipos sean roles.
+
+## [2026-10-09] decision | `db.sql` aprobado como diseño de referencia; implementación con migraciones de EF Core
+- Autor: juancarlosfc5
+- Cambios:
+  - La persona líder del proyecto aclaró que pidió `db.sql` como paso previo para validar el esquema antes de implementarlo con EF Core. Revisó la base de datos y la aprobó.
+  - Nuevo [[adr-0009-db-sql-diseno-de-referencia]] (aceptada): `db.sql` es el diseño de referencia y no se ejecuta ni se usa para scaffolding. Cada HU crea su parte con migraciones code-first equivalentes; si una HU cambia el esquema, actualiza `db.sql` en el mismo PR.
+  - La contradicción «DB-first frente a migraciones» pasa a resuelta en [[pendientes]]. Los DoD de las HU siguen igual.
+  - [[persistencia-postgresql]]: la sección pasa a «Diseño de referencia», con la guía para llevarlo a EF Core (Identity, snake_case, `HasCheckConstraint`, FK compuestas, `migrationBuilder.Sql`).
+  - `db.sql` no se modificó, por instrucción expresa: su cabecera aún dice «DB-first» y el ADR prevalece.
+- Wiki: [[adr-0009-db-sql-diseno-de-referencia]] (nueva), [[persistencia-postgresql]], [[pendientes]], [[index]].
+- Pendiente: alinear la cabecera de `db.sql` cuando se toque el script; siguen abiertas las decisiones provisionales del diseño (ver ADR-0009).
+
+## [2026-10-09] decision | Plan goal del login y loop del chat; ADR-0004, ADR-0010 y ADR-0011; ingesta de DataTicket.html
+- Autor: juancarlosfc5
+- Cambios:
+  - Decisiones D1–D6 de la persona líder del proyecto:
+    - [[adr-0004-autenticacion-cookie-mismo-origen]] pasa a **aceptada**;
+    - nuevo [[adr-0010-enrutador-react-router]] (`react-router` 8.4.0 exacta, modo librería; verificado en npm: `latest`, peer `react >=19.2.7`, `node >=22.22`);
+    - orden: primero el goal y después el loop;
+    - commits locales por bloque y por rebanada.
+  - Nuevos archivos de control en la raíz, con lista de chequeo y registro de ejecución:
+    - `goal_login.md`: `/goal` de HU-002, HU-003 y HU-004 en los bloques B0–B8; el texto del comando tiene 1084 caracteres;
+    - `loop_chat.md`: `/loop` autopacado de EP-009 en las rebanadas P0 y R0–R12. R0 adelanta lo mínimo de HU-018/019.
+  - Ingesta de `DataTicket.html` (raíz, fuente cruda inmutable):
+    - nuevas [[fuente-prototipo-dataticket-html]] y [[sistema-de-diseno]] (tokens claro/oscuro, Archivo, componentes, movimiento, mapeo de estados como propuesta);
+    - nuevo [[adr-0011-estilo-visual-inspirado-en-el-prototipo]]: estilo sí, pantallas no; el orquestador opera el frontend.
+  - Skills locales de `emilkowalski/skill` (subconjunto web: 11 skills, solo Markdown y revisadas) en `.claude/skills/` y `skills-lock.json`. `frontend-engineer` precarga `emil-design-eng`.
+  - Agentes y esquema:
+    - `frontend-engineer` y `frontend/CLAUDE.md` adoptan ADR-0010 y la guía visual (se elimina el bloqueo por falta de ADR del enrutador);
+    - `orchestrator` asume la operación del frontend y el uso de los archivos de control;
+    - `AGENTS.md` añade `DataTicket.html`, `db.sql`, `goal_login.md`, `loop_chat.md` y `.claude/skills/` al mapa, `DataTicket.html` como fuente cruda y la regla de estilo visual.
+  - `PLAN-DE-TRABAJO.md` incluye la sección «Ejecución automatizada en curso».
+- Verificación:
+  - frontmatter completo y 0 enlaces rotos en las 13 páginas tocadas (script de Node);
+  - `skills-lock.json` es JSON válido;
+  - las skills instaladas no traen scripts ni comandos de red.
+- Wiki: [[plan-goal-login-y-loop-chat]] (nueva), [[sistema-de-diseno]] (nueva), [[fuente-prototipo-dataticket-html]] (nueva), [[adr-0010-enrutador-react-router]] (nueva), [[adr-0011-estilo-visual-inspirado-en-el-prototipo]] (nueva), [[adr-0004-autenticacion-cookie-mismo-origen]], [[autenticacion-identity]], [[frontend-mvc]], [[stack-y-versiones]], [[pendientes]], [[trabajar-con-el-agente]], [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]], [[index]].
+- Pendiente:
+  - logo oficial de Data Global;
+  - ratificar en la T-01 de HU-003 la «puerta solo visual» y en las HU de pantallas el mapeo de colores de estado;
+  - verificar en npm el paquete autoalojado de Archivo;
+  - nada está en commit: abrir una rama `docs/` o `chore/` para estos cambios antes del goal.
+
+## [2026-10-09] feature | DML de datos semilla en `db.sql`, 14 skills de Emil, estilo Apple y Docker operado desde Claude Code
+- Autor: juancarlosfc5
+- Cambios:
+  - `db.sql`:
+    - nueva sección **13. DML**, referencia del sembrador de Development de HU-010 y de los fixtures. Contenido: 50 empresas (5 inactivas), 169 usuarios (9 internos del piloto; clientes `Active`, `Invited` y `Deactivated`), 10 tickets en los seis estados, ajuste de prioridad, asignaciones con reasignación, participante retirado, toma en cobertura, 8 mensajes de chat (par con igual marca de tiempo), lecturas, notificaciones, 5 adjuntos (metadatos), 2 respuestas formales, una plantilla publicada y 36 entradas de auditoría;
+    - IDs deterministas por prefijo;
+    - contraseña sintética común con hash V3 de Identity;
+    - cabecera alineada con ADR-0009 (ya no dice DB-first ni propone scaffolding; explica cómo validarlo en un contenedor desechable y cómo llevarlo a EF Core). Era el pendiente del log del 2026-10-09.
+  - Skills: se instalan también `apple-design`, `animate-expo` y `write-swift`; quedan las 14 de `emilkowalski/skill`, revisadas (solo Markdown). `frontend-engineer` precarga `apple-design` y `emil-design-eng`.
+  - Decisiones de la persona líder:
+    - el PRD y las HU de Scrum rigen todo;
+    - `DataTicket.html` es **solo referencia visual**, así que sus diferencias (dos puertas, respuestas públicas, estados) no se tienen en cuenta;
+    - el estilo combina Apple y la estética del prototipo;
+    - Docker lo opera el agente desde Claude Code, con contenedores desechables `dt-*-check` para lo que el stack no tiene.
+  - `goal_login.md` y `loop_chat.md`:
+    - reglas de Docker, fuente de verdad y datos semilla;
+    - se eliminan la «entrada dos puertas» y las instrucciones de Docker Desktop;
+    - el sembrador y los fixtures replican `db.sql` §13.
+  - `AGENTS.md` §6 y §10, `orchestrator` y `frontend-engineer` actualizados con estas reglas.
+- Verificación:
+  - `db.sql` completo aplicado con `ON_ERROR_STOP` en un `postgres:18.6` desechable (`dt-dbsql-check`, eliminado al terminar; el stack de Compose no se tocó). Conteos y orden estable del chat correctos; siguiente número `DT-000011`; `UPDATE` en auditoría y FK compuesta multiempresa rechazados.
+  - Hash de contraseña verificado con `PasswordHasher` de `Microsoft.Extensions.Identity.Core` 10.0.12: la correcta da `Success` y una incorrecta, `Failed`.
+  - `skills-lock.json` válido (15 skills).
+  - Wiki: 115 páginas con frontmatter y 0 enlaces rotos.
+- Wiki: [[persistencia-postgresql]], [[sistema-de-diseno]], [[fuente-prototipo-dataticket-html]], [[adr-0011-estilo-visual-inspirado-en-el-prototipo]], [[autenticacion-identity]], [[pendientes]], [[trabajar-con-el-agente]], [[hu-010-datos-sinteticos-de-desarrollo]], [[index]].
+- Pendiente:
+  - confirmar P-21 (nombres reales del equipo con correos `@dataticket.local`);
+  - los binarios de los adjuntos semilla no existen en Azurite;
+  - nada está en commit.

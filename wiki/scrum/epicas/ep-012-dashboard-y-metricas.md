@@ -1,8 +1,8 @@
 ---
 title: "EP-012 — Dashboard y métricas"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/dashboard, producto/metricas]
 sources: ["PRD.md §4", "PRD.md §5", "PRD.md §10", "PRD.md §13", "PRD.md §14", "PRD.md §16"]
 aliases: ["EP-012", "Dashboard y métricas"]
@@ -11,7 +11,7 @@ criterios_prd: [CA-13, CA-02, CA-10]
 historias: ["[[hu-039-calculo-de-tiempos-habiles]]", "[[hu-040-panel-global-de-la-pm]]", "[[hu-041-panel-del-equipo-interno]]", "[[hu-042-resumen-de-estados-en-portal]]"]
 dependencias: ["[[ep-006-triage-asignacion-y-participantes]]", "[[ep-007-trabajo-interno-y-estados]]", "[[ep-008-bandejas-y-portal-del-cliente]]", "[[ep-010-respuesta-formal-y-cierre]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-012 — Dashboard y métricas

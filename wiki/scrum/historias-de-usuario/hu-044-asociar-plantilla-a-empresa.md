@@ -1,8 +1,8 @@
 ---
 title: "HU-044 — Asociar plantilla a empresa y ordenar campos"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/formularios, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §9", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-044", "Asociar plantilla a empresa y ordenar campos", "Asociar plantilla a empresa"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 9"
 dependencias: ["[[hu-043-constructor-de-plantillas]]", "[[hu-007-administrar-empresas-cliente]]", "[[hu-011-registrar-eventos-auditables]]"]
 relacionadas: ["[[hu-045-versionar-plantillas]]", "[[hu-046-radicar-con-formulario-de-empresa]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-044 — Asociar plantilla a empresa y ordenar campos
@@ -234,6 +234,7 @@ Propuesta; se ratifica en T-01.
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

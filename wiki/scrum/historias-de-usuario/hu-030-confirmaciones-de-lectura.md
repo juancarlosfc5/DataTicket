@@ -1,8 +1,8 @@
 ---
 title: "HU-030 — Confirmaciones de lectura"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, signalr, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-030", "Confirmaciones de lectura"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 6"
 dependencias: ["[[hu-026-historial-del-chat-por-cursor]]", "[[hu-027-unirse-al-chat-del-ticket]]", "[[hu-028-enviar-y-recibir-mensajes]]"]
 relacionadas: ["[[hu-031-recuperar-mensajes-tras-reconexion]]", "[[hu-032-revocar-acceso-al-retirar-participante]]", "[[hu-037-notificaciones-en-la-app]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-030 — Confirmaciones de lectura
@@ -230,6 +230,7 @@ El PRD exige que cada participante vea quién leyó cada mensaje y en qué fecha
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

@@ -1,8 +1,8 @@
 ---
 title: "HU-002 — Shell de la aplicación y navegación por rol"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, arquitectura/frontend, producto/roles]
 sources: ["PRD.md §1", "PRD.md §5", "PRD.md §10", "PRD.md §12"]
 aliases: ["HU-002", "Shell de la aplicación y navegación por rol"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]", "[[hu-001-integracion-continua]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-002 — Shell de la aplicación y navegación por rol
@@ -70,9 +70,9 @@ Hoy `frontend/src/app/App.tsx` solo muestra el estado de salud (`modules/system`
 ## Dependencias y relaciones
 
 - Épica: [[ep-001-fundaciones-tecnicas]]
-- Dependencias: [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] (contrato de `GET /api/auth/me`); decisión abierta «enrutador del frontend y librería de estado de servidor» ([[pendientes]] §4) para T-02.
+- Dependencias: [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] (contrato de `GET /api/auth/me`); enrutador decidido en [[adr-0010-enrutador-react-router]] (React Router 8.4.0) para T-02; estilo visual en [[sistema-de-diseno]].
 - Relacionadas: [[hu-003-iniciar-y-cerrar-sesion|HU-003]] (vista de entrada, `GET /api/auth/antiforgery`, cierre de sesión), [[hu-005-invitar-y-activar-cuentas|HU-005]] y [[hu-006-restablecer-contrasena|HU-006]] (rutas públicas), [[hu-001-integracion-continua|HU-001]].
-- Decisiones: [[adr-0003-frontend-mvc]], [[adr-0004-autenticacion-cookie-mismo-origen]] (propuesta), ADR de enrutador pendiente.
+- Decisiones: [[adr-0003-frontend-mvc]], [[adr-0004-autenticacion-cookie-mismo-origen]] (aceptada), [[adr-0010-enrutador-react-router]] (aceptada), [[adr-0011-estilo-visual-inspirado-en-el-prototipo]] (aceptada).
 
 ## Componentes afectados
 
@@ -270,6 +270,8 @@ Firma propuesta del cliente HTTP (ratificar en T-01): `getJson<T>(path, options)
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
+- 2026-10-09 — ADR-0010 (enrutador) y ADR-0011 (estilo visual) aceptados: T-02 desbloqueada. Se ejecuta en el goal de `goal_login.md` (bloque B5).
 
 ## Notas y decisiones
 

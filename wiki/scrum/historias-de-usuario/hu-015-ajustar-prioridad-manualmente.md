@@ -1,8 +1,8 @@
 ---
 title: "HU-015 — Ajustar prioridad manualmente"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/prioridad, producto/auditoria, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §6.1", "PRD.md §5", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-015", "Ajustar prioridad manualmente", "PriorityOverride"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 3"
 dependencias: ["[[hu-013-radicar-ticket]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-016-cola-global-de-triage]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-012-consultar-bitacora-del-ticket]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-040-panel-global-de-la-pm]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-015 — Ajustar prioridad manualmente
@@ -244,6 +244,7 @@ Respuesta `201 Created`:
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

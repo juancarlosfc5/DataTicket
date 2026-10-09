@@ -1,8 +1,8 @@
 ---
 title: "HU-029 — Adjuntos e imágenes en el chat"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, producto/archivos, signalr, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §8", "PRD.md §10", "PRD.md §12", "PRD.md §14", "PRD.md §16"]
 aliases: ["HU-029", "Adjuntos e imágenes en el chat"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 6"
 dependencias: ["[[hu-014-adjuntos-en-radicacion]]", "[[hu-026-historial-del-chat-por-cursor]]", "[[hu-028-enviar-y-recibir-mensajes]]"]
 relacionadas: ["[[hu-033-emitir-respuesta-formal]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]", "[[hu-034-portal-respuesta-formal]]", "[[hu-032-revocar-acceso-al-retirar-participante]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-029 — Adjuntos e imágenes en el chat
@@ -263,6 +263,7 @@ Tipos admitidos (propuesta, pendiente de V-06): `.pdf`; `.png`, `.jpg`/`.jpeg`, 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

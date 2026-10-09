@@ -18,6 +18,16 @@ El detalle de cada épica e historia de usuario (HU) está en la wiki: [tablero 
 
 Estados Scrum de una HU: `Pendiente de aprobación` → `Aprobada` → `En desarrollo` → `En validación` → `Completada` (o `Bloqueada`).
 Al crear el backlog (2026-10-07), todas las HU quedaron en `Pendiente de aprobación`.
+El 2026-10-09 la persona líder del proyecto aprobó todas las épicas y HU: su estado actual es `Aprobada`.
+
+## Ejecución automatizada en curso
+
+| Archivo de control | Alcance | Estado |
+|---|---|---|
+| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | Listo para ejecutar |
+| [loop_chat.md](loop_chat.md) | EP-009: HU-026 a HU-032 (`/loop`, después del goal) | Listo para ejecutar |
+
+Plan y decisiones: [wiki/sintesis/plan-goal-login-y-loop-chat.md](wiki/sintesis/plan-goal-login-y-loop-chat.md). El loop incluye la rebanada R0, un adelanto parcial de HU-018/019 (solo `Ticket` y `TicketParticipant`, sin UI de triage).
 
 ## Avance por fase
 

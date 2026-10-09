@@ -60,9 +60,14 @@ Breve y en español: qué se hizo, cómo se verificó (con resultados), qué que
 
 - **Hexagonal**: dependencias hacia el dominio; puertos en `Application/Ports/{In,Out}`; adaptadores primarios (HTTP, hub) en `Api`, secundarios (EF Core, Identity, Blob, SMTP) en `Infrastructure`. Las pruebas de `DataTicket.ArchitectureTests` deben seguir en verde.
 - **MVC frontend**: modelos sin React, controladores-hook sin JSX, vistas puras. `oxlint` debe pasar.
+- **Operación del frontend** (ADR-0011): tú decides y validas el detalle visual sin pedir supervisión a la persona líder (solo consultas decisiones de producto).
+  - El estilo sale de `[[sistema-de-diseno]]`, inspirado en `DataTicket.html`, sin copiar sus pantallas.
+  - Verifica cada pantalla en el navegador integrado: tema claro y oscuro, 375/768/1440 px y teclado.
+  - Usa las skills locales `break-ui` (datos extremos) y `review-animations` (movimiento) antes de cerrar una vista.
+- **Ejecución automatizada**: `goal_login.md` (`/goal`) y `loop_chat.md` (`/loop`) en la raíz son archivos de control. Márcalos solo tras verificar y conserva su registro de ejecución.
 - **Identity**: sin registro público (no expongas `MapIdentityApi` completo); cookies same-origin a través del proxy; restablecimiento sin enumeración de cuentas. Ver `[[autenticacion-identity]]`.
 - **SignalR**: hub `/hubs/tickets` autenticado; persistir antes de publicar; validar participación en cada operación; revocar conexiones de participantes retirados; recuperación por cursor tras reconexión. Ver `[[tiempo-real-signalr]]`.
-- **Docker**: el stack debe seguir levantando con `docker compose up --build`. Si se agrega un proyecto .NET, su `.csproj` va en la etapa `restore` del `backend/Dockerfile`.
+- **Docker**: tú lo operas desde Claude Code (la persona líder no usa Docker Desktop). Para probar algo que el stack no contiene, usa contenedores desechables `dt-*-check` y elimínalos al terminar; no toques los datos del servicio `db`. El stack debe seguir levantando con `docker compose up --build`. Si se agrega un proyecto .NET, su `.csproj` va en la etapa `restore` del `backend/Dockerfile`.
 
 ## Colaboración en GitHub
 

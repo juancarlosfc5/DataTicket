@@ -1,8 +1,8 @@
 ---
 title: "HU-028 — Enviar y recibir mensajes en tiempo real"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, signalr, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §11", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-028", "Enviar y recibir mensajes en tiempo real"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 5"
 dependencias: ["[[hu-026-historial-del-chat-por-cursor]]", "[[hu-027-unirse-al-chat-del-ticket]]"]
 relacionadas: ["[[hu-029-adjuntos-e-imagenes-en-chat]]", "[[hu-030-confirmaciones-de-lectura]]", "[[hu-031-recuperar-mensajes-tras-reconexion]]", "[[hu-032-revocar-acceso-al-retirar-participante]]", "[[hu-037-notificaciones-en-la-app]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-028 — Enviar y recibir mensajes en tiempo real
@@ -257,6 +257,7 @@ Reglas (propuesta):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

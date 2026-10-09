@@ -6,7 +6,7 @@ tags: [scrum, proceso]
 sources: ["PRD.md §13", "PRD.md §14"]
 aliases: [Tablero Scrum, Backlog, Product Backlog]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Tablero Scrum de DataTicket
@@ -14,7 +14,7 @@ updated: 2026-10-07
 Mapa del backlog: 13 épicas y 47 historias de usuario (HU), alineadas con las fases 0–4 del PRD (§13). Se generó con la skill `scrum-spec-orchestrator/`. El seguimiento de ejecución (checkmark, responsable y fecha) está en `PLAN-DE-TRABAJO.md`, en la raíz del repositorio. El detalle de cada HU vive en su propia nota y aquí no se duplica.
 
 > [!info] Estado del backlog
-> Todas las épicas y HU están en estado `Pendiente de aprobación` (`status: propuesta`). Para pasar una HU a `Aprobada`, el equipo debe aprobar explícitamente su contenido (regla de la skill).
+> El 2026-10-09 la persona líder del proyecto (juancarlosfc5) aprobó explícitamente en bloque las 13 épicas y las 47 HU: todas están en estado `Aprobada` (`status: vigente`). La aprobación no cierra las decisiones abiertas de la sección final: cada HU las sigue ratificando en su tarea T-01 antes de implementar lo que dependa de ellas.
 
 ## Objetivo
 

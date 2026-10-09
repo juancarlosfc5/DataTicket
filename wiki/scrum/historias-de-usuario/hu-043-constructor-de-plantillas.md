@@ -1,8 +1,8 @@
 ---
 title: "HU-043 — Constructor de plantillas de formulario"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/formularios, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.1", "PRD.md §9", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["HU-043", "Constructor de plantillas de formulario", "Constructor de plantillas"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 9"
 dependencias: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-007-administrar-empresas-cliente]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-013-radicar-ticket]]"]
 relacionadas: ["[[hu-044-asociar-plantilla-a-empresa]]", "[[hu-045-versionar-plantillas]]", "[[hu-046-radicar-con-formulario-de-empresa]]", "[[hu-047-consultar-por-campos-variables]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-043 — Constructor de plantillas de formulario
@@ -255,6 +255,7 @@ Respuesta `200`:
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

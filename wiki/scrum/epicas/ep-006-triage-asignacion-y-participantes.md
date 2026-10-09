@@ -1,8 +1,8 @@
 ---
 title: "EP-006 — Triage, asignación y participantes"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/ticket, producto/roles, producto/seguridad]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.3", "PRD.md §7", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["EP-006", "Triage, asignación y participantes"]
@@ -11,7 +11,7 @@ criterios_prd: ["PRD CA-03", "PRD CA-04", "PRD CA-14", "PRD CA-08"]
 historias: ["[[hu-016-cola-global-de-triage]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-019-reasignar-y-retirar-participantes]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-003-empresas-usuarios-y-equipos]]", "[[ep-004-auditoria-append-only]]", "[[ep-005-radicacion-de-tickets]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-006 — Triage, asignación y participantes

@@ -6,7 +6,7 @@ tags: [arquitectura, versiones]
 sources: ["PRD.md §17", "Registros oficiales consultados el 2026-10-07: MCR, Docker Hub, npm, NuGet, nodejs/Release, dotnet release-metadata, endoflife.date"]
 aliases: [Versiones, Tecnologías]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Stack y versiones
@@ -52,6 +52,8 @@ SignalR viene incluido en el framework compartido de ASP.NET Core 10.
 | `vitest` | 5.0.3 |
 | `oxlint` | 1.81+ |
 | Por incorporar: `@microsoft/signalr` | 10.0.11 disponible |
+| Por incorporar: `react-router` | 8.4.0 exacta ([[adr-0010-enrutador-react-router]]; verificada en npm el 2026-10-09: peer `react >=19.2.7`, engine `node >=22.22`) |
+| Por incorporar: tipografía Archivo autoalojada | propuesta `@fontsource-variable/archivo`, versión por verificar ([[sistema-de-diseno]]) |
 
 ## Política
 

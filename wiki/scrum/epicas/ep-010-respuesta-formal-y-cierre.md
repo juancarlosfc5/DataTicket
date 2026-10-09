@@ -1,8 +1,8 @@
 ---
 title: "EP-010 — Respuesta formal y cierre manual"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/ticket, producto/respuesta-formal]
 sources: ["PRD.md §5", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §8", "PRD.md §10", "PRD.md §11", "PRD.md §12", "PRD.md §13", "PRD.md §14", "PRD.md §16"]
 aliases: ["EP-010", "Respuesta formal y cierre manual"]
@@ -11,7 +11,7 @@ criterios_prd: ["CA-01", "CA-02", "CA-09", "CA-10", "CA-11", "CA-12", "CA-14"]
 historias: ["[[hu-033-emitir-respuesta-formal]]", "[[hu-034-portal-respuesta-formal]]", "[[hu-035-correo-de-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-004-auditoria-append-only]]", "[[ep-005-radicacion-de-tickets]]", "[[ep-006-triage-asignacion-y-participantes]]", "[[ep-007-trabajo-interno-y-estados]]", "[[ep-008-bandejas-y-portal-del-cliente]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-010 — Respuesta formal y cierre manual

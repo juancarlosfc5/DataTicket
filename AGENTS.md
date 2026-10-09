@@ -25,11 +25,16 @@ Este archivo es el **esquema** de la wiki del proyecto (patrón *LLM Wiki*): def
 ├── CLAUDE.md              ← entrada de Claude Code (importa AGENTS.md)
 ├── PRD.md                 ← fuente cruda principal (inmutable salvo petición explícita)
 ├── PLAN-DE-TRABAJO.md     ← seguimiento por fase y HU (checkmark, responsable, fecha)
+├── DataTicket.html        ← prototipo navegable: fuente cruda de la inspiración visual (inmutable)
+├── db.sql                 ← diseño de referencia del esquema (ADR-0009)
+├── goal_login.md          ← archivo de control del /goal del login (lista de chequeo)
+├── loop_chat.md           ← archivo de control del /loop del chat SignalR (lista de chequeo)
 ├── docker-compose.yml     ← entorno local completo
 ├── .env.example           ← variables sobrescribibles (copiar a .env, que no se versiona)
 ├── .claude/
 │   ├── settings.json      ← hilo principal = orchestrator + hook Stop de la wiki
 │   ├── agents/            ← orchestrator, backend-engineer, frontend-engineer, quality-reviewer, wiki-keeper
+│   ├── skills/            ← skills locales (using-agent-skills; diseño y movimiento de emilkowalski/skill)
 │   └── hooks/             ← wiki-guard.mjs
 ├── backend/               ← solución .NET 10 (DataTicket.slnx), hexagonal
 ├── frontend/              ← SPA React 19 + TS (Vite), MVC
@@ -40,7 +45,7 @@ Este archivo es el **esquema** de la wiki del proyecto (patrón *LLM Wiki*): def
 ## 3. Fuentes de verdad y precedencia
 
 1. Instrucciones explícitas de la persona usuaria en la conversación actual.
-2. `PRD.md` y demás fuentes crudas en `wiki/raw/`. **Inmutables**: se leen, no se editan (salvo petición explícita).
+2. `PRD.md`, `DataTicket.html` (prototipo) y demás fuentes crudas en `wiki/raw/`. **Inmutables**: se leen, no se editan (salvo petición explícita).
 3. Decisiones con `status: aceptada` en `wiki/decisiones/`.
 4. El resto de la wiki (síntesis mantenida por el LLM).
 5. El código existente.
@@ -63,7 +68,7 @@ Si dos fuentes se contradicen, **no elijas en silencio**: aplica la de mayor pre
 
 | Capa | Ubicación | Quién escribe |
 |---|---|---|
-| Fuentes crudas | `PRD.md` (raíz) y `wiki/raw/` (actas, prototipos, diseños; adjuntos en `wiki/raw/assets/`) | Personas. El LLM solo lee. |
+| Fuentes crudas | `PRD.md` y `DataTicket.html` (raíz) y `wiki/raw/` (actas, prototipos, diseños; adjuntos en `wiki/raw/assets/`) | Personas. El LLM solo lee. |
 | Wiki | `wiki/**/*.md` (salvo `raw/`) | El LLM (personas revisan) |
 | Esquema | `AGENTS.md` | Personas + LLM, de común acuerdo |
 
@@ -167,9 +172,14 @@ wiki/
 - Los puertos (interfaces) viven en `Application/Ports/In` y `Application/Ports/Out`; los adaptadores secundarios en `Infrastructure`, los primarios (HTTP, hub SignalR) en `Api`.
 - La autorización se aplica en servidor en cada operación (casos de uso), no solo en la UI.
 
-**Frontend MVC** (detalle: `wiki/arquitectura/frontend-mvc.md`):
+**Frontend MVC** (detalle: `wiki/arquitectura/frontend-mvc.md`; estilo visual: `wiki/arquitectura/sistema-de-diseno.md`):
 - `src/modules/<modulo>/{models,controllers,views}` + `src/core` (http, tiempo real) + `src/shared` (UI genérica) + `src/app` (arranque y rutas).
 - **Modelos**: tipos, validación, gateways de API/SignalR; sin React. **Controladores**: hooks `useXController` que orquestan modelos y exponen estado + acciones; sin JSX. **Vistas**: componentes puros que reciben props; sin fetch ni SignalR. `oxlint` hace cumplir estas fronteras.
+- **Estilo visual** (ADR-0011):
+  - Estilo Apple (skill `apple-design`) combinado con la estética de `DataTicket.html` (paleta Data Global, tipografía Archivo, densidad).
+  - El prototipo es solo referencia visual: el PRD y las HU de Scrum definen pantallas y comportamiento.
+  - Solo tokens de `src/styles/tokens.css`.
+  - El orquestador opera y valida el frontend en el navegador.
 
 ## 7. Invariantes del PRD que nunca se rompen
 
@@ -218,11 +228,13 @@ npm --prefix frontend test                        # vitest
 npm --prefix frontend run build                   # typecheck + build
 ```
 
+**Docker lo opera el agente desde Claude Code**: el stack de Compose ya está levantado y los comandos (`docker compose …`, `curl`, pruebas) se ejecutan desde la sesión, no desde Docker Desktop. Para probar algo que el stack no contiene, crea un contenedor desechable (Testcontainers o `docker run --rm --name dt-<algo>-check …`) y elimínalo al terminar. Nunca borres volúmenes ni cargues datos de prueba en el servicio `db` de Compose fuera de las migraciones y del sembrador de Development. Los datos semilla de referencia están en `db.sql` §13.
+
 URLs locales: frontend `http://localhost:5173`, API `http://localhost:8080` (OpenAPI en `/openapi/v1.json`), salud `/api/health`, Mailpit `http://localhost:8025`, Azurite Blob `http://localhost:10000`.
 
 ## 11. Lo que un agente nunca hace
 
-- Editar `PRD.md` o archivos de `wiki/raw/` sin petición explícita.
+- Editar `PRD.md`, `DataTicket.html` o archivos de `wiki/raw/` sin petición explícita.
 - Escribir secretos reales en el repositorio (`.env` no se versiona; `appsettings.Development.json` solo lleva valores locales de ejemplo).
 - Desactivar pruebas de arquitectura o reglas de lint para "hacer pasar" un cambio.
 - Reescribir o borrar entradas previas de `wiki/log.md`.

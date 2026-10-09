@@ -1,8 +1,8 @@
 ---
 title: "HU-025 — Portal: el coordinador consulta los tickets de su empresa"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/portal, producto/seguridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.4", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-025", "Portal: el coordinador consulta los tickets de su empresa"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 4"
 dependencias: ["[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-010-datos-sinteticos-de-desarrollo]]"]
 relacionadas: ["[[hu-013-radicar-ticket]]", "[[hu-034-portal-respuesta-formal]]", "[[hu-042-resumen-de-estados-en-portal]]", "[[hu-022-registrar-url-de-pr]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-025 — Portal: el coordinador consulta los tickets de su empresa
@@ -214,6 +214,7 @@ Errores: idénticos a HU-024 (400, 401, 403 para internos, 404 para tickets de o
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

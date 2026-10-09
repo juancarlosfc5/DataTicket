@@ -1,8 +1,8 @@
 ---
 title: "HU-009 — Administrar usuarios internos, equipos y roles"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/roles, personas, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.3", "PRD.md §10", "PRD.md §12"]
 aliases: ["HU-009", "Administrar usuarios internos, equipos y roles", "Administrar usuarios internos y equipos"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-011-registrar-eventos-auditables]]"]
 relacionadas: ["[[hu-010-datos-sinteticos-de-desarrollo]]", "[[hu-016-cola-global-de-triage]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-023-bandeja-de-mis-tickets-y-equipo]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-009 — Administrar usuarios internos, equipos y roles
@@ -256,6 +256,7 @@ Desactivar/reactivar: `POST /api/admin/users/{userId}/deactivate|reactivate` de 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

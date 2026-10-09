@@ -1,8 +1,8 @@
 ---
 title: "HU-018 — Asignar y agregar participantes"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/ticket, producto/roles, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §6.2", "PRD.md §5", "PRD.md §6.3", "PRD.md §7", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-018", "Asignar y agregar participantes", "AssignParticipants"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 3"
 dependencias: ["[[hu-016-cola-global-de-triage]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-038-correo-de-vinculacion]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-026-historial-del-chat-por-cursor]]", "[[hu-023-bandeja-de-mis-tickets-y-equipo]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-018 — Asignar y agregar participantes
@@ -287,6 +287,7 @@ Ambos responden `200 OK` con la lista vigente (misma forma que el `GET`):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

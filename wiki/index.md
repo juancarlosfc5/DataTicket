@@ -6,7 +6,7 @@ tags: [indice]
 sources: []
 aliases: [Índice, Inicio, Home]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Índice de la wiki de DataTicket
@@ -51,9 +51,10 @@ Catálogo de todas las páginas. **Agentes: leer primero.** Personas: empezar po
 - [[arquitectura-general]] — Monorepo, contenedores, proxy same-origin y estado actual.
 - [[backend-hexagonal]] — Proyectos, regla de dependencias, mapa de puertos y cómo añadir funcionalidades.
 - [[frontend-mvc]] — Estructura por módulos, reglas de capas (oxlint) y módulo de referencia.
-- [[autenticacion-identity]] — Diseño de login con ASP.NET Core Identity (propuesta).
+- [[sistema-de-diseno]] — Guía visual obligatoria: estilo Apple + tokens, tipografía Archivo y componentes de `DataTicket.html`; el PRD manda.
+- [[autenticacion-identity]] — Diseño de login con ASP.NET Core Identity (cookie same-origin aceptada; sin implementar).
 - [[tiempo-real-signalr]] — Hub `/hubs/tickets`, persistir antes de publicar, reconexión y revocación.
-- [[persistencia-postgresql]] — EF Core + Npgsql, migraciones, multiempresa y auditoría.
+- [[persistencia-postgresql]] — EF Core + Npgsql, migraciones, diseño de referencia `db.sql`, multiempresa y auditoría.
 - [[entorno-docker]] — Servicios, Compose Watch, variables, Dockerfiles, verificación y problemas frecuentes.
 - [[stack-y-versiones]] — Versiones verificadas, soporte y política de actualización.
 
@@ -62,11 +63,14 @@ Catálogo de todas las páginas. **Agentes: leer primero.** Personas: empezar po
 - [[adr-0001-monorepo-contenedorizado]] — Monorepo con backend, frontend, wiki y Compose. *Aceptada.*
 - [[adr-0002-backend-hexagonal]] — Puertos y adaptadores verificados por pruebas. *Aceptada.*
 - [[adr-0003-frontend-mvc]] — MVC por módulo con fronteras en oxlint. *Aceptada.*
-- [[adr-0004-autenticacion-cookie-mismo-origen]] — Identity con cookie same-origin. *Propuesta.*
+- [[adr-0004-autenticacion-cookie-mismo-origen]] — Identity con cookie same-origin. *Aceptada.*
 - [[adr-0005-signalr-para-chat]] — SignalR + PostgreSQL para el chat. *Aceptada.*
 - [[adr-0006-urls-publicas-azure-blob]] — URL pública permanente para adjuntos (riesgo aceptado). *Aceptada.*
 - [[adr-0007-entorno-local-compose-watch]] — Compose Watch, Mailpit y Azurite. *Aceptada.*
 - [[adr-0008-portal-cliente-en-fase-1]] — La consulta básica del portal del cliente se entrega en la Fase 1. *Aceptada.*
+- [[adr-0009-db-sql-diseno-de-referencia]] — `db.sql` es el diseño de referencia aprobado; la base se implementa con migraciones de EF Core. *Aceptada.*
+- [[adr-0010-enrutador-react-router]] — React Router 8.4.0 en modo librería; sin librería de estado de servidor por ahora. *Aceptada.*
+- [[adr-0011-estilo-visual-inspirado-en-el-prototipo]] — Estilo Apple + estética de `DataTicket.html` (solo referencia visual; rigen el PRD y Scrum); el orquestador opera el frontend. *Aceptada.*
 
 ## Scrum
 
@@ -97,7 +101,9 @@ Las 47 historias (`hu-001…hu-047`) están en `wiki/scrum/historias-de-usuario/
 
 - [[fuente-prd-v0-1]] — PRD v0.1 (2026-10-05): resumen y mapa de secciones a páginas.
 - [[fuente-patron-llm-wiki]] — Metodología LLM Wiki y cómo se instanció aquí.
+- [[fuente-prototipo-dataticket-html]] — Prototipo navegable `DataTicket.html`: qué se adopta (estilo) y contradicciones con el PRD.
 
 ## Síntesis
 
 - [[analisis-prd-vs-docker-compose]] — Brechas del Compose original frente al PRD y cómo se resolvieron.
+- [[plan-goal-login-y-loop-chat]] — Plan de ejecución: `/goal` del login (`goal_login.md`) y `/loop` del chat SignalR (`loop_chat.md`), decisiones D1–D6 y riesgos.

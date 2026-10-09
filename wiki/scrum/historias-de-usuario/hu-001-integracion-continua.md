@@ -1,8 +1,8 @@
 ---
 title: "HU-001 — Integración continua en cada PR"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, proceso, proceso/ci, arquitectura/infra]
 sources: ["PRD.md §12", "PRD.md §13", "PRD.md §14", "AGENTS.md §6", "AGENTS.md §8", "AGENTS.md §10"]
 aliases: ["HU-001", "Integración continua en cada PR"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: []
 relacionadas: ["[[hu-002-shell-y-navegacion-por-rol]]", "[[hu-003-iniciar-y-cerrar-sesion]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-001 — Integración continua en cada PR
@@ -215,6 +215,7 @@ No aplica: la HU no expone rutas REST ni métodos del hub. Su «contrato» es la
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

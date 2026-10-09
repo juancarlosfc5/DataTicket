@@ -6,12 +6,12 @@ tags: [arquitectura/backend, seguridad, identity]
 sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login"]
 aliases: [Identity, Login, Autenticación]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Autenticación con ASP.NET Core Identity
 
-El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2026-10-07). El mecanismo concreto —cookie *same-origin* a través del proxy del frontend— es una **propuesta** en [[adr-0004-autenticacion-cookie-mismo-origen]] pendiente de aceptación. Aún no está implementado.
+El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2026-10-07). El mecanismo concreto —cookie *same-origin* a través del proxy del frontend— quedó **aceptado** el 2026-10-09 en [[adr-0004-autenticacion-cookie-mismo-origen]]. Aún no está implementado: lo construye el goal de `goal_login.md` ([[plan-goal-login-y-loop-chat]]). La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13 ([[persistencia-postgresql]]).
 
 ## Requisitos del PRD que condicionan el diseño
 
@@ -49,4 +49,4 @@ Invitación, restablecimiento y vinculación a un ticket salen por `IEmailSender
 
 ## Relacionado
 
-- [[adr-0004-autenticacion-cookie-mismo-origen]] · [[roles-y-permisos]] · [[persistencia-postgresql]] · [[entorno-docker]]
+- [[adr-0004-autenticacion-cookie-mismo-origen]] · [[sistema-de-diseno]] · [[plan-goal-login-y-loop-chat]] · [[roles-y-permisos]] · [[persistencia-postgresql]] · [[entorno-docker]]

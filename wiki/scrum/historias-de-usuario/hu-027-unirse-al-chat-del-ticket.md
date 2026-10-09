@@ -1,8 +1,8 @@
 ---
 title: "HU-027 — Conectarse y unirse al chat del ticket"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, signalr, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-027", "Conectarse y unirse al chat del ticket"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 5"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-026-historial-del-chat-por-cursor]]"]
 relacionadas: ["[[hu-028-enviar-y-recibir-mensajes]]", "[[hu-031-recuperar-mensajes-tras-reconexion]]", "[[hu-032-revocar-acceso-al-retirar-participante]]", "[[hu-020-detalle-interno-del-ticket]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-027 — Conectarse y unirse al chat del ticket
@@ -228,6 +228,7 @@ await connection.invoke("JoinTicket", "01928b77-1c2d-7e0f-a3b4-c5d6e7f80912");
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

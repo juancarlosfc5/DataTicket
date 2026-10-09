@@ -1,8 +1,8 @@
 ---
 title: "HU-006 — Restablecer contraseña sin enumeración"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, seguridad, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §12"]
 aliases: ["HU-006", "Restablecer contraseña sin enumeración", "Restablecer contraseña"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-005-invitar-y-activar-cuentas]]"]
 relacionadas: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-002-shell-y-navegacion-por-rol]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-006 — Restablecer contraseña sin enumeración
@@ -236,6 +236,7 @@ Propuesta REST; ratificar en T-01. Públicos, con cabecera antiforgery. Errores 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

@@ -1,8 +1,8 @@
 ---
 title: "EP-013 — Formularios configurables por cliente"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/formularios]
 sources: ["PRD.md §1", "PRD.md §2", "PRD.md §4", "PRD.md §6.1", "PRD.md §9", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-013", "Formularios configurables por cliente"]
@@ -11,7 +11,7 @@ criterios_prd: ["CA-15", "CA-01"]
 historias: ["[[hu-043-constructor-de-plantillas]]", "[[hu-044-asociar-plantilla-a-empresa]]", "[[hu-045-versionar-plantillas]]", "[[hu-046-radicar-con-formulario-de-empresa]]", "[[hu-047-consultar-por-campos-variables]]"]
 dependencias: ["[[ep-003-empresas-usuarios-y-equipos]]", "[[ep-004-auditoria-append-only]]", "[[ep-005-radicacion-de-tickets]]", "[[ep-006-triage-asignacion-y-participantes]]", "[[ep-008-bandejas-y-portal-del-cliente]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-013 — Formularios configurables por cliente

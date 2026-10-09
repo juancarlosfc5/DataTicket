@@ -1,8 +1,8 @@
 ---
 title: "EP-007 — Trabajo interno y estados"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/ticket, producto/estados]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.3", "PRD.md §6.4", "PRD.md §10", "PRD.md §11", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-007", "Trabajo interno y estados"]
@@ -11,7 +11,7 @@ criterios_prd: [CA-03, CA-10, CA-14]
 historias: ["[[hu-020-detalle-interno-del-ticket]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-022-registrar-url-de-pr]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-004-auditoria-append-only]]", "[[ep-005-radicacion-de-tickets]]", "[[ep-006-triage-asignacion-y-participantes]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-007 — Trabajo interno y estados

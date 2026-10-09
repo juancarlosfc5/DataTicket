@@ -1,8 +1,8 @@
 ---
 title: "HU-036 — Cerrar ticket manualmente"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/ticket, producto/estados, producto/auditoria]
 sources: ["PRD.md §5", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["HU-036", "Cerrar ticket manualmente", "Cierre manual"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 7"
 dependencias: ["[[hu-033-emitir-respuesta-formal]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-021-cambiar-estado-interno]]"]
 relacionadas: ["[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]", "[[hu-034-portal-respuesta-formal]]", "[[hu-039-calculo-de-tiempos-habiles]]", "[[hu-040-panel-global-de-la-pm]]", "[[hu-012-consultar-bitacora-del-ticket]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-036 — Cerrar ticket manualmente
@@ -244,6 +244,7 @@ Respuesta `200 OK`:
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

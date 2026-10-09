@@ -1,8 +1,8 @@
 ---
 title: "HU-021 — Cambiar estado interno"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/estados, producto/auditoria, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.3", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §11", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-021", "Cambiar estado interno"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 4"
 dependencias: ["[[hu-011-registrar-eventos-auditables]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-022-registrar-url-de-pr]]", "[[hu-023-bandeja-de-mis-tickets-y-equipo]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-033-emitir-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]", "[[hu-012-consultar-bitacora-del-ticket]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-021 — Cambiar estado interno
@@ -242,6 +242,7 @@ Errores (ProblemDetails):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

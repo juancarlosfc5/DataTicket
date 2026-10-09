@@ -1,8 +1,8 @@
 ---
 title: "HU-046 — Radicar con el formulario de la empresa"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/formularios, producto/ticket, producto/portal, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.1", "PRD.md §8", "PRD.md §9", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-046", "Radicar con el formulario de la empresa"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 9"
 dependencias: ["[[hu-045-versionar-plantillas]]", "[[hu-044-asociar-plantilla-a-empresa]]", "[[hu-013-radicar-ticket]]", "[[hu-014-adjuntos-en-radicacion]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-024-portal-solicitante-consulta-tickets]]"]
 relacionadas: ["[[hu-043-constructor-de-plantillas]]", "[[hu-047-consultar-por-campos-variables]]", "[[hu-025-portal-coordinador-consulta-tickets]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-046 — Radicar con el formulario de la empresa
@@ -278,6 +278,7 @@ Respuesta `201`: la de HU-013 más `formTemplateVersion: 3`.
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

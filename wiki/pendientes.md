@@ -6,7 +6,7 @@ tags: [pendientes, decision]
 sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)"]
 aliases: [Preguntas abiertas, Decisiones pendientes, Contradicciones]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Pendientes, dudas y contradicciones
@@ -29,6 +29,13 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 
 > [!warning] Contradicción — roles frente a equipos
 > [[autenticacion-identity]] define `Development` y `Production` como roles de Identity. En cambio, [[glosario]], [[roles-y-permisos]] y [[modelo-de-dominio]] los tratan como equipos (`Team.Development`, `Team.Production`), separados de `Roles[]`. Hay que decidir el modelo antes de [[hu-004-contexto-de-usuario-y-autorizacion]] y [[hu-009-administrar-usuarios-internos-y-equipos]].
+> Actualización 2026-10-09: `db.sql` usa provisionalmente la opción de [[autenticacion-identity]] y siembra seis roles, entre ellos `Development` y `Production`, sin tablas de equipos. Si se eligen equipos separados, hay que añadir esas tablas al diseño de referencia y a la migración de HU-009 ([[persistencia-postgresql]]).
+
+> [!success] Resuelta 2026-10-09 — DB-first frente a migraciones code-first
+> `db.sql` (raíz) fue un paso previo de validación del esquema y no el mecanismo de implementación. La persona líder del proyecto lo aprobó como **diseño de referencia**. La base de datos se implementa con migraciones de EF Core, como piden [[persistencia-postgresql]] y los DoD de las HU, sin cambios en estas. Decisión: [[adr-0009-db-sql-diseno-de-referencia]].
+
+> [!success] Resuelta 2026-10-09 — prototipo `DataTicket.html` frente al PRD
+> La persona líder del proyecto decidió que el prototipo es **solo referencia visual**: lo que difiere del PRD o de las HU (respuestas públicas en el hilo, estados propios, entrada en dos puertas) no se tiene en cuenta. El mapeo de colores por estado de [[sistema-de-diseno]] sigue siendo una propuesta visual. Detalle en [[fuente-prototipo-dataticket-html]].
 
 > [!warning] Contradicción — métrica "primera respuesta"
 > PRD §13 (fase 3) menciona "medición de primera respuesta", métrica que §4 no define (solo define tiempo hasta respuesta formal) → [[dashboard-y-metricas]].
@@ -104,9 +111,10 @@ Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DT
 
 ## 4. Decisiones técnicas abiertas
 
-- [ ] Aceptar o cambiar [[adr-0004-autenticacion-cookie-mismo-origen]] (cookie same-origin) antes de implementar el login.
+- [x] ~~Aceptar o cambiar [[adr-0004-autenticacion-cookie-mismo-origen]] (cookie same-origin) antes de implementar el login.~~ Aceptado el 2026-10-09 (D1 de [[plan-goal-login-y-loop-chat]]).
 - [ ] Evaluar Row-Level Security de PostgreSQL como defensa adicional al filtro multiempresa (PRD §12) → [[persistencia-postgresql]].
-- [ ] Enrutador del frontend y librería de estado de servidor (p. ej. React Router, TanStack Query) → [[frontend-mvc]].
+- [x] ~~Enrutador del frontend~~ → [[adr-0010-enrutador-react-router]] (React Router 8.4.0, 2026-10-09).
+- [ ] Librería de estado de servidor (p. ej. TanStack Query): no se adopta por ahora; reabrir si aparecen cachés compartidas entre pantallas → [[adr-0010-enrutador-react-router]].
 - [ ] Estrategia de despliegue productivo que mantenga el mismo origen para `/api` y `/hubs` (nginx del frontend u otro proxy) → [[entorno-docker]].
 - [ ] Backplane de SignalR (Redis o Azure SignalR) solo al escalar a varias instancias (PRD §7) → [[tiempo-real-signalr]].
 - [ ] CI en GitHub Actions (pruebas backend, lint/pruebas/build frontend) → [[flujo-de-trabajo-github]].
@@ -124,7 +132,9 @@ Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DT
 
 ## 6. Fuentes por ingerir
 
-- [ ] `mvp-sistema-tickets.md` (borrador del desarrollador) y `DataTicket.html` (prototipo), citados en PRD §2.
+- [ ] `mvp-sistema-tickets.md` (borrador del desarrollador), citado en PRD §2.
+- [x] ~~`DataTicket.html` (prototipo)~~ → ingerido el 2026-10-09: [[fuente-prototipo-dataticket-html]], [[sistema-de-diseno]].
+- [ ] Logo oficial de Data Global para la entrada y la cabecera (el prototipo deja el espacio vacío).
 - [ ] ZIP de diseño del equipo (PRD §2).
 
 Colócalas en `wiki/raw/` y pide su ingesta ([[trabajar-con-el-agente]]).

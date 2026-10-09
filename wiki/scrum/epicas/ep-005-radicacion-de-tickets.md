@@ -1,8 +1,8 @@
 ---
 title: "EP-005 — Radicación de tickets"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/ticket, producto/archivos, producto/prioridad]
 sources: ["PRD.md §6.1", "PRD.md §8", "PRD.md §9", "PRD.md §5", "PRD.md §12", "PRD.md §14"]
 aliases: ["EP-005", "Radicación de tickets"]
@@ -11,7 +11,7 @@ criterios_prd: ["PRD CA-15", "PRD CA-09", "PRD CA-14", "PRD CA-01"]
 historias: ["[[hu-013-radicar-ticket]]", "[[hu-014-adjuntos-en-radicacion]]", "[[hu-015-ajustar-prioridad-manualmente]]"]
 dependencias: ["[[ep-001-fundaciones-tecnicas]]", "[[ep-002-identidad-y-acceso]]", "[[ep-003-empresas-usuarios-y-equipos]]", "[[ep-004-auditoria-append-only]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-005 — Radicación de tickets

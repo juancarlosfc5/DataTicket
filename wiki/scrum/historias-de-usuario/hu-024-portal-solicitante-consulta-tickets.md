@@ -1,8 +1,8 @@
 ---
 title: "HU-024 — Portal: el solicitante consulta sus tickets"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/portal, producto/seguridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.1", "PRD.md §6.4", "PRD.md §8", "PRD.md §10", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-024", "Portal: el solicitante consulta sus tickets", "ListClientTickets", "GetClientTicket"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 4"
 dependencias: ["[[hu-002-shell-y-navegacion-por-rol]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-010-datos-sinteticos-de-desarrollo]]", "[[hu-013-radicar-ticket]]", "[[hu-014-adjuntos-en-radicacion]]", "[[hu-021-cambiar-estado-interno]]"]
 relacionadas: ["[[hu-025-portal-coordinador-consulta-tickets]]", "[[hu-022-registrar-url-de-pr]]", "[[hu-034-portal-respuesta-formal]]", "[[hu-042-resumen-de-estados-en-portal]]", "[[hu-015-ajustar-prioridad-manualmente]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-024 — Portal: el solicitante consulta sus tickets
@@ -265,6 +265,7 @@ Errores (ProblemDetails):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

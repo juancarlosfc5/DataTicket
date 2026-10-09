@@ -1,8 +1,8 @@
 ---
 title: "HU-010 — Datos sintéticos de desarrollo"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, arquitectura/infra, arquitectura/datos, proceso]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §16"]
 aliases: ["HU-010", "Datos sintéticos de desarrollo", "Semilla de desarrollo"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-007-administrar-empresas-cliente]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]"]
 relacionadas: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-013-radicar-ticket]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-040-panel-global-de-la-pm]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-010 — Datos sintéticos de desarrollo
@@ -220,6 +220,8 @@ Cuentas de referencia (propuesta):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
+- 2026-10-09 — `db.sql` §13 (DML) deja la referencia de los datos semilla. Reparto alineado con esta HU: 50 empresas (5 inactivas), 2 solicitantes + 1 coordinador por empresa y cuentas `Invited`/`Deactivated` en las empresas 01–05. Añade 10 tickets con chat, auditoría y adjuntos para las HU de las fases 1–2. El sembrador de EF Core (T-01 en adelante) debe replicar sus IDs deterministas.
 
 ## Notas y decisiones
 

@@ -1,8 +1,8 @@
 ---
 title: "HU-032 — Revocar acceso al retirar un participante"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, producto/seguridad, signalr, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §11", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-032", "Revocar acceso al retirar un participante"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 5"
 dependencias: ["[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-027-unirse-al-chat-del-ticket]]", "[[hu-028-enviar-y-recibir-mensajes]]"]
 relacionadas: ["[[hu-026-historial-del-chat-por-cursor]]", "[[hu-029-adjuntos-e-imagenes-en-chat]]", "[[hu-030-confirmaciones-de-lectura]]", "[[hu-031-recuperar-mensajes-tras-reconexion]]", "[[hu-037-notificaciones-en-la-app]]", "[[hu-038-correo-de-vinculacion]]", "[[hu-018-asignar-y-agregar-participantes]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-032 — Revocar acceso al retirar un participante
@@ -225,6 +225,7 @@ Retirar a un participante revoca su acceso futuro y conserva su participación p
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

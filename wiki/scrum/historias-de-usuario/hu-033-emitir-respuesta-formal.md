@@ -1,8 +1,8 @@
 ---
 title: "HU-033 — Emitir respuesta formal"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/respuesta-formal, producto/archivos, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §8", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-033", "Emitir respuesta formal"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 7"
 dependencias: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-014-adjuntos-en-radicacion]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-021-cambiar-estado-interno]]"]
 relacionadas: ["[[hu-034-portal-respuesta-formal]]", "[[hu-035-correo-de-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]", "[[hu-029-adjuntos-e-imagenes-en-chat]]", "[[hu-039-calculo-de-tiempos-habiles]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-033 — Emitir respuesta formal
@@ -272,6 +272,7 @@ Errores (ProblemDetails, RFC 9457; `type` propuesto):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

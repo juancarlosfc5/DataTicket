@@ -1,8 +1,8 @@
 ---
 title: "EP-011 — Notificaciones acordadas"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/notificaciones, producto/chat]
 sources: ["PRD.md §5", "PRD.md §7", "PRD.md §11", "PRD.md §12", "PRD.md §13", "PRD.md §16"]
 aliases: ["EP-011", "Notificaciones acordadas"]
@@ -11,7 +11,7 @@ criterios_prd: []
 historias: ["[[hu-037-notificaciones-en-la-app]]", "[[hu-038-correo-de-vinculacion]]"]
 dependencias: ["[[ep-002-identidad-y-acceso]]", "[[ep-006-triage-asignacion-y-participantes]]", "[[ep-009-chat-interno-en-tiempo-real]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-011 — Notificaciones acordadas

@@ -1,8 +1,8 @@
 ---
 title: "HU-040 — Panel global de la PM"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/dashboard, producto/metricas, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §4", "PRD.md §5", "PRD.md §10", "PRD.md §13", "PRD.md §14", "PRD.md §16"]
 aliases: ["HU-040", "Panel global de la PM", "Dashboard global"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 8"
 dependencias: ["[[hu-039-calculo-de-tiempos-habiles]]", "[[hu-016-cola-global-de-triage]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-033-emitir-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]", "[[hu-010-datos-sinteticos-de-desarrollo]]"]
 relacionadas: ["[[hu-041-panel-del-equipo-interno]]", "[[hu-042-resumen-de-estados-en-portal]]", "[[hu-023-bandeja-de-mis-tickets-y-equipo]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-040 — Panel global de la PM
@@ -241,6 +241,7 @@ Errores (ProblemDetails):
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

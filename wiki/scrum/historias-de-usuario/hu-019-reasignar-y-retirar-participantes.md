@@ -1,8 +1,8 @@
 ---
 title: "HU-019 — Reasignar y retirar participantes"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/ticket, producto/roles, producto/seguridad, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §6.3", "PRD.md §7", "PRD.md §11", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-019", "Reasignar y retirar participantes", "RemoveParticipant"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 3"
 dependencias: ["[[hu-018-asignar-y-agregar-participantes]]", "[[hu-011-registrar-eventos-auditables]]", "[[hu-020-detalle-interno-del-ticket]]"]
 relacionadas: ["[[hu-032-revocar-acceso-al-retirar-participante]]", "[[hu-026-historial-del-chat-por-cursor]]", "[[hu-027-unirse-al-chat-del-ticket]]", "[[hu-037-notificaciones-en-la-app]]", "[[hu-038-correo-de-vinculacion]]", "[[hu-012-consultar-bitacora-del-ticket]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-019 — Reasignar y retirar participantes
@@ -262,6 +262,7 @@ Propuesta, ratificar en T-01.
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

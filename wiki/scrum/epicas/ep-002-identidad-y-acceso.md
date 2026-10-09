@@ -1,8 +1,8 @@
 ---
 title: "EP-002 — Identidad y acceso"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, seguridad, identity, arquitectura/backend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-002", "Identidad y acceso"]
@@ -11,7 +11,7 @@ criterios_prd: ["CA-01"]
 historias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]"]
 dependencias: ["[[ep-001-fundaciones-tecnicas]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-002 — Identidad y acceso

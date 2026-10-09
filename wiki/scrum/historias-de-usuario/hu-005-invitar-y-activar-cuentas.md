@@ -1,8 +1,8 @@
 ---
 title: "HU-005 — Invitar y activar cuentas"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, seguridad, identity, producto/notificaciones, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §16"]
 aliases: ["HU-005", "Invitar y activar cuentas"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-002-shell-y-navegacion-por-rol]]"]
 relacionadas: ["[[hu-006-restablecer-contrasena]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-038-correo-de-vinculacion]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-005 — Invitar y activar cuentas
@@ -259,6 +259,7 @@ Propuesta REST; ratificar en T-01. Errores `application/problem+json`. Ambos `PO
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

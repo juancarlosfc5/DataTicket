@@ -1,8 +1,8 @@
 ---
 title: "HU-035 — Enviar la respuesta formal por correo"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/notificaciones, producto/respuesta-formal, arquitectura/backend]
 sources: ["PRD.md §5", "PRD.md §6.5", "PRD.md §8", "PRD.md §11", "PRD.md §14", "PRD.md §16"]
 aliases: ["HU-035", "Enviar la respuesta formal por correo", "Correo de respuesta formal"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 7"
 dependencias: ["[[hu-033-emitir-respuesta-formal]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-008-administrar-usuarios-cliente]]"]
 relacionadas: ["[[hu-034-portal-respuesta-formal]]", "[[hu-038-correo-de-vinculacion]]", "[[hu-036-cerrar-ticket-manualmente]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-035 — Enviar la respuesta formal por correo
@@ -241,6 +241,7 @@ El detalle interno (`GET /api/tickets/{ticketId}/formal-response`) incluye `emai
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

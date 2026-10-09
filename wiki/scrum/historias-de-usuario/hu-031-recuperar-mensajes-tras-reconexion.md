@@ -1,8 +1,8 @@
 ---
 title: "HU-031 — Recuperar mensajes tras reconexión"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/chat, signalr, arquitectura/frontend, arquitectura/backend]
 sources: ["PRD.md §7", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-031", "Recuperar mensajes tras reconexión"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 6"
 dependencias: ["[[hu-026-historial-del-chat-por-cursor]]", "[[hu-027-unirse-al-chat-del-ticket]]", "[[hu-028-enviar-y-recibir-mensajes]]"]
 relacionadas: ["[[hu-030-confirmaciones-de-lectura]]", "[[hu-032-revocar-acceso-al-retirar-participante]]", "[[hu-003-iniciar-y-cerrar-sesion]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-031 — Recuperar mensajes tras reconexión
@@ -217,6 +217,7 @@ Los eventos `MessageCreated` que llegan entre los pasos 3 y 5 se fusionan con la
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

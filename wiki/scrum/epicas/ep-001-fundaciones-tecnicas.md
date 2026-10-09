@@ -1,8 +1,8 @@
 ---
 title: "EP-001 — Fundaciones técnicas y calidad continua"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, arquitectura/frontend, proceso]
 sources: ["PRD.md §1", "PRD.md §5", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
 aliases: ["EP-001", "Fundaciones técnicas y calidad continua"]
@@ -11,7 +11,7 @@ criterios_prd: []
 historias: ["[[hu-001-integracion-continua]]", "[[hu-002-shell-y-navegacion-por-rol]]"]
 dependencias: []
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-001 — Fundaciones técnicas y calidad continua

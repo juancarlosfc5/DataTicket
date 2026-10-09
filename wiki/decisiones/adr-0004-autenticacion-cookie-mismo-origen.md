@@ -1,20 +1,20 @@
 ---
 title: "ADR-0004: Identity con cookie en el mismo origen"
 type: decision
-status: propuesta
+status: aceptada
 tags: [decision, seguridad, identity]
 sources: ["Decisión de la persona líder (2026-10-07): usar ASP.NET Core Identity", "PRD.md §5, §7, §12"]
 aliases: [ADR-0004]
 created: 2026-10-07
-updated: 2026-10-07
-decision_date:
-deciders: []
+updated: 2026-10-09
+decision_date: 2026-10-09
+deciders: [juancarlosfc5 (persona líder del proyecto)]
 ---
 
 # ADR-0004: Identity con cookie en el mismo origen
 
-> [!question] Pendiente de aceptación
-> Que el login use **ASP.NET Core Identity** ya está decidido. Lo que se propone aquí es el **mecanismo de sesión**. El equipo debe aceptarlo o cambiarlo antes de implementar el login (fase 0).
+> [!info] Decisión aceptada (2026-10-09)
+> La persona líder del proyecto aceptó la opción 1 (decisión D1 de [[plan-goal-login-y-loop-chat]]). Que el login use **ASP.NET Core Identity** ya estaba decidido; con esta aceptación queda fijado también el **mecanismo de sesión**. Desbloquea HU-003 (DoD-08) y el resto de [[ep-002-identidad-y-acceso]].
 
 ## Contexto
 
@@ -27,7 +27,7 @@ deciders: []
 1. **Cookie de Identity, mismo origen** — `HttpOnly` (no la lee JavaScript), viaja sola a `/api` y al WebSocket del hub, sin CORS. Requiere antiforgery en mutaciones.
 2. **Bearer tokens de `MapIdentityApi`** — sirve para clientes no web, pero el token vive en JavaScript (riesgo ante XSS), SignalR lo envía en la query string y `MapIdentityApi` expone `/register`, contrario al PRD.
 
-## Decisión propuesta
+## Decisión
 
 Opción 1: cookie de Identity `HttpOnly`, `Secure`, `SameSite=Lax`, endpoints de autenticación propios en `/api/auth`, antiforgery por encabezado y claves de Data Protection en PostgreSQL. Detalle en [[autenticacion-identity]].
 
@@ -39,4 +39,4 @@ Opción 1: cookie de Identity `HttpOnly`, `Secure`, `SameSite=Lax`, endpoints de
 
 ## Relacionado
 
-- [[autenticacion-identity]] · [[roles-y-permisos]] · [[tiempo-real-signalr]] · [[pendientes]]
+- [[autenticacion-identity]] · [[roles-y-permisos]] · [[tiempo-real-signalr]] · [[pendientes]] · [[plan-goal-login-y-loop-chat]] · [[hu-003-iniciar-y-cerrar-sesion]]

@@ -1,8 +1,8 @@
 ---
 title: "HU-038 — Correo de vinculación en la primera asociación"
 type: historia-de-usuario
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/historia, producto/notificaciones, producto/ticket, arquitectura/backend]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §7", "PRD.md §11", "PRD.md §12", "PRD.md §16"]
 aliases: ["HU-038", "Correo de vinculación en la primera asociación", "Correo de vinculación"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 6"
 dependencias: ["[[hu-018-asignar-y-agregar-participantes]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-019-reasignar-y-retirar-participantes]]"]
 relacionadas: ["[[hu-037-notificaciones-en-la-app]]", "[[hu-020-detalle-interno-del-ticket]]", "[[hu-035-correo-de-respuesta-formal]]", "[[hu-003-iniciar-y-cerrar-sesion]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # HU-038 — Correo de vinculación en la primera asociación
@@ -219,6 +219,7 @@ Ejemplo de valores: `Number = DT-000123` (formato pendiente V-16), `Title = Erro
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
+- 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 
 ## Notas y decisiones
 

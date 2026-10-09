@@ -1,8 +1,8 @@
 ---
 title: "EP-004 — Auditoría append-only"
 type: epica
-status: propuesta
-estado: Pendiente de aprobación
+status: vigente
+estado: Aprobada
 tags: [scrum, scrum/epica, producto/auditoria, arquitectura/backend]
 sources: ["PRD.md §12", "PRD.md §6.1", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §14"]
 aliases: ["EP-004", "Auditoría append-only"]
@@ -11,7 +11,7 @@ criterios_prd: ["PRD CA-04", "PRD CA-14"]
 historias: ["[[hu-011-registrar-eventos-auditables]]", "[[hu-012-consultar-bitacora-del-ticket]]"]
 dependencias: ["[[ep-001-fundaciones-tecnicas]]", "[[ep-002-identidad-y-acceso]]"]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # EP-004 — Auditoría append-only
