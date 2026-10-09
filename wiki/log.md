@@ -241,3 +241,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - confirmar P-21 (nombres reales del equipo con correos `@dataticket.local`);
   - los binarios de los adjuntos semilla no existen en Azurite;
   - nada está en commit.
+
+## [2026-10-09] setup | Goal del login — B0 preparación
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: rama `feature/auth-login`; línea base verificada (`dotnet test` 5/5, `oxlint`, `vitest` 3/3, `vite build`); stack de Compose healthy; HU-002, HU-003 y HU-004 pasan a `En desarrollo` con responsable en `PLAN-DE-TRABAJO.md`.
+- Wiki: [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
+- Pendiente: bloques B1–B8.

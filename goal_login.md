@@ -51,11 +51,11 @@ Archivo de control del `/goal` que construye **HU-002, HU-003 y HU-004**. Claude
 ## 3. Lista de control
 
 ### B0 — Preparación
-- [ ] Rama `feature/auth-login` creada desde `main` · Evidencia:
-- [ ] ADR-0004 y ADR-0010 en estado `aceptada` (verificado en `wiki/decisiones/`) · Evidencia:
-- [ ] Línea base en verde: `dotnet test`, `lint`, `test` y `build` del frontend · Evidencia:
-- [ ] Stack de Compose operativo desde Claude Code (`docker compose ps`: `db` y `backend` healthy) · Evidencia:
-- [ ] HU-002, HU-003 y HU-004 en estado `En desarrollo` y PLAN-DE-TRABAJO con responsable · Evidencia:
+- [x] Rama `feature/auth-login` creada desde `main` · Evidencia: `git checkout -b feature/auth-login` desde `main` al día con `origin/main` (`5bc3418`), árbol limpio.
+- [x] ADR-0004 y ADR-0010 en estado `aceptada` (verificado en `wiki/decisiones/`) · Evidencia: `grep status` → `adr-0004…: status: aceptada`, `adr-0010…: status: aceptada`.
+- [x] Línea base en verde: `dotnet test`, `lint`, `test` y `build` del frontend · Evidencia: `dotnet test` total 5, error 0 (exit 0); `oxlint` exit 0; `vitest` 3 passed (exit 0); `vite build` ✓ built (exit 0).
+- [x] Stack de Compose operativo desde Claude Code (`docker compose ps`: `db` y `backend` healthy) · Evidencia: `db` (postgres:18.6) `Up 2 hours (healthy)`, `backend` `Up 2 hours (healthy)`, `frontend`, `mailpit` (healthy) y `azurite` arriba.
+- [x] HU-002, HU-003 y HU-004 en estado `En desarrollo` y PLAN-DE-TRABAJO con responsable · Evidencia: `estado: En desarrollo` + línea de historial en las tres HU; `PLAN-DE-TRABAJO.md` con responsable juancarlosfc5 y goal «En ejecución».
 
 ### B1 — Contratos T-01 (HU-002, HU-003, HU-004)
 - [ ] Contrato de `/api/auth/antiforgery`, `/login`, `/logout` y `/me` ratificado con los valores por defecto · Evidencia:
@@ -116,3 +116,4 @@ Una fila por turno que cambie algo. La añade Claude; no se borran filas.
 | Fecha | Bloque | Resultado | Commit | Nota |
 |---|---|---|---|---|
 | — | — | — | — | Goal creado el 2026-10-09, sin ejecutar |
+| 2026-10-09 | B0 | Hecho | ver `git log` (`chore(auth): B0 …`) | Rama creada, línea base en verde, stack healthy, HU en desarrollo |

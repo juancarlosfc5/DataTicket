@@ -2,7 +2,7 @@
 title: "HU-002 — Shell de la aplicación y navegación por rol"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En desarrollo
 tags: [scrum, scrum/historia, arquitectura/frontend, producto/roles]
 sources: ["PRD.md §1", "PRD.md §5", "PRD.md §10", "PRD.md §12"]
 aliases: ["HU-002", "Shell de la aplicación y navegación por rol"]
@@ -272,6 +272,7 @@ Firma propuesta del cliente HTTP (ratificar en T-01): `getJson<T>(path, options)
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 - 2026-10-09 — ADR-0010 (enrutador) y ADR-0011 (estilo visual) aceptados: T-02 desbloqueada. Se ejecuta en el goal de `goal_login.md` (bloque B5).
+- 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
 
 ## Notas y decisiones
 

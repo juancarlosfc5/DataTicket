@@ -24,7 +24,7 @@ El 2026-10-09 la persona líder del proyecto aprobó todas las épicas y HU: su 
 
 | Archivo de control | Alcance | Estado |
 |---|---|---|
-| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | Listo para ejecutar |
+| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | En ejecución (rama `feature/auth-login`) |
 | [loop_chat.md](loop_chat.md) | EP-009: HU-026 a HU-032 (`/loop`, después del goal) | Listo para ejecutar |
 
 Plan y decisiones: [wiki/sintesis/plan-goal-login-y-loop-chat.md](wiki/sintesis/plan-goal-login-y-loop-chat.md). El loop incluye la rebanada R0, un adelanto parcial de HU-018/019 (solo `Ticket` y `TicketParticipant`, sin UI de triage).
@@ -51,12 +51,12 @@ Resultado esperado: monolito modular .NET 10, React/TypeScript, PostgreSQL, aute
 ### EP-001 — Fundaciones técnicas y calidad continua · [épica](wiki/scrum/epicas/ep-001-fundaciones-tecnicas.md)
 
 - [ ] [HU-001 — Integración continua en cada PR](wiki/scrum/historias-de-usuario/hu-001-integracion-continua.md) · Sprint 0 · Responsable: ______ · Fecha: ______
-- [ ] [HU-002 — Shell de la aplicación y navegación por rol](wiki/scrum/historias-de-usuario/hu-002-shell-y-navegacion-por-rol.md) · Sprint 0 · Responsable: ______ · Fecha: ______
+- [ ] [HU-002 — Shell de la aplicación y navegación por rol](wiki/scrum/historias-de-usuario/hu-002-shell-y-navegacion-por-rol.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en desarrollo) · Fecha: ______
 
 ### EP-002 — Identidad y acceso · [épica](wiki/scrum/epicas/ep-002-identidad-y-acceso.md)
 
-- [ ] [HU-003 — Iniciar y cerrar sesión](wiki/scrum/historias-de-usuario/hu-003-iniciar-y-cerrar-sesion.md) · Sprint 0 · Responsable: ______ · Fecha: ______
-- [ ] [HU-004 — Contexto del usuario y autorización por rol](wiki/scrum/historias-de-usuario/hu-004-contexto-de-usuario-y-autorizacion.md) · Sprint 0 · Responsable: ______ · Fecha: ______
+- [ ] [HU-003 — Iniciar y cerrar sesión](wiki/scrum/historias-de-usuario/hu-003-iniciar-y-cerrar-sesion.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en desarrollo) · Fecha: ______
+- [ ] [HU-004 — Contexto del usuario y autorización por rol](wiki/scrum/historias-de-usuario/hu-004-contexto-de-usuario-y-autorizacion.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en desarrollo) · Fecha: ______
 - [ ] [HU-005 — Invitar y activar cuentas](wiki/scrum/historias-de-usuario/hu-005-invitar-y-activar-cuentas.md) · Sprint 1 · Responsable: ______ · Fecha: ______
 - [ ] [HU-006 — Restablecer contraseña sin enumeración](wiki/scrum/historias-de-usuario/hu-006-restablecer-contrasena.md) · Sprint 1 · Responsable: ______ · Fecha: ______
 

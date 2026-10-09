@@ -2,7 +2,7 @@
 title: "HU-003 — Iniciar y cerrar sesión"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En desarrollo
 tags: [scrum, scrum/historia, seguridad, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §13"]
 aliases: ["HU-003", "Iniciar y cerrar sesión"]
@@ -279,6 +279,7 @@ Comportamiento común de la API (todas las rutas `/api/**`): sin sesión → `40
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 - 2026-10-09 — ADR-0004 aceptado (DoD-08 cumplido en cuanto a la decisión). Se ejecuta en el goal de `goal_login.md` (bloques B1–B3, B6, B7).
+- 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
 
 ## Notas y decisiones
 
