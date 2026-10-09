@@ -7,6 +7,41 @@
   },
   "overrides": [
     {
+      "files": ["src/core/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "react", "message": "core: infraestructura sin React (http, tiempo real)." },
+              { "name": "react-dom", "message": "core: infraestructura sin React (http, tiempo real)." },
+              { "name": "react-router", "message": "core: no conoce el enrutador; la navegación la decide app/." }
+            ],
+            "patterns": [
+              { "group": ["**/modules/**", "**/app/**", "**/shared/**"], "message": "core: no depende de módulos, app ni UI." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              { "name": "@microsoft/signalr", "message": "shared/ui: componentes visuales genéricos, sin SignalR." },
+              { "name": "react-router", "message": "shared/ui: sin enrutador; la navegación llega por props (onNavigate)." }
+            ],
+            "patterns": [
+              { "group": ["**/core/**", "**/modules/**", "**/app/**", "**/*Gateway", "**/*Gateway.ts"], "message": "shared/ui: componentes genéricos; no acceden a APIs ni a módulos." }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["src/**/models/**"],
       "rules": {
         "no-restricted-imports": [
@@ -14,10 +49,11 @@
           {
             "paths": [
               { "name": "react", "message": "MVC: los modelos no dependen de React." },
-              { "name": "react-dom", "message": "MVC: los modelos no dependen de React." }
+              { "name": "react-dom", "message": "MVC: los modelos no dependen de React." },
+              { "name": "react-router", "message": "MVC: los modelos no conocen el enrutador (ADR-0010)." }
             ],
             "patterns": [
-              { "group": ["**/controllers/**", "**/views/**"], "message": "MVC: los modelos no conocen controladores ni vistas." }
+              { "group": ["**/controllers/**", "**/views/**", "**/app/**"], "message": "MVC: los modelos no conocen controladores, vistas ni app." }
             ]
           }
         ]
@@ -30,7 +66,7 @@
           "error",
           {
             "patterns": [
-              { "group": ["**/views/**"], "message": "MVC: los controladores exponen estado y acciones; no importan vistas." }
+              { "group": ["**/views/**", "**/app/**"], "message": "MVC: los controladores exponen estado y acciones; no importan vistas ni app." }
             ]
           }
         ]
@@ -43,10 +79,11 @@
           "error",
           {
             "paths": [
-              { "name": "@microsoft/signalr", "message": "MVC: la conexión SignalR vive en modelos/core, no en vistas." }
+              { "name": "@microsoft/signalr", "message": "MVC: la conexión SignalR vive en modelos/core, no en vistas." },
+              { "name": "react-router", "message": "MVC: las vistas no conocen el enrutador (ADR-0010); reciben onNavigate por props." }
             ],
             "patterns": [
-              { "group": ["**/core/**", "**/*Gateway", "**/*Gateway.ts"], "message": "MVC: las vistas reciben datos del controlador por props; no acceden a APIs." }
+              { "group": ["**/core/**", "**/*Gateway", "**/*Gateway.ts", "**/app/**"], "message": "MVC: las vistas reciben datos del controlador por props; no acceden a APIs." }
             ]
           }
         ]

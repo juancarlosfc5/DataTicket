@@ -1,0 +1,256 @@
+/*
+ * Tokens de diseño de DataTicket (wiki/arquitectura/sistema-de-diseno.md, ADR-0011).
+ * Color y forma: copiados del `:root` de DataTicket.html (marca Data Global #004098 / #7DBF00).
+ * Espaciado, tipografía y movimiento: escala propia de la guía. Ningún componente usa valores sueltos.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Superficies */
+  --ground: #EEF1F6;
+  --surface: #FFFFFF;
+  --surface-2: #F6F8FB;
+  --surface-3: #E6EBF2;
+  /* Líneas */
+  --line: #D8DFE9;
+  --line-strong: #C0CAD8;
+  /* Tinta */
+  --ink: #12203A;
+  --ink-2: #44536B;
+  --ink-3: #64728A;
+  /* Acento (azul Data Global) */
+  --accent: #004098;
+  --accent-hover: #00337A;
+  --accent-soft: #E3ECF8;
+  --accent-line: #9FB9E0;
+  --on-accent: #FFFFFF;
+  --focus: #2F6FD0;
+  /* Marca */
+  --brand-blue: #004098;
+  --brand-green: #7DBF00;
+  --brand-green-soft: #E3ECB7;
+  --brand-navy: #0B1F44;
+  /* Nota interna */
+  --note-bg: #FFF6DA;
+  --note-line: #D39A12;
+  --note-ink: #6B4B00;
+  --note-hatch: rgba(211, 154, 18, 0.2);
+  /* Prioridad */
+  --p-crit-bg: #C62A2F;
+  --p-crit-ink: #FFFFFF;
+  --p-alta-bg: #FCE8D4;
+  --p-alta-ink: #93440A;
+  --p-alta-line: #F0C197;
+  --p-media-bg: #F7EFC6;
+  --p-media-ink: #6C5500;
+  --p-media-line: #E2CF80;
+  --p-baja-bg: #E8EDF3;
+  --p-baja-ink: #4A5872;
+  --p-baja-line: #D0D9E4;
+  /* Estado */
+  --s-nuevo: #1F5FB5;
+  --s-nuevo-bg: #E3EDFB;
+  --s-asignado: #0B6B7C;
+  --s-asignado-bg: #DBEFF2;
+  --s-curso: #4A3DB0;
+  --s-curso-bg: #ECE8FB;
+  --s-espera: #933076;
+  --s-espera-bg: #F7E5F0;
+  --s-resuelto: #1B6E3F;
+  --s-resuelto-bg: #DDF1E5;
+  --s-cerrado: #55636E;
+  --s-cerrado-bg: #E6EBF0;
+  /* Otros */
+  --danger: #B42328;
+  --stale: #94540A;
+  --overlay: rgba(9, 20, 40, 0.44);
+  --shadow-pop: 0 12px 32px -10px rgba(10, 28, 60, 0.3), 0 2px 6px rgba(10, 28, 60, 0.1);
+  --shadow-card: 0 1px 2px rgba(10, 28, 60, 0.06), 0 8px 24px -16px rgba(10, 28, 60, 0.18);
+  /* Material translúcido de barras (estilo Apple); opaco si se pide menos transparencia */
+  --material-bar: color-mix(in srgb, var(--surface) 82%, transparent);
+  --material-blur: blur(16px) saturate(180%);
+
+  /* Forma */
+  --r-s: 4px;
+  --r: 6px;
+  --r-l: 10px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-pill: 999px;
+  --border-width: 1px;
+  --indicator-width: 3px;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --underline-offset: 2px;
+  /* Tamaño de la técnica de ocultación accesible (solo lectores de pantalla) */
+  --sr-only-size: 1px;
+
+  /* Tipografía: Archivo variable (wdth 62–125, wght 100–900), autoalojada */
+  --font: 'Archivo Variable', 'Archivo', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --text-xs: 11.5px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 15px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-display: clamp(28px, 3.2vw, 44px);
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.45;
+  --tracking-display: -0.02em;
+  --tracking-title: -0.01em;
+  --weight-regular: 450;
+  --weight-medium: 560;
+  --weight-semibold: 620;
+  --weight-bold: 680;
+  --weight-heavy: 720;
+  --stretch-title: 112%;
+  --stretch-brand: 122%;
+
+  /* Espaciado (escala de 4 px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Medidas de componentes (densidad del prototipo) */
+  --bar-height: 52px;
+  --sidebar-width: 236px;
+  --control-height: 30px;
+  --control-height-sm: 26px;
+  --field-height: 32px;
+  --nav-item-height: 30px;
+  --touch-target: 40px;
+  --avatar-size: 28px;
+  --brand-mark-size: 28px;
+  --content-max: 1080px;
+  --notice-max: 460px;
+  --spinner-size: 18px;
+
+  /* Movimiento */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 120ms;
+  --dur-hover: 160ms;
+  --dur-enter: 220ms;
+  --dur-view: 320ms;
+  --dur-spin: 700ms;
+  --press-scale: 0.97;
+}
+
+/* Tema oscuro: copiado del bloque `prefers-color-scheme: dark` / `[data-theme="dark"]` del prototipo */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ground: #0B111C;
+    --surface: #111927;
+    --surface-2: #162030;
+    --surface-3: #1C2839;
+    --line: #223047;
+    --line-strong: #32435E;
+    --ink: #E4EAF3;
+    --ink-2: #A7B3C6;
+    --ink-3: #8593A9;
+    --accent: #7FA9EB;
+    --accent-hover: #9DBEF1;
+    --accent-soft: #16294A;
+    --accent-line: #2E4A7A;
+    --on-accent: #081830;
+    --focus: #9DBEF1;
+    --note-bg: #282010;
+    --note-line: #A57A12;
+    --note-ink: #EFC965;
+    --note-hatch: rgba(239, 201, 101, 0.1);
+    --p-crit-bg: #D3373D;
+    --p-crit-ink: #FFFFFF;
+    --p-alta-bg: #3A2515;
+    --p-alta-ink: #F2A867;
+    --p-alta-line: #5C3A1E;
+    --p-media-bg: #2F2910;
+    --p-media-ink: #E0C455;
+    --p-media-line: #4D4318;
+    --p-baja-bg: #1B2536;
+    --p-baja-ink: #A7B3C6;
+    --p-baja-line: #2C3A50;
+    --s-nuevo: #8DB6F0;
+    --s-nuevo-bg: #15243A;
+    --s-asignado: #6CCBDA;
+    --s-asignado-bg: #10303A;
+    --s-curso: #B2A9F3;
+    --s-curso-bg: #221F3E;
+    --s-espera: #E59ACC;
+    --s-espera-bg: #33182B;
+    --s-resuelto: #7DD29F;
+    --s-resuelto-bg: #132E1E;
+    --s-cerrado: #9AA7B6;
+    --s-cerrado-bg: #1C2533;
+    --danger: #F07A7E;
+    --stale: #E8AE4E;
+    --overlay: rgba(0, 0, 0, 0.55);
+    --shadow-pop: 0 14px 34px -10px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme='dark'] {
+  --ground: #0B111C;
+  --surface: #111927;
+  --surface-2: #162030;
+  --surface-3: #1C2839;
+  --line: #223047;
+  --line-strong: #32435E;
+  --ink: #E4EAF3;
+  --ink-2: #A7B3C6;
+  --ink-3: #8593A9;
+  --accent: #7FA9EB;
+  --accent-hover: #9DBEF1;
+  --accent-soft: #16294A;
+  --accent-line: #2E4A7A;
+  --on-accent: #081830;
+  --focus: #9DBEF1;
+  --note-bg: #282010;
+  --note-line: #A57A12;
+  --note-ink: #EFC965;
+  --note-hatch: rgba(239, 201, 101, 0.1);
+  --p-crit-bg: #D3373D;
+  --p-crit-ink: #FFFFFF;
+  --p-alta-bg: #3A2515;
+  --p-alta-ink: #F2A867;
+  --p-alta-line: #5C3A1E;
+  --p-media-bg: #2F2910;
+  --p-media-ink: #E0C455;
+  --p-media-line: #4D4318;
+  --p-baja-bg: #1B2536;
+  --p-baja-ink: #A7B3C6;
+  --p-baja-line: #2C3A50;
+  --s-nuevo: #8DB6F0;
+  --s-nuevo-bg: #15243A;
+  --s-asignado: #6CCBDA;
+  --s-asignado-bg: #10303A;
+  --s-curso: #B2A9F3;
+  --s-curso-bg: #221F3E;
+  --s-espera: #E59ACC;
+  --s-espera-bg: #33182B;
+  --s-resuelto: #7DD29F;
+  --s-resuelto-bg: #132E1E;
+  --s-cerrado: #9AA7B6;
+  --s-cerrado-bg: #1C2533;
+  --danger: #F07A7E;
+  --stale: #E8AE4E;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 14px 34px -10px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material-bar: var(--surface);
+    --material-blur: none;
+  }
+}

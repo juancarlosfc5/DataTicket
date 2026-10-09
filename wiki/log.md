@@ -260,3 +260,15 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Hallazgo: el bloqueo de `UserManager` y los tokens de `DataProtectorTokenProvider` no respetan `TimeProvider` (relevante para CHU-05 de HU-003 y para HU-005/HU-006).
 - Wiki: [[estrategia-de-pruebas]], [[backend-hexagonal]], [[entorno-docker]], [[stack-y-versiones]]
 - Pendiente: revisión de `quality-reviewer` de B2; B5 (frontend) en curso en paralelo.
+
+## [2026-10-09] feature | Goal del login — B3 y B5 en curso (registro intermedio)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: `frontend-engineer` trabaja en B5 (shell, navegación por rol, `core/http`, tokens) y `backend-engineer` en B3 (Identity, migración, login/logout). Los archivos de `frontend/` y `backend/` aún no están cerrados ni verificados por el orquestador.
+- Wiki: sin cambios de contenido todavía; [[frontend-mvc]], [[estrategia-de-pruebas]], [[autenticacion-identity]] y [[persistencia-postgresql]] se actualizan al cerrar cada bloque.
+- Pendiente: verificación, revisión de `quality-reviewer` y commit de B3 y B5.
+
+## [2026-10-09] feature | Goal del login — B5 shell, navegación por rol y cliente HTTP (frontend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `frontend-engineer`)
+- Cambios: `react-router` 8.4.0, Testing Library + jsdom, `tokens.css` claro/oscuro y Archivo autoalojada; `core/http` con mutaciones, antiforgery y `HttpError`; módulo `session` (modelo, navegación por rol, `sanitizeReturnUrl`, controlador, guardas, layouts, «sin permiso»). lint 0/0, 89 pruebas, build OK. CHU-10 verificado en el navegador integrado (375 px oscuro y 1440 px claro, sin desbordamiento) con un doble del contrato.
+- Wiki: [[frontend-mvc]], [[estrategia-de-pruebas]], [[stack-y-versiones]], [[sistema-de-diseno]], [[glosario]], [[hu-002-shell-y-navegacion-por-rol]]
+- Pendiente: B3 (backend) en curso. Revisión de B5: 0 CRÍTICO, 0 ALTO; 4 MEDIO pasan a B6.

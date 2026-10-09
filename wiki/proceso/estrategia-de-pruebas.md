@@ -35,11 +35,13 @@ Desarrollo guiado por pruebas: primero la prueba que falla, luego la implementac
 
 ## Frontend (React 19)
 
+jsdom se activa por archivo (`// @vitest-environment jsdom` + `import '…/test/domSetup'`); los modelos siguen en `node`. Tras B5 del goal del login hay 89 pruebas Vitest.
+
 | Nivel | Herramientas | Qué cubre |
 |---|---|---|
 | Estático | `oxlint` (incluye fronteras MVC) + `tsc -b` | Tipos y capas |
 | Unitarias | Vitest | Modelos (normalización, reglas) y controladores |
-| Componentes | Testing Library + jsdom (por añadir) | Vistas con interacción |
+| Componentes | Testing Library + jsdom (desde 2026-10-09) | Vistas con interacción; `app/` monta `<MemoryRouter><App/></MemoryRouter>` con un doble de `fetch` que falla ante rutas no previstas |
 | E2E | Playwright (por añadir) | Flujos críticos: radicar, triage, chat, respuesta formal |
 
 ## Pruebas imprescindibles por invariante

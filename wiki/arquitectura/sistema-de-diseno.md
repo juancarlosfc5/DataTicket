@@ -23,7 +23,7 @@ Guía visual obligatoria del SPA. **El PRD y las HU de Scrum mandan**: definen q
 
 ## Tokens (fuente: `:root` de `DataTicket.html`)
 
-Viven en `frontend/src/styles/tokens.css`. Ningún componente usa colores sueltos.
+Viven en `frontend/src/styles/tokens.css` (implementado el 2026-10-09 en B5 del goal del login). Ningún componente usa colores sueltos. Además de los colores del prototipo, el archivo define escalas de espaciado (`--space-*`), tipografía (`--text-*`, `--weight-*`, `--stretch-*`), medidas (`--bar-height`, `--sidebar-width`, `--touch-target`), movimiento (`--dur-*`, `--ease-out`, `--press-scale`), `--shadow-card` y el material translúcido de barra (`--material-bar`/`--material-blur`, opaco con `prefers-reduced-transparency`). Tema oscuro con `prefers-color-scheme` y `[data-theme="dark"]`.
 
 | Grupo | Tokens claros (oscuro análogo) |
 |---|---|
@@ -42,7 +42,7 @@ Los valores del tema oscuro se copian del bloque `@media (prefers-color-scheme:d
 
 ## Tipografía
 
-- **Archivo** variable (`wdth` 62–125, `wght` 100–900). Propuesta: autoalojarla con un paquete `@fontsource-variable/archivo` verificado en npm, en lugar de Google Fonts. Así no se depende de un tercero y se simplifica la CSP ([[pendientes]] §4).
+- **Archivo** variable (`wdth` 62–125, `wght` 100–900), autoalojada con `@fontsource-variable/archivo` 5.3.0 (`wdth.css`) desde el 2026-10-09, en lugar de Google Fonts. Así no se depende de un tercero y se simplifica la CSP ([[pendientes]] §4).
 - Pila de respaldo: `"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif`.
 - Escala: cuerpo 13/1.45; títulos de bandeja 20 px, peso 660, `font-stretch:112%`; título de la entrada `clamp(28px,3.2vw,44px)`, peso 720; etiquetas 12 px, peso 600.
 - Identificadores (`t-id`), contadores y fechas con `font-variant-numeric: tabular-nums`.

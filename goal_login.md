@@ -83,12 +83,12 @@ Archivo de control del `/goal` que construye **HU-002, HU-003 y HU-004**. Claude
 - [ ] CHU-01 a CHU-09 de HU-004 en verde; `ArchitectureTests` en verde · Evidencia:
 
 ### B5 — Frontend HU-002: shell, navegación y cliente HTTP
-- [ ] `react-router@8.4.0` (exacta), Testing Library y jsdom instalados con versiones verificadas en npm · Evidencia:
-- [ ] `src/styles/tokens.css` con los tokens claro/oscuro de `sistema-de-diseno` y la tipografía Archivo · Evidencia:
-- [ ] `core/http`: `postJson`, `putJson`, `patchJson`, `deleteRequest`, antiforgery y error ProblemDetails tipado · Evidencia:
-- [ ] Modelo de sesión, navegación por rol (función pura), guardas, `returnUrl` saneado y vista «sin permiso» · Evidencia:
-- [ ] Layout interno y del portal con nombre del usuario y «Cerrar sesión» · Evidencia:
-- [ ] CHU-01 a CHU-10 de HU-002 en verde · Evidencia:
+- [x] `react-router@8.4.0` (exacta), Testing Library y jsdom instalados con versiones verificadas en npm · Evidencia: `npm view` + `--save-exact`: `react-router` 8.4.0, `@testing-library/react` 16.3.3, `/dom` 10.4.2, `/user-event` 14.6.7, `/jest-dom` 7.0.1, `jsdom` 30.1.2; «found 0 vulnerabilities».
+- [x] `src/styles/tokens.css` con los tokens claro/oscuro de `sistema-de-diseno` y la tipografía Archivo · Evidencia: `tokens.css` con la paleta del prototipo en claro y oscuro (`prefers-color-scheme` y `[data-theme]`), escalas de espacio/tipo/movimiento; `@fontsource-variable/archivo` 5.3.0 autoalojada (navegador: `font-family: "Archivo Variable"…`); sin colores sueltos en CSS nuevo.
+- [x] `core/http`: `postJson`, `putJson`, `patchJson`, `deleteRequest`, antiforgery y error ProblemDetails tipado · Evidencia: `getJson/postJson/putJson/patchJson/deleteRequest`, `antiforgery.ts` (caché en memoria + `invalidateAntiforgeryToken`), `HttpError`/`problemDetails`, `authEvents` 401/403; pruebas `postJson envía cabecera antiforgery…`, `getJson no envía…`, `problem+json se mapea a HttpError…`, `401 invoca el manejador global` en verde.
+- [x] Modelo de sesión, navegación por rol (función pura), guardas, `returnUrl` saneado y vista «sin permiso» · Evidencia: `modules/session`: `toCurrentUser` (surface desconocido → `none`), `navigationFor`/`canAccessPath`, `sanitizeReturnUrl`, `useSessionController`, guardas `RequireSession`/`RequireAccess`, `ForbiddenView`; navegador: cliente en `/interno/administracion` → «No tienes permiso para ver esta página.» + «Ir a mi portal».
+- [x] Layout interno y del portal con nombre del usuario y «Cerrar sesión» · Evidencia: `AppLayout` (variantes `internal` y `portal`) con nombre y «Cerrar sesión» (`AppLayout muestra el nombre del usuario y Cerrar sesión` en verde); navegador 375 px oscuro y 1440 px claro: `scrollWidth = innerWidth`, ningún elemento fuera del viewport, con nombre y empresa extremos; foco visible (`:focus-visible`, contorno sólido).
+- [x] CHU-01 a CHU-10 de HU-002 en verde · Evidencia: lint 0/0 (43 archivos), Vitest 11 archivos / 89 pruebas, build ✓ (exit 0 los tres); CHU-01…09 con pruebas nombradas y CHU-10 en el navegador integrado (Vite :5180 + doble del contrato). `quality-reviewer`: 0 CRÍTICO, 0 ALTO (4 MEDIO → B6).
 
 ### B6 — Frontend HU-003/HU-004: entrada y sesión
 - [ ] Módulo `src/modules/auth` (models, controllers, views) con la vista `/ingresar` de HU-003, con el lenguaje visual de `sistema-de-diseno` · Evidencia:
@@ -119,3 +119,4 @@ Una fila por turno que cambie algo. La añade Claude; no se borran filas.
 | 2026-10-09 | B0 | Hecho | ver `git log` (`chore(auth): B0 …`) | Rama creada, línea base en verde, stack healthy, HU en desarrollo |
 | 2026-10-09 | B1 | Hecho | ver `git log` (`docs(auth): B1 …`) | Contrato T-01 ratificado con los valores por defecto; equipos = roles de Identity expuestos en `teams` |
 | 2026-10-09 | B2 | Hecho | ver `git log` (`test(auth): B2 …`) | Infraestructura de integración con Testcontainers; revisión 0 CRÍTICO / 0 ALTO |
+| 2026-10-09 | B5 | Hecho | ver `git log` (`feat(shell): B5 …`) | Shell, navegación por rol y `core/http`; revisión 0/0; MEDIO trasladados a B6 |

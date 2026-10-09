@@ -17,16 +17,20 @@ El frontend (`frontend/`, React 19 + TypeScript sobre Vite y Node 24) organiza c
 
 ```text
 frontend/src/
-├── main.tsx                 arranque
-├── app/                     App, layout y (más adelante) rutas: conecta controladores con vistas
-├── core/http/httpClient.ts  fetch same-origin a /api con la cookie de sesión
+├── main.tsx                 arranque: BrowserRouter, fuente Archivo autoalojada, tokens
+├── app/                     App, AppRoutes, guardas (RequireSession, RequireAccess),
+│                            AuthenticatedShell, páginas y shellContext: conectan controladores con vistas
+├── core/http/               httpClient (get/post/put/patch/delete), httpError, problemDetails,
+│                            antiforgery (caché en memoria), authEvents (manejadores globales 401/403)
 ├── core/realtime/           conexión SignalR compartida (cuando exista el chat)
 ├── modules/<modulo>/
 │   ├── models/              tipos, normalización de datos externos, gateways (xxxGateway.ts)
 │   ├── controllers/         hooks useXController: estado + acciones
 │   └── views/               componentes puros (props → JSX)
-├── shared/ui/               componentes visuales genéricos
-└── styles/global.css        tokens provisionales (hasta el ZIP de diseño)
+├── modules/session/         CurrentUser, navigationFor, sanitizeReturnUrl, useSessionController, AppLayout, ForbiddenView
+├── shared/ui/               InternalLink, BrandMark, LoadingView (genéricos, sin router ni core)
+├── styles/tokens.css        tokens claro/oscuro de [[sistema-de-diseno]]
+└── styles/global.css        base y primitivas sobre los tokens
 ```
 
 ```mermaid
@@ -44,7 +48,11 @@ flowchart LR
 |---|---|---|
 | `models/` | `core/`, otros modelos | `react`, `react-dom`, `controllers/`, `views/` |
 | `controllers/` | `react`, `models/`, `core/` | `views/` |
-| `views/` | tipos de `models/` y `controllers/`, `shared/ui` | `core/`, `*Gateway`, `@microsoft/signalr` |
+| `views/` | tipos de `models/` y `controllers/`, `shared/ui` | `core/`, `*Gateway`, `@microsoft/signalr`, `react-router` (salvo tipos), `app/` |
+| `core/` | — | `react`, `react-router`, `modules/`, `app/`, `shared/` |
+| `shared/` | `react` | `core/`, `modules/`, `app/`, gateways, SignalR, `react-router` |
+
+Además, desde B5 del goal del login (2026-10-09): los modelos no importan `react-router` ni `app/`, y los controladores no importan `app/`. Las vistas reciben `onNavigate` y `currentItemId` por props: solo `app/` usa el enrutador.
 
 Configuradas con `no-restricted-imports` por carpeta en `frontend/.oxlintrc.json`; se comprobó que bloquean las cinco violaciones típicas (2026-10-07). `npm run lint` debe pasar antes de cada PR.
 
@@ -69,7 +77,14 @@ Configuradas con `no-restricted-imports` por carpeta en `frontend/.oxlintrc.json
 
 - Enrutador: `react-router` 8.4.0 en modo librería, con rutas y guardas en `src/app` y sin `loader`/`action` para datos ([[adr-0010-enrutador-react-router]]). Librería de estado de servidor: no se adopta por ahora ([[pendientes]] §4).
 - Estilo visual: tokens y componentes según [[sistema-de-diseno]] (inspiración `DataTicket.html`, [[adr-0011-estilo-visual-inspirado-en-el-prototipo]]).
-- Testing Library + jsdom para pruebas de componentes cuando haya vistas con lógica de interacción.
+- ~~Testing Library + jsdom~~ incorporados el 2026-10-09 (B5).
+
+## Shell y navegación (HU-002, desde 2026-10-09)
+
+- Al cargar, `useSessionController` pide `/api/auth/me` (sin disparar el manejador global de 401) y expone `loading | anonymous | authenticated | error`, `refresh()` y `endSession()`.
+- Guardas en `src/app`: `RequireSession` (sin sesión → `/ingresar?returnUrl=`) y `RequireAccess` (superficie o sección ajena → «sin permiso» en la misma URL, dentro del layout del usuario). Un `403` de la API navega a `/sin-permiso`.
+- `navigationFor(user)` sale de una única tabla de secciones (`navigation.ts`), de la que también derivan `canAccessPath` y `homePathFor`. Un interno sin `ProductManager`/`Administrator` que abre a mano `/interno/triage` o `/interno/administracion` ve «sin permiso» (*propuesta*, extensión de UX del contrato; la barrera real es el backend).
+- El módulo `system` (salud) vive en `/interno/estado` («Estado del sistema»), solo en el espacio interno.
 
 ## Relacionado
 

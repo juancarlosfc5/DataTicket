@@ -29,6 +29,9 @@ Lenguaje ubicuo de DataTicket: cada término de negocio en español con su nombr
 | Superficie | `Surface` (`client`, `internal`) | Portal del cliente o Espacio interno al que entra el usuario; campo `surface` de `/api/auth/me` | [[autenticacion-identity]] |
 | Usuario actual | `ICurrentUser` (puerto backend) / `CurrentUser` (frontend) | Identidad, roles, equipos y empresa (solo cliente) de la sesión; la empresa sale del claim `company_id`, nunca de la petición (PRD §5) | [[autenticacion-identity]] |
 | Claim de empresa | `company_id` | Claim de la cookie con la empresa del usuario cliente | [[autenticacion-identity]] |
+| Acceso por superficie (frontend) | `SurfaceAccess` (`client`, `internal`, `none`) | `surface` normalizado de `/me`; un valor desconocido es `none` (sin acceso) | [[frontend-mvc]] |
+| Navegación por rol (frontend) | `navigationFor`, `canAccessPath`, `sanitizeReturnUrl`, `signInPathFor` | Funciones puras del módulo `session`: ayuda de navegación, nunca la barrera de seguridad | [[frontend-mvc]] |
+| Error HTTP tipado (frontend) | `HttpError` (`status`, `problem?`) | Error del cliente HTTP; `problem` es el ProblemDetails (RFC 9457) si la respuesta lo trae | [[frontend-mvc]] |
 | Políticas de autorización | `ClientUser`, `InternalUser`, `Administrator`, `ProductManagerOrAdministrator` | Políticas con nombre del backend; la de reserva exige usuario autenticado | [[autenticacion-identity]] |
 | Radicación | `SubmitTicket` (caso de uso) | Creación de un ticket por un usuario cliente con el formulario común (PRD §6.1) | [[flujo-del-ticket]] |
 | Triage | `Triage` | Revisión de categoría, urgencia e impacto y asignación inicial (PRD §6.2) | [[flujo-del-ticket]] |

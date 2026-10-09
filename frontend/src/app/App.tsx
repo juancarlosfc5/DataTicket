@@ -1,16 +1,17 @@
-import { useHealthController } from '../modules/system/controllers/useHealthController'
-import { HealthStatusView } from '../modules/system/views/HealthStatusView'
+import { useNavigate } from 'react-router'
+import { useSessionController } from '../modules/session/controllers/useSessionController'
+import { FORBIDDEN_PATH } from '../modules/session/models/navigation'
+import { AppRoutes } from './AppRoutes'
 
+/** Shell de DataTicket. Necesita un enrutador por encima (`BrowserRouter` en `main.tsx`). */
 export function App() {
-  const health = useHealthController()
+  const navigate = useNavigate()
+  const session = useSessionController({
+    onForbidden: () => navigate(FORBIDDEN_PATH, { replace: true }),
+  })
 
-  return (
-    <main className="shell">
-      <header className="shell__header">
-        <h1>DataTicket</h1>
-        <p>Portal de soporte de Data Global</p>
-      </header>
-      <HealthStatusView state={health.state} onRetry={health.retry} />
-    </main>
-  )
+  // Punto de conexión del cierre de sesión. B5 solo descarta la sesión en memoria (la guarda lleva
+  // a /ingresar); HU-003 (bloque B6) lo sustituye por el controlador de `auth`, que llama antes a
+  // POST /api/auth/logout y expone `isSigningOut`.
+  return <AppRoutes session={session} onSignOut={session.endSession} isSigningOut={false} />
 }

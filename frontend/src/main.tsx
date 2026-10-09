@@ -1,6 +1,9 @@
+import '@fontsource-variable/archivo/wdth.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router'
 import { App } from './app/App'
+import './styles/tokens.css'
 import './styles/global.css'
 
 const rootElement = document.getElementById('root')
@@ -10,6 +13,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )

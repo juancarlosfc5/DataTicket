@@ -55,8 +55,10 @@ SignalR viene incluido en el framework compartido de ASP.NET Core 10.
 | `vitest` | 5.0.3 |
 | `oxlint` | 1.81+ |
 | Por incorporar: `@microsoft/signalr` | 10.0.11 disponible |
-| Por incorporar: `react-router` | 8.4.0 exacta ([[adr-0010-enrutador-react-router]]; verificada en npm el 2026-10-09: peer `react >=19.2.7`, engine `node >=22.22`) |
-| Por incorporar: tipografía Archivo autoalojada | propuesta `@fontsource-variable/archivo`, versión por verificar ([[sistema-de-diseno]]) |
+| `react-router` | 8.4.0 exacta ([[adr-0010-enrutador-react-router]]; peer `react >=19.2.7`, engine `node >=22.22`) |
+| `@fontsource-variable/archivo` | 5.3.0 (se carga `wdth.css`, familia `'Archivo Variable'`) |
+| `@testing-library/react` · `/dom` · `/user-event` · `/jest-dom` | 16.3.3 · 10.4.2 · 14.6.7 · 7.0.1 (desarrollo) |
+| `jsdom` | 30.1.2 (desarrollo; engine `^24.15`) |
 
 ## Política
 

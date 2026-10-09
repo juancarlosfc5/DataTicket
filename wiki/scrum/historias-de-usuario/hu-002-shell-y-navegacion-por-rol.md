@@ -46,7 +46,7 @@ Hoy `frontend/src/app/App.tsx` solo muestra el estado de salud (`modules/system`
 - Pantallas de entrada, activación y restablecimiento (las implementan [[hu-003-iniciar-y-cerrar-sesion|HU-003]], [[hu-005-invitar-y-activar-cuentas|HU-005]] y [[hu-006-restablecer-contrasena|HU-006]]).
 - Contenido funcional de las secciones (bandejas, radicación, administración): solo marcadores de posición.
 - Elegir enrutador o librería de estado de servidor (decisión abierta).
-- Diseño visual definitivo: depende del ZIP de diseño (PRD §2); se usan los tokens provisionales de `styles/global.css`.
+- Diseño visual definitivo: depende del ZIP de diseño (PRD §2). Actualización 2026-10-09: por [[adr-0011-estilo-visual-inspirado-en-el-prototipo]] el shell usa ya `styles/tokens.css` de [[sistema-de-diseno]] (no los tokens provisionales de `global.css`).
 - Conexión SignalR (`core/realtime`), que llega con [[ep-009-chat-interno-en-tiempo-real]].
 
 ## Requisitos y reglas de negocio
