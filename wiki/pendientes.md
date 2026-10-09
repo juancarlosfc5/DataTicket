@@ -30,6 +30,7 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 > [!warning] Contradicción — roles frente a equipos
 > [[autenticacion-identity]] define `Development` y `Production` como roles de Identity. En cambio, [[glosario]], [[roles-y-permisos]] y [[modelo-de-dominio]] los tratan como equipos (`Team.Development`, `Team.Production`), separados de `Roles[]`. Hay que decidir el modelo antes de [[hu-004-contexto-de-usuario-y-autorizacion]] y [[hu-009-administrar-usuarios-internos-y-equipos]].
 > Actualización 2026-10-09: `db.sql` usa provisionalmente la opción de [[autenticacion-identity]] y siembra seis roles, entre ellos `Development` y `Production`, sin tablas de equipos. Si se eligen equipos separados, hay que añadir esas tablas al diseño de referencia y a la migración de HU-009 ([[persistencia-postgresql]]).
+> Actualización 2026-10-09 (B1 de `goal_login.md`, DoD-06 de HU-004): se **implementa** la opción de `db.sql` (equipos = roles de Identity `Development`/`Production`), pero `/api/auth/me` los expone en un campo `teams` separado de `roles`, de modo que el contrato del frontend no cambia si HU-009 adopta tablas de equipos. La decisión definitiva sigue abierta para HU-009.
 
 > [!success] Resuelta 2026-10-09 — DB-first frente a migraciones code-first
 > `db.sql` (raíz) fue un paso previo de validación del esquema y no el mecanismo de implementación. La persona líder del proyecto lo aprobó como **diseño de referencia**. La base de datos se implementa con migraciones de EF Core, como piden [[persistencia-postgresql]] y los DoD de las HU, sin cambios en estas. Decisión: [[adr-0009-db-sql-diseno-de-referencia]].
@@ -106,6 +107,7 @@ Las HU de [[tablero-scrum]] cubren los vacíos del PRD con **propuestas** marcad
 | P-19 | **Radicación:** los internos no radican en nombre de un cliente (403); descripción de hasta 10 000 caracteres; categorías semilla provisionales ("Incidente", "Requerimiento", "Consulta") sujetas a V-12 | HU-013 | [[flujo-del-ticket]] |
 | P-20 | **Formularios configurables:** hasta 30 campos y de 2 a 50 opciones; tipos `ShortText`, `LongText`, `Number`, `Date`, `SingleChoice` y `MultipleChoice`; solo los campos marcados como consultables se filtran en las bandejas internas. Almacenamiento: ver V-23 | HU-043 a HU-047 | [[formularios-configurables]] |
 | P-21 | **Datos sintéticos:** la semilla usa los nombres reales del equipo interno con correos ficticios `@dataticket.local`; hay que confirmarlo | HU-010 | [[equipo-del-repositorio]] |
+| P-22 | **Sesión (valores por defecto del goal del login, en uso):** cookie `dataticket.auth` con expiración deslizante de 8 h; antiforgery `X-XSRF-TOKEN` renovado tras login/logout; sello de seguridad revalidado cada 5 min; el logout no revoca otras sesiones (riesgo aceptado); perfiles de rol mixtos (cliente + interno) no inician sesión | HU-002, HU-003, HU-004 | [[autenticacion-identity]] |
 
 Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DTO, acciones de auditoría, eventos del hub) se agregan a [[glosario]] cuando se ratifiquen en la T-01 de cada HU, antes de usarlos en código.
 

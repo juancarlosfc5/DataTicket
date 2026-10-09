@@ -130,7 +130,7 @@ Comportamiento común de la API (todas las rutas `/api/**`): sin sesión → `40
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
   Descripción: con ADR-0004 aceptado, fijar rutas, cuerpos, códigos, nombre de la cabecera antiforgery (`X-XSRF-TOKEN`, propuesta), nombre de la cookie (propuesta: `dataticket.auth`), duración de la sesión deslizante, parámetros de bloqueo, intervalo de revalidación del sello de seguridad y modelo mínimo del estado de la cuenta (`AccountStatus` {`Invited`, `Active`, `Deactivated`}, nombre propuesto, ratificar con HU-005/HU-008 y registrar en el [[glosario]]). Decidir si el cierre de sesión revoca la cookie en servidor (ver Notas).
 - [ ] **T-02 — Proyecto de pruebas de integración** · Capa: Backend (pruebas) · Dificultad: Medio  
   Descripción: crear `DataTicket.IntegrationTests` (nombre propuesto) con `WebApplicationFactory<Program>`, PostgreSQL real (Compose o Testcontainers, según HU-001), base aislada por ejecución y fixture para crear cuentas en cada estado. Añadirlo a `DataTicket.slnx` y a la etapa `restore` de `backend/Dockerfile`.

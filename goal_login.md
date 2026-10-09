@@ -58,9 +58,9 @@ Archivo de control del `/goal` que construye **HU-002, HU-003 y HU-004**. Claude
 - [x] HU-002, HU-003 y HU-004 en estado `En desarrollo` y PLAN-DE-TRABAJO con responsable · Evidencia: `estado: En desarrollo` + línea de historial en las tres HU; `PLAN-DE-TRABAJO.md` con responsable juancarlosfc5 y goal «En ejecución».
 
 ### B1 — Contratos T-01 (HU-002, HU-003, HU-004)
-- [ ] Contrato de `/api/auth/antiforgery`, `/login`, `/logout` y `/me` ratificado con los valores por defecto · Evidencia:
-- [ ] Contrato documentado en `wiki/arquitectura/autenticacion-identity.md`; `AccountStatus` y los nombres nuevos en `glosario` · Evidencia:
-- [ ] Rutas del SPA fijadas (`/ingresar`, `/portal/**`, `/interno/**`, `/sin-permiso`, públicas de cuenta) · Evidencia:
+- [x] Contrato de `/api/auth/antiforgery`, `/login`, `/logout` y `/me` ratificado con los valores por defecto · Evidencia: `autenticacion-identity` § «Contrato ratificado»: cookie `dataticket.auth` (HttpOnly, Lax, Secure fuera de Development, 8 h deslizante), `X-XSRF-TOKEN` renovado tras login/logout, bloqueo 5 × 15 min, contraseña ≥ 12, sello 5 min, logout sin revocar otras sesiones (riesgo aceptado), cuerpos y códigos 204/400/401 de cada ruta y `/me`; valores por defecto registrados como P-22 en `pendientes`.
+- [x] Contrato documentado en `wiki/arquitectura/autenticacion-identity.md`; `AccountStatus` y los nombres nuevos en `glosario` · Evidencia: secciones nuevas en `wiki/arquitectura/autenticacion-identity.md` (parámetros, roles/claims, políticas, endpoints, comportamiento común, públicos); `glosario`: `AccountStatus`, `Surface`, `ICurrentUser`/`CurrentUser`, `company_id`, políticas y equipos como roles; `pendientes`: roles vs. equipos (DoD-06 HU-004) y P-22.
+- [x] Rutas del SPA fijadas (`/ingresar`, `/portal/**`, `/interno/**`, `/sin-permiso`, públicas de cuenta) · Evidencia: tabla «Rutas del SPA» en `autenticacion-identity`: `/ingresar` (con `returnUrl` saneado), `/activar-cuenta`, `/olvide-mi-contrasena`, `/restablecer-contrasena` públicas; `/` redirige por `surface`; `/portal/**` solo cliente; `/interno/**` solo interno; `/sin-permiso`; resto → `/`.
 
 ### B2 — Infraestructura de pruebas backend
 - [ ] `backend/tests/DataTicket.IntegrationTests` creado con `WebApplicationFactory<Program>` y PostgreSQL real aislado · Evidencia:
@@ -117,3 +117,4 @@ Una fila por turno que cambie algo. La añade Claude; no se borran filas.
 |---|---|---|---|---|
 | — | — | — | — | Goal creado el 2026-10-09, sin ejecutar |
 | 2026-10-09 | B0 | Hecho | ver `git log` (`chore(auth): B0 …`) | Rama creada, línea base en verde, stack healthy, HU en desarrollo |
+| 2026-10-09 | B1 | Hecho | ver `git log` (`docs(auth): B1 …`) | Contrato T-01 ratificado con los valores por defecto; equipos = roles de Identity expuestos en `teams` |

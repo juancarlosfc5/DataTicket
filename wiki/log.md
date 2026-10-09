@@ -247,3 +247,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: rama `feature/auth-login`; línea base verificada (`dotnet test` 5/5, `oxlint`, `vitest` 3/3, `vite build`); stack de Compose healthy; HU-002, HU-003 y HU-004 pasan a `En desarrollo` con responsable en `PLAN-DE-TRABAJO.md`.
 - Wiki: [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
 - Pendiente: bloques B1–B8.
+
+## [2026-10-09] decision | Goal del login — B1 contrato de autenticación (T-01 de HU-002/003/004)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: contrato de `/api/auth/antiforgery`, `/login`, `/logout`, `/me`, políticas, públicos y rutas del SPA ratificado con los valores por defecto del goal; equipos implementados como roles de Identity (`db.sql`) pero expuestos en `teams`; nuevos términos en el glosario.
+- Wiki: [[autenticacion-identity]], [[glosario]], [[pendientes]] (P-22, roles vs. equipos), [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
+- Pendiente: ratificar P-22 con el equipo; decisión definitiva de equipos en HU-009.

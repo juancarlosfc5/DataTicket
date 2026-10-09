@@ -140,7 +140,7 @@ No admite parámetros: cualquier `?userId=` o cabecera adicional se ignora.
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
   Descripción: fijar el JSON de `/me`, la regla de `surface`, los nombres de políticas y claims (`company_id`, claim de equipo propuesto `team`), la lista de públicos y **cómo se representan los equipos** (rol Identity frente a claim/tabla `Team.*`), registrando la decisión en un ADR o en [[pendientes]] sin resolverla en silencio.
 - [ ] **T-02 — Puerto `ICurrentUser` (pruebas primero)** · Capa: Backend (Application) · Dificultad: Bajo  
   Descripción: interfaz en `Application/Ports/Out` (`UserId`, `IsAuthenticated`, `Roles`, `Teams`, `CompanyId?`, `IsInRole`), sin dependencias de ASP.NET Core; las `ArchitectureTests` lo verifican.

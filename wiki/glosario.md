@@ -6,7 +6,7 @@ tags: [dominio, glosario]
 sources: ["PRD.md §5", "PRD.md §6", "PRD.md §7", "PRD.md §8", "PRD.md §9", "PRD.md §10", "PRD.md §12"]
 aliases: [Lenguaje ubicuo, Diccionario de términos]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Glosario
@@ -24,7 +24,12 @@ Lenguaje ubicuo de DataTicket: cada término de negocio en español con su nombr
 | Coordinador de empresa | `CompanyCoordinator` | Usuario cliente que consulta los tickets de toda su empresa y puede radicar (PRD §5) | [[roles-y-permisos]] |
 | PM | rol `ProductManager` | Responsable de triage, asignación, respuesta formal y cierre; hoy Elizabeth (PRD §5) | [[elizabeth-pm]] |
 | Administrador | `Administrator` | Administra el sistema y participantes; cubre triage; sin acceso automático al contenido (PRD §5) | [[roles-y-permisos]] |
-| Equipo Desarrollo / Producción | `Team.Development` / `Team.Production` | Equipos internos; pertenecer no da acceso al ticket sin asociación (PRD §5, §6.2) | [[equipo-data-global]] |
+| Equipo Desarrollo / Producción | `Team.Development` / `Team.Production` (implementados como roles de Identity `Development` / `Production`, ver [[autenticacion-identity]]) | Equipos internos; pertenecer no da acceso al ticket sin asociación (PRD §5, §6.2) | [[equipo-data-global]] |
+| Estado de la cuenta | `AccountStatus` (`Invited`, `Active`, `Deactivated`) | Invitada sin contraseña, activa o desactivada por Data Global; solo `Active` inicia sesión (PRD §5) | [[autenticacion-identity]] |
+| Superficie | `Surface` (`client`, `internal`) | Portal del cliente o Espacio interno al que entra el usuario; campo `surface` de `/api/auth/me` | [[autenticacion-identity]] |
+| Usuario actual | `ICurrentUser` (puerto backend) / `CurrentUser` (frontend) | Identidad, roles, equipos y empresa (solo cliente) de la sesión; la empresa sale del claim `company_id`, nunca de la petición (PRD §5) | [[autenticacion-identity]] |
+| Claim de empresa | `company_id` | Claim de la cookie con la empresa del usuario cliente | [[autenticacion-identity]] |
+| Políticas de autorización | `ClientUser`, `InternalUser`, `Administrator`, `ProductManagerOrAdministrator` | Políticas con nombre del backend; la de reserva exige usuario autenticado | [[autenticacion-identity]] |
 | Radicación | `SubmitTicket` (caso de uso) | Creación de un ticket por un usuario cliente con el formulario común (PRD §6.1) | [[flujo-del-ticket]] |
 | Triage | `Triage` | Revisión de categoría, urgencia e impacto y asignación inicial (PRD §6.2) | [[flujo-del-ticket]] |
 | Cola de triage | `TriageQueue` | Tickets pendientes de triage; vista limitada para el admin de cobertura (PRD §5, §6.2) | [[roles-y-permisos]] |

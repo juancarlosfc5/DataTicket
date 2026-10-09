@@ -150,7 +150,7 @@ Firma propuesta del cliente HTTP (ratificar en T-01): `getJson<T>(path, options)
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Bajo  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Bajo  
   Descripción: ratificar con HU-003/HU-004 la forma de `/api/auth/me`, `/api/auth/antiforgery`, el nombre de la cabecera antiforgery, el formato ProblemDetails y las rutas públicas/protegidas del SPA (que también usan los enlaces de correo de HU-005 y HU-006).
 - [ ] **T-02 — Adoptar el enrutador decidido** · Capa: Frontend (app) · Dificultad: Medio  
   Descripción: bloqueada hasta registrar el ADR de enrutador/estado de servidor. Definir las rutas públicas y protegidas en `src/app` y una guarda que, sin sesión, navegue a `/ingresar?returnUrl=`.
