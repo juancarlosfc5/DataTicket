@@ -37,6 +37,9 @@ Versiones verificadas contra los registros oficiales el **2026-10-07**; coincide
 | `Microsoft.Extensions.DependencyInjection.Abstractions` | 10.0.12 |
 | `xunit.v3` | 4.0.1 (sobre Microsoft.Testing.Platform) |
 | `Microsoft.Testing.Extensions.CodeCoverage` | 18.12.0 |
+| `Testcontainers.PostgreSql` | 4.16.0 (verificada en NuGet el 2026-10-09; usa `testcontainers/ryuk:0.14.0`) |
+| `Microsoft.AspNetCore.Mvc.Testing` | 10.0.12 |
+| `Microsoft.Extensions.TimeProvider.Testing` | 10.10.0 |
 | Por incorporar: `Microsoft.AspNetCore.Identity.EntityFrameworkCore` | 10.0.12 disponible |
 
 SignalR viene incluido en el framework compartido de ASP.NET Core 10.

@@ -1,0 +1,2 @@
+- [TimeProvider en Identity/cookie (ASP.NET Core 10)](aspnetcore10-timeprovider-identity.md) — cookie y sello de seguridad siguen DI; lockout de UserManager y tokens usan reloj real
+- [Recetas de pruebas de integración](integration-tests-recetas.md) — Testcontainers perezoso, filtro RequiresDocker en docker build, UseSetting, versiones verificadas

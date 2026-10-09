@@ -6,7 +6,7 @@ tags: [arquitectura/backend, hexagonal, dotnet]
 sources: ["PRD.md §7, §12, §13", "backend/"]
 aliases: [Backend, Puertos y adaptadores, Arquitectura hexagonal]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Backend hexagonal
@@ -70,6 +70,8 @@ Nombres según [[glosario]]. Es una guía de partida: se ajusta al implementar y
 | `DataTicketDbContext` (vacío) + health check de PostgreSQL | Hecho |
 | `GET /api/health/live` (proceso), `GET /api/health` (checks `ready`; detalle solo en Development), OpenAPI en Development | Hecho |
 | Avisos de vulnerabilidad NuGet (NU1901–NU1904) visibles pero sin romper el build | Hecho |
+| `TimeProvider.System` registrado en el composition root (reloj único, base del puerto `IClock`; las pruebas lo sustituyen) | Hecho (B2 del goal del login) |
+| Proyecto `DataTicket.IntegrationTests` (`WebApplicationFactory<Program>` + Testcontainers); `Program` es público por generación de código de .NET 10 | Hecho (B2) |
 | Identity, dominio, casos de uso, SignalR, migraciones | Pendiente (fase 0–2) |
 
 ## Relacionado

@@ -6,7 +6,7 @@ tags: [arquitectura/infra, docker]
 sources: ["docker-compose.yml", "backend/Dockerfile", "frontend/Dockerfile", ".env.example", "PRD.md §15"]
 aliases: [Docker Compose, Entorno local, Contenedores]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Entorno Docker
@@ -66,10 +66,12 @@ Las claves de correo y Blob aún no las consume el código; los adaptadores debe
 
 | Archivo | Etapas | Validación |
 |---|---|---|
-| `backend/Dockerfile` | `restore` → `dev` · `test` · `build` → `runtime` (`aspnet:10.0`, usuario `app` no root) | `docker build --target test ./backend` ejecuta las pruebas |
+| `backend/Dockerfile` | `restore` → `dev` · `test` · `build` → `runtime` (`aspnet:10.0`, usuario `app` no root) | `docker build --target test ./backend` ejecuta las pruebas que no necesitan Docker (filtra `Category=RequiresDocker`); las de integración con Testcontainers corren con `cd backend && dotnet test` en el anfitrión |
 | `frontend/Dockerfile` | `deps` → `dev` · `build` → `runtime` (`nginxinc/nginx-unprivileged:1.30-alpine`) | nginx sirve el SPA y hace proxy de `/api` y `/hubs` (WebSocket) a `${BACKEND_UPSTREAM}` |
 
-Al crear un proyecto .NET nuevo, agrega su `.csproj` a la etapa `restore`.
+Al crear un proyecto .NET nuevo (también de `tests/`), agrega su `.csproj` a la etapa `restore`: desde 2026-10-09 esa etapa restaura toda la solución `DataTicket.slnx`.
+
+Las pruebas de integración crean contenedores efímeros de Testcontainers (`postgres:18.6` y `testcontainers/ryuk:0.14.0`) que se eliminan solos; nunca usan el servicio `db` de Compose.
 
 ### nginx (imagen runtime del frontend)
 

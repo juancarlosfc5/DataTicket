@@ -63,10 +63,10 @@ Archivo de control del `/goal` que construye **HU-002, HU-003 y HU-004**. Claude
 - [x] Rutas del SPA fijadas (`/ingresar`, `/portal/**`, `/interno/**`, `/sin-permiso`, públicas de cuenta) · Evidencia: tabla «Rutas del SPA» en `autenticacion-identity`: `/ingresar` (con `returnUrl` saneado), `/activar-cuenta`, `/olvide-mi-contrasena`, `/restablecer-contrasena` públicas; `/` redirige por `surface`; `/portal/**` solo cliente; `/interno/**` solo interno; `/sin-permiso`; resto → `/`.
 
 ### B2 — Infraestructura de pruebas backend
-- [ ] `backend/tests/DataTicket.IntegrationTests` creado con `WebApplicationFactory<Program>` y PostgreSQL real aislado · Evidencia:
-- [ ] Añadido a `DataTicket.slnx`, a la etapa `restore` del `backend/Dockerfile` y a las reglas de `ArchitectureTests` si aplica · Evidencia:
-- [ ] Fixtures de cuentas por estado (`Active`, `Invited`, `Deactivated`) y por rol · Evidencia:
-- [ ] Reloj controlable (`TimeProvider`) disponible para las pruebas de bloqueo · Evidencia:
+- [x] `backend/tests/DataTicket.IntegrationTests` creado con `WebApplicationFactory<Program>` y PostgreSQL real aislado · Evidencia: proyecto creado; Testcontainers.PostgreSql 4.16.0 con `postgres:18.6`, una base `dataticket_test_<guid>` por clase borrada al terminar; `Health_responde_200_con_PostgreSQL_del_contenedor` y `El_host_usa_la_base_aislada_y_no_la_del_Compose` en verde; `dotnet test` 19/19 exit 0; sin contenedores huérfanos.
+- [x] Añadido a `DataTicket.slnx`, a la etapa `restore` del `backend/Dockerfile` y a las reglas de `ArchitectureTests` si aplica · Evidencia: en `DataTicket.slnx`; `restore` del `Dockerfile` copia los `.csproj` de `tests/` y restaura la solución; etapa `test` filtra `Category=RequiresDocker` → `docker build --target test` 14/14 exit 0; `ArchitectureTests` 5/5 sin regla nueva (el proyecto de pruebas no es una capa).
+- [x] Fixtures de cuentas por estado (`Active`, `Invited`, `Deactivated`) y por rol · Evidencia: catálogo `TestAccounts`/`TestCompanies`/`TestRoles` = `db.sql` §13.1–13.4 (9 internas, 10 cliente de empresas 01 y 02 en `Active`/`Invited`/`Deactivated`); `TestAccountsCatalogTests` 7/7; persistencia en `ApiFixture.SeedAsync` (B3).
+- [x] Reloj controlable (`TimeProvider`) disponible para las pruebas de bloqueo · Evidencia: `TimeProvider.System` en DI (prueba roja → verde) y `FakeTimeProvider` en la factory (`TestClockTests` 2/2). Hallazgo: el bloqueo de `UserManager` usa `DateTimeOffset.UtcNow` → B3 lo resuelve con un `UserManager` que usa `TimeProvider`. `quality-reviewer`: 0 CRÍTICO, 0 ALTO (6 BAJO, se atienden en B3).
 
 ### B3 — Backend HU-003: iniciar y cerrar sesión
 - [ ] Pruebas del DoD-02 de HU-003 escritas y en rojo · Evidencia:
@@ -118,3 +118,4 @@ Una fila por turno que cambie algo. La añade Claude; no se borran filas.
 | — | — | — | — | Goal creado el 2026-10-09, sin ejecutar |
 | 2026-10-09 | B0 | Hecho | ver `git log` (`chore(auth): B0 …`) | Rama creada, línea base en verde, stack healthy, HU en desarrollo |
 | 2026-10-09 | B1 | Hecho | ver `git log` (`docs(auth): B1 …`) | Contrato T-01 ratificado con los valores por defecto; equipos = roles de Identity expuestos en `teams` |
+| 2026-10-09 | B2 | Hecho | ver `git log` (`test(auth): B2 …`) | Infraestructura de integración con Testcontainers; revisión 0 CRÍTICO / 0 ALTO |

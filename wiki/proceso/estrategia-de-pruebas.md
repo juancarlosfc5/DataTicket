@@ -6,7 +6,7 @@ tags: [proceso, pruebas]
 sources: ["PRD.md §14", "backend/tests", "frontend/src/**/*.test.ts"]
 aliases: [Pruebas, Testing, TDD]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-09
 ---
 
 # Estrategia de pruebas
@@ -19,11 +19,19 @@ Desarrollo guiado por pruebas: primero la prueba que falla, luego la implementac
 |---|---|---|
 | Arquitectura | `DataTicket.ArchitectureTests` (xUnit v3) | Regla de dependencias hexagonal (5 pruebas, en verde) |
 | Unitarias | xUnit v3 + dobles de los puertos | Invariantes de dominio y casos de uso, incluida la autorización negativa |
-| Integración | `WebApplicationFactory<Program>` + PostgreSQL real (Compose o Testcontainers) | Endpoints, EF Core, filtros multiempresa (CA-01), hub SignalR |
+| Integración | `DataTicket.IntegrationTests`: `WebApplicationFactory<Program>` + Testcontainers `postgres:18.6` (nunca el `db` de Compose) | Endpoints, EF Core, filtros multiempresa (CA-01), hub SignalR |
 
 - Runner: **Microsoft.Testing.Platform**, activado en `backend/global.json` (`test.runner`). Por eso `dotnet` se ejecuta **dentro de `backend/`**: `cd backend && dotnet test`. Desde la raíz no se encuentra `global.json`, el SDK cae en modo VSTest y el comando falla (comprobado el 2026-10-07).
 - Cobertura: `cd backend && dotnet test --coverage --coverage-output-format cobertura` (extensión `Microsoft.Testing.Extensions.CodeCoverage`; reporte en `backend/TestResults/`, ignorado por git).
-- Sin SDK local: `docker build --target test ./backend`.
+- Sin SDK local: `docker build --target test ./backend` (solo las pruebas sin Docker; ver abajo).
+
+### Pruebas de integración (`DataTicket.IntegrationTests`, desde 2026-10-09)
+
+- **Aislamiento**: un contenedor `postgres:18.6` por ejecución, arrancado cuando la primera prueba lo necesita; una base `dataticket_test_<guid>` por clase (`IClassFixture<ApiFixture>`), migrada con `MigrateAsync` (nunca `EnsureCreated`) y borrada con `DROP DATABASE … WITH (FORCE)`. Una prueba comprueba que el host no apunta al `db` de Compose.
+- **Rasgo `Category=RequiresDocker`**: obligatorio en toda clase que use PostgreSQL (lo vigila una prueba de convención). La etapa `test` del `backend/Dockerfile` lo excluye porque dentro de `docker build` no hay Docker; las integraciones completas corren con `cd backend && dotnet test` en una máquina con Docker y, en CI, en un runner con Docker ([[hu-001-integracion-continua]]).
+- **Cuentas**: catálogo inmutable `TestAccounts` / `TestCompanies` / `TestRoles` que replica `db.sql` §13.1–13.4 (IDs, correos, estados y roles); la contraseña sintética es una constante del proyecto de pruebas.
+- **Reloj**: `TimeProvider` registrado en el composition root y sustituido por `FakeTimeProvider` (inicio 2026-10-09 13:00 UTC; `api.Time.Advance(...)`). Respetan ese reloj la cookie de autenticación y el `SecurityStampValidator`; **no** lo respetan el bloqueo de `UserManager` (`DateTimeOffset.UtcNow`) ni los tokens de `DataProtectorTokenProvider` (afecta a HU-005/HU-006). Fuente: código de `dotnet/aspnetcore` `release/10.0`.
+- **Reinicio del backend**: otra `WebApplicationFactory` con la misma cadena de conexión.
 
 ## Frontend (React 19)
 

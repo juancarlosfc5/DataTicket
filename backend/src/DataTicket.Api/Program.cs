@@ -9,6 +9,10 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 
+// Reloj único de la aplicación (casos de uso, cookie de autenticación, sello de seguridad).
+// Las pruebas de integración lo sustituyen por FakeTimeProvider.
+builder.Services.AddSingleton(TimeProvider.System);
+
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 

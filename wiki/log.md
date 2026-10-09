@@ -253,3 +253,10 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: contrato de `/api/auth/antiforgery`, `/login`, `/logout`, `/me`, políticas, públicos y rutas del SPA ratificado con los valores por defecto del goal; equipos implementados como roles de Identity (`db.sql`) pero expuestos en `teams`; nuevos términos en el glosario.
 - Wiki: [[autenticacion-identity]], [[glosario]], [[pendientes]] (P-22, roles vs. equipos), [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
 - Pendiente: ratificar P-22 con el equipo; decisión definitiva de equipos en HU-009.
+
+## [2026-10-09] infra | Goal del login — B2 infraestructura de pruebas de integración (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`)
+- Cambios: proyecto `DataTicket.IntegrationTests` (`WebApplicationFactory<Program>` + Testcontainers `postgres:18.6`, base aislada por clase, rasgo `RequiresDocker`), catálogo de cuentas de `db.sql` §13, `TimeProvider` en DI sustituible por `FakeTimeProvider`; `Dockerfile` restaura la solución completa. `dotnet test` 19/19.
+- Hallazgo: el bloqueo de `UserManager` y los tokens de `DataProtectorTokenProvider` no respetan `TimeProvider` (relevante para CHU-05 de HU-003 y para HU-005/HU-006).
+- Wiki: [[estrategia-de-pruebas]], [[backend-hexagonal]], [[entorno-docker]], [[stack-y-versiones]]
+- Pendiente: revisión de `quality-reviewer` de B2; B5 (frontend) en curso en paralelo.
