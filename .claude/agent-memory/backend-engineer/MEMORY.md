@@ -1,2 +1,4 @@
 - [TimeProvider en Identity/cookie (ASP.NET Core 10)](aspnetcore10-timeprovider-identity.md) — cookie y sello de seguridad siguen DI; lockout de UserManager y tokens usan reloj real
-- [Recetas de pruebas de integración](integration-tests-recetas.md) — Testcontainers perezoso, filtro RequiresDocker en docker build, UseSetting, versiones verificadas
+- [Recetas de pruebas de integración](integration-tests-recetas.md) — Testcontainers perezoso, filtro RequiresDocker, WithWebHostBuilder para espías, rojo por mutación, versiones verificadas
+- [Identity + EF Core frente a db.sql](identity-efcore-db-sql-mapping.md) — SchemaVersion, snake_case en history, defaults bool por SQL, Data Protection al arrancar
+- [ProblemDetails, Accept y ThrowOnBadRequest (ASP.NET Core 10)](aspnetcore10-problemdetails-accept.md) — WriteAsync lanza con Accept text/html; Development da 500 con JSON mal formado

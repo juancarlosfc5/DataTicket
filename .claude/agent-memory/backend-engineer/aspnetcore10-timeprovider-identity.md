@@ -16,4 +16,4 @@ NO lo respetan (usan el reloj real):
 - `DataProtectorTokenProvider` (tokens de invitación/restablecimiento, HU-005/006): `DateTimeOffset.UtcNow`.
 - Data Protection (`XmlKeyManager`, `KeyRingProvider`): reloj real; no interfiere con un reloj falso.
 
-**How to apply:** en pruebas de bloqueo (CHU-05 de HU-003) no basta con `FakeTimeProvider.Advance`; decide override de `UserManager` o manipulación de `LockoutEnd` y documéntalo. Revisa de nuevo si sube la versión mayor de ASP.NET Core. Ver [[integration-tests-recetas]].
+**How to apply:** el bloqueo ya está resuelto con `DataTicketUserManager` (override con TimeProvider, B3 2026-10-09); los tokens de HU-005/006 siguen con reloj real. Revisa de nuevo si sube la versión mayor de ASP.NET Core. Ver [[integration-tests-recetas]].

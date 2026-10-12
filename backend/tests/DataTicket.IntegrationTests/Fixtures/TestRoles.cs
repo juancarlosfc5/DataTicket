@@ -1,18 +1,19 @@
+using DataTicket.Domain.Users;
+
 namespace DataTicket.IntegrationTests.Fixtures;
 
 /// <summary>
-/// Nombres de los roles de Identity (<c>db.sql</c> §12; contrato T-01 de HU-004). <c>Development</c> y
+/// Atajos a los nombres de rol de producción (<see cref="RoleNames"/>, <c>db.sql</c> §12). <c>Development</c> y
 /// <c>Production</c> son los equipos, modelados como roles.
 /// </summary>
 public static class TestRoles
 {
-    public const string ProductManager = "ProductManager";
-    public const string Administrator = "Administrator";
-    public const string Development = "Development";
-    public const string Production = "Production";
-    public const string Requester = "Requester";
-    public const string CompanyCoordinator = "CompanyCoordinator";
+    public const string ProductManager = RoleNames.ProductManager;
+    public const string Administrator = RoleNames.Administrator;
+    public const string Development = RoleNames.Development;
+    public const string Production = RoleNames.Production;
+    public const string Requester = RoleNames.Requester;
+    public const string CompanyCoordinator = RoleNames.CompanyCoordinator;
 
-    public static IReadOnlyList<string> All { get; } =
-        [ProductManager, Administrator, Development, Production, Requester, CompanyCoordinator];
+    public static IReadOnlyList<string> All => RoleNames.All;
 }

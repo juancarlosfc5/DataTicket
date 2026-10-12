@@ -3,10 +3,10 @@ title: Pendientes, dudas y contradicciones
 type: pendientes
 status: vigente
 tags: [pendientes, decision]
-sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)"]
+sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)", "Revisión del código de B3 del goal del login (2026-10-12)"]
 aliases: [Preguntas abiertas, Decisiones pendientes, Contradicciones]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Pendientes, dudas y contradicciones
@@ -40,6 +40,9 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 
 > [!warning] Contradicción — métrica "primera respuesta"
 > PRD §13 (fase 3) menciona "medición de primera respuesta", métrica que §4 no define (solo define tiempo hasta respuesta formal) → [[dashboard-y-metricas]].
+
+> [!warning] Contradicción menor — identificadores de los roles de referencia (2026-10-12)
+> `db.sql` §12 genera al azar el `id` (`DEFAULT uuidv7()`) y el `concurrency_stamp` (`gen_random_uuid()`) de los seis roles. La migración `AddIdentityAndCompanies` (B3) los siembra con `HasData` y valores fijos (`a8000000-0000-7000-8000-00000000000N`), porque el modelo de EF Core debe ser estable entre migraciones. No cambia el comportamiento: los roles se referencian por `normalized_name`. Se aplicó el código y `db.sql` no se tocó. **Acción:** decidir si se alinea `db.sql` §12 con los identificadores fijos, como pide [[adr-0009-db-sql-diseno-de-referencia]] cuando una HU se aparta del diseño → [[persistencia-postgresql]].
 
 ## 2. Decisiones de producto pendientes antes de producción (PRD §16)
 
@@ -126,6 +129,18 @@ Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DT
 - [ ] Máximo de archivos por solicitud (radicación, respuesta formal): define el límite de cuerpo del backend; nginx admite hoy 50 MB en `/api/` → [[archivos-adjuntos]], [[entorno-docker]].
 - [ ] Content-Security-Policy del SPA: requiere conocer el dominio público del Blob para `img-src`/`connect-src` → [[entorno-docker]].
 - [ ] Al desplegar tras un proxy/TLS: `UseForwardedHeaders` con proxies conocidos, `AllowedHosts` fijo y `X-Forwarded-Proto` correcto → [[autenticacion-identity]].
+  - Ampliación 2026-10-12 (B3): fuera de Development las cookies `dataticket.auth` y `dataticket.xsrf` usan `CookieSecurePolicy.Always`, y con esa política antiforgery exige que la petición llegue por HTTPS. Tras un proxy que termina TLS el backend recibe HTTP: sin `UseForwardedHeaders` (hoy no está en `Program.cs`) el token antiforgery no se emite ni se valida y el login no funciona. Es comportamiento del framework y ninguna prueba del repositorio lo cubre todavía. Previsiblemente afecta también a probar la imagen `runtime` por HTTP en local → [[entorno-docker]].
+
+Endurecimiento del login, detectado al cerrar B3 del goal del login (2026-10-12). Ninguno bloquea B3; deben resolverse antes de un entorno compartido:
+
+- [ ] **Claves de Data Protection sin cifrar en reposo.** Se guardan en `identity.data_protection_keys` con `PersistKeysToDbContext`, sin `ProtectKeysWith*`: quien lea esa tabla o un respaldo puede falsificar cookies de sesión y tokens. Elegir el mecanismo de cifrado junto con la infraestructura (§16.1) → [[autenticacion-identity]], [[persistencia-postgresql]].
+- [ ] **`POST /api/auth/login` sin limitador de peticiones y `password` sin longitud máxima.** El bloqueo por cuenta (5 intentos, P-18) no frena un barrido de muchas cuentas, y cada intento cuesta un cálculo de hash (también para correos inexistentes, por el hash señuelo). Definir un limitador y un máximo de longitud para `password` → [[autenticacion-identity]].
+- [ ] **El login aún no rechaza a los usuarios de empresas inactivas.** `AccountAccess.CanSignIn` solo mira el estado de la cuenta y el perfil, tanto al iniciar sesión como al revalidar el sello. P-18 propone que desactivar una empresa bloquee el acceso de sus usuarios; es una tarea de [[hu-007-administrar-empresas-cliente]] → [[autenticacion-identity]].
+- [ ] **FK compuesta de `tickets` hacia `identity.users (id, company_id)`.** `ux_users_id_company` se creó con SQL porque `company_id` admite nulos y no puede ser clave alternativa en EF Core; por lo mismo, la FK `tickets(requester_id, company_id)` del invariante 1 tendrá que crearse con SQL en la migración de [[hu-013-radicar-ticket]], no con `HasPrincipalKey` → [[persistencia-postgresql]].
+- [x] ~~**Comprobar en Compose la migración al arrancar.**~~ Comprobado el 2026-10-12 al reconstruir `backend` → [[entorno-docker]].
+- [ ] **Idioma del `400` por JSON mal formado.** El título es el del framework («Bad Request», en inglés); el contrato T-01 no lo fija. Decidir si se traduce como el resto de errores → [[autenticacion-identity]].
+- [ ] **ProblemDetails de `UseStatusCodePages` y del manejador de excepciones con `Accept` no JSON.** Con `Accept: text/html`, un `400` generado por el framework sale como `text/plain`, y el `401` del login es `problem+json` sin `traceId`. No filtra información; unificar el formato → [[autenticacion-identity]].
+- [ ] **Aviso de `dotnet watch` en el contenedor `backend`:** no puede leer `obj\Debug/net10.0/staticwebassets.development.json` (separador de Windows en el `obj` compartido con el host). No impide el arranque → [[entorno-docker]].
 
 ## 5. Equipo y colaboración
 

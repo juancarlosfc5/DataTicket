@@ -1,3 +1,5 @@
+using DataTicket.Domain.Users;
+
 namespace DataTicket.IntegrationTests.Fixtures;
 
 /// <summary>
@@ -83,7 +85,7 @@ public static class TestAccounts
             Guid.Parse($"a0000000-0000-7000-8000-{number:D12}"),
             email,
             displayName,
-            TestAccountStatus.Active,
+            AccountStatus.Active,
             [.. roles],
             CompanyId: null);
 
@@ -101,9 +103,9 @@ public static class TestAccounts
         };
         var status = kind switch
         {
-            ClientKind.Invited => TestAccountStatus.Invited,
-            ClientKind.Deactivated => TestAccountStatus.Deactivated,
-            _ => TestAccountStatus.Active,
+            ClientKind.Invited => AccountStatus.Invited,
+            ClientKind.Deactivated => AccountStatus.Deactivated,
+            _ => AccountStatus.Active,
         };
         var role = kind == ClientKind.Coordinator ? TestRoles.CompanyCoordinator : TestRoles.Requester;
 

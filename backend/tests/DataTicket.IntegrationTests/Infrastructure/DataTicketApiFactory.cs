@@ -27,11 +27,17 @@ public sealed record ApiFactoryOptions
     /// <c>null</c> deja el de producción (<see cref="TimeProvider.System"/>).
     /// </summary>
     public FakeTimeProvider? TimeProvider { get; init; }
+
+    /// <summary>
+    /// Si el host aplica las migraciones al arrancar (solo surte efecto en Development). Por defecto no:
+    /// las fixtures migran de forma explícita para controlar los fallos.
+    /// </summary>
+    public bool ApplyMigrationsOnStartup { get; init; }
 }
 
 /// <summary>
-/// Host en memoria del Api (<see cref="WebApplicationFactory{TEntryPoint}"/>) apuntado a una base aislada.
-/// Para simular un reinicio se crea otra instancia con la misma cadena de conexión.
+/// Host en memoria del Api (<see cref="WebApplicationFactory{TEntryPoint}"/>) apuntado a una base aislada,
+/// con los <see cref="TestEndpoints"/>. Para simular un reinicio se crea otra instancia con la misma cadena.
 /// </summary>
 public sealed class DataTicketApiFactory(ApiFactoryOptions options) : WebApplicationFactory<Program>
 {
@@ -54,14 +60,17 @@ public sealed class DataTicketApiFactory(ApiFactoryOptions options) : WebApplica
         // UseSetting entra en la configuración antes de que Program.cs la lea (AddInfrastructure),
         // y tiene prioridad sobre appsettings.{Environment}.json.
         builder.UseSetting($"ConnectionStrings:{InfrastructureRegistration.ConnectionStringName}", Options.ConnectionString);
+        builder.UseSetting(DatabaseMigrations.ApplyOnStartupKey, Options.ApplyMigrationsOnStartup ? "true" : "false");
 
-        if (Options.TimeProvider is { } fakeTime)
+        builder.ConfigureTestServices(services =>
         {
-            builder.ConfigureTestServices(services =>
+            services.AddSingleton<IStartupFilter, TestEndpoints>();
+
+            if (Options.TimeProvider is { } fakeTime)
             {
                 services.RemoveAll<TimeProvider>();
                 services.AddSingleton<TimeProvider>(fakeTime);
-            });
-        }
+            }
+        });
     }
 }

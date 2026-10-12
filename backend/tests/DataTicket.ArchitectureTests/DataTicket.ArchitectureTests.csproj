@@ -11,6 +11,8 @@
     <ProjectReference Include="..\..\src\DataTicket.Application\DataTicket.Application.csproj" />
     <ProjectReference Include="..\..\src\DataTicket.Infrastructure\DataTicket.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\DataTicket.Api\DataTicket.Api.csproj" />
+    <!-- Solo para inspeccionar sus referencias: las pruebas unitarias no tocan adaptadores ni frameworks. -->
+    <ProjectReference Include="..\DataTicket.UnitTests\DataTicket.UnitTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

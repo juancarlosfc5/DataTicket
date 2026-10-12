@@ -22,18 +22,27 @@ public sealed class TestCategoryConventionTests
             $"Añade [Trait(TestCategories.Name, TestCategories.RequiresDocker)] a: {string.Join(", ", offenders)}");
     }
 
+    private static readonly Type[] PostgreSqlFixtures = [typeof(ApiFixture), typeof(PostgreSqlContainerFixture)];
+
     private static bool UsesPostgreSql(Type type)
     {
+        // Las propias fixtures no son clases de prueba.
+        if (PostgreSqlFixtures.Contains(type))
+        {
+            return false;
+        }
+
         var usesFixtureInterface = type.GetInterfaces().Any(contract =>
             contract.IsGenericType
-            && contract.GetGenericTypeDefinition() == typeof(IClassFixture<>)
-            && contract.GetGenericArguments()[0] == typeof(ApiFixture));
+            && (contract.GetGenericTypeDefinition() == typeof(IClassFixture<>)
+                || contract.GetGenericTypeDefinition() == typeof(ICollectionFixture<>))
+            && PostgreSqlFixtures.Contains(contract.GetGenericArguments()[0]));
 
-        var usesContainerDirectly = type != typeof(ApiFixture) && type.GetConstructors()
+        var receivesFixture = type.GetConstructors()
             .SelectMany(constructor => constructor.GetParameters())
-            .Any(parameter => parameter.ParameterType == typeof(PostgreSqlContainerFixture));
+            .Any(parameter => PostgreSqlFixtures.Contains(parameter.ParameterType));
 
-        return usesFixtureInterface || usesContainerDirectly;
+        return usesFixtureInterface || receivesFixture;
     }
 
     private static bool HasRequiresDockerTrait(Type type) =>

@@ -1,3 +1,5 @@
+using DataTicket.Domain.Users;
+
 namespace DataTicket.IntegrationTests.Fixtures;
 
 /// <summary>
@@ -32,7 +34,7 @@ public sealed class TestAccountsCatalogTests
     public void Catalogo_cubre_los_tres_estados_y_los_seis_roles()
     {
         Assert.Equal(
-            Enum.GetValues<TestAccountStatus>().Order(),
+            Enum.GetValues<AccountStatus>().Order(),
             TestAccounts.All.Select(account => account.Status).Distinct().Order());
 
         Assert.Equal(
@@ -59,7 +61,7 @@ public sealed class TestAccountsCatalogTests
         Assert.All(TestAccounts.Internals, account =>
         {
             Assert.Null(account.CompanyId);
-            Assert.Equal(TestAccountStatus.Active, account.Status);
+            Assert.Equal(AccountStatus.Active, account.Status);
             Assert.DoesNotContain(account.Roles, role => clientRoles.Contains(role));
         });
     }
@@ -74,7 +76,7 @@ public sealed class TestAccountsCatalogTests
                 .Select(account => account.Status)
                 .Distinct();
 
-            Assert.Equal(Enum.GetValues<TestAccountStatus>().Order(), statuses.Order());
+            Assert.Equal(Enum.GetValues<AccountStatus>().Order(), statuses.Order());
         }
     }
 
@@ -91,6 +93,6 @@ public sealed class TestAccountsCatalogTests
     public void Solo_las_cuentas_Invited_carecen_de_contrasena()
     {
         Assert.All(TestAccounts.All, account =>
-            Assert.Equal(account.Status != TestAccountStatus.Invited, account.HasPassword));
+            Assert.Equal(account.Status != AccountStatus.Invited, account.HasPassword));
     }
 }

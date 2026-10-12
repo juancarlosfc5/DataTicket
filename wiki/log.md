@@ -284,3 +284,30 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Incidencia: el disco C: se llenó (≈3 MB libres); se vaciaron los cachés de npm (9,2 GB) y HTTP de NuGet con sus comandos propios. Docker (`Docker\wsl`, 21,7 GB) es el mayor consumidor.
 - Wiki: [[frontend-mvc]], [[autenticacion-identity]], [[estrategia-de-pruebas]], [[sistema-de-diseno]]
 - Pendiente: B3 (backend) en curso. Revisión de B6: 0 CRÍTICO, 0 ALTO (3 BAJO a B7).
+
+## [2026-10-09] infra | Goal del login — Docker sin respuesta tras el disco lleno (bloqueo)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: correcciones BAJO de la revisión de B6 en el frontend (aviso de logout obsoleto, error de `/me` tras el login con «Reintentar», `method="post"`), 150 pruebas en verde, sin commit (entran con B7). B3 del backend a medio camino (migración `AddIdentityAndCompanies` creada).
+- Incidencia: tras llenarse el disco C:, `docker version` no responde (procesos de Docker Desktop/WSL vivos). Según las reglas del goal, se detiene la ejecución y se consulta a la persona líder.
+- Wiki: [[entorno-docker]] (sin cambios de contenido)
+- Pendiente: recuperar Docker; terminar B3, luego B4, B7 y B8.
+
+## [2026-10-12] feature | Goal del login — reanudación tras recuperar Docker; B3 verificado y en revisión
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: la persona líder reinició Docker y liberó disco (58 GB libres; 5 servicios arriba, `db` y `backend` healthy); el orquestador no modificó Docker. B3 del backend, que quedó sin informe por el corte de sesión, se verificó de nuevo: `dotnet build` 0 advertencias / 0 errores y `dotnet test` 70/70 (exit 0). Rojo de TDD comprobado a posteriori en una copia fuera del repo: sin `api.MapAuthEndpoints()` fallan 19 de 70, incluidas las 11 pruebas del DoD-02 de HU-003.
+- Hallazgo: la base `db` del Compose aún no tiene la migración `AddIdentityAndCompanies` (el `backend` del stack corre la imagen anterior); se aplicará al reconstruir el servicio, después de la revisión.
+- Wiki: sin cambios de contenido; [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]] y [[glosario]] se actualizan al cerrar B3.
+- Pendiente: veredicto de `quality-reviewer` sobre B3, cierre de wiki y commit de B3; después B4, B7 y B8.
+
+## [2026-10-12] feature | Goal del login — B3 revisado; correcciones en curso y wiki de B3 al día
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: `quality-reviewer` sobre B3: 0 CRÍTICO, 0 ALTO (4 MEDIO, 10 BAJO); la migración `AddIdentityAndCompanies` coincide con `db.sql` §2–§3. `backend-engineer` está corrigiendo en `backend/` los MEDIO y BAJO de la revisión (401/403 con cualquier `Accept`, política `Secure`, defensa de tiempos con hash señuelo del hasher inyectado, JSON mal formado, migración solo en Development, reglas de arquitectura); esos archivos aún no están verificados por el orquestador.
+- Wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[stack-y-versiones]], [[entorno-docker]], [[pendientes]], [[index]]
+- Pendiente: verificar las correcciones, aplicar la migración al `db` del Compose reconstruyendo `backend`, marcar y commitear B3. Preguntas abiertas en [[pendientes]]: IDs fijos de roles frente a `db.sql` §12, estado `propuesta` de [[autenticacion-identity]], endurecimiento del login y cookie no persistente.
+
+## [2026-10-12] feature | Goal del login — B3 iniciar y cerrar sesión (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`, revisión de `quality-reviewer`)
+- Cambios: Identity sobre `DataTicketDbContext`, migración `AddIdentityAndCompanies`, endpoints `antiforgery`/`login`/`logout`, cookie, bloqueo con `TimeProvider`, sello de seguridad y claves de Data Protection en PostgreSQL. Correcciones de la revisión: 401/403 `problem+json` con cualquier `Accept` (antes 500), JSON mal formado → 400, hash señuelo `DecoyPasswordHash` con el hasher de la aplicación, reglas de arquitectura para `DataTicket.UnitTests` y la ubicación de los puertos.
+- Verificación: `dotnet build` 0/0; `dotnet test` 96/96 (exit 0); `quality-reviewer` 0 CRÍTICO, 0 ALTO; `docker compose up --build -d backend` aplicó la migración al `db` del Compose (9 tablas, 6 roles, sin datos de prueba) y los endpoints responden en `:8080`.
+- Wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[stack-y-versiones]], [[entorno-docker]], [[pendientes]], [[index]]
+- Pendiente: B4 (`ICurrentUser`, claims, políticas, *fallback*, `/api/auth/me` y prueba de convención de antiforgery); B7 y B8. Preguntas abiertas en [[pendientes]]: IDs fijos de roles frente a `db.sql` §12, endurecimiento del login, idioma del 400 genérico.

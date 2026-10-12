@@ -47,7 +47,7 @@ public sealed class HealthEndpointsTests(ApiFixture api) : IClassFixture<ApiFixt
         Assert.StartsWith("dataticket_test_", used.Database, StringComparison.Ordinal);
         Assert.Equal(expected.Database, used.Database);
         Assert.Equal(expected.Port, used.Port);
-        Assert.NotEqual(5432, used.Port);
+        Assert.NotEqual("dataticket", used.Database);
         Assert.True(
             await dbContext.Database.CanConnectAsync(TestContext.Current.CancellationToken),
             "La base aislada debe aceptar conexiones.");

@@ -3,15 +3,20 @@ title: Autenticación con ASP.NET Core Identity
 type: arquitectura
 status: propuesta
 tags: [arquitectura/backend, seguridad, identity]
-sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login"]
+sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login", "backend/src/DataTicket.Api/Auth", "backend/src/DataTicket.Api/Endpoints/Auth", "backend/src/DataTicket.Application/Authentication", "backend/src/DataTicket.Infrastructure/Identity"]
 aliases: [Identity, Login, Autenticación]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Autenticación con ASP.NET Core Identity
 
-El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2026-10-07). El mecanismo concreto —cookie *same-origin* a través del proxy del frontend— quedó **aceptado** el 2026-10-09 en [[adr-0004-autenticacion-cookie-mismo-origen]]. Aún no está implementado: lo construye el goal de `goal_login.md` ([[plan-goal-login-y-loop-chat]]). La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13 ([[persistencia-postgresql]]).
+El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2026-10-07). El mecanismo concreto —cookie *same-origin* a través del proxy del frontend— quedó **aceptado** el 2026-10-09 en [[adr-0004-autenticacion-cookie-mismo-origen]]. Lo construye el goal de `goal_login.md` ([[plan-goal-login-y-loop-chat]]) por bloques:
+
+- **Implementado en el backend (B3, HU-003):** antiforgery, login, logout, cookie de sesión, bloqueo por intentos fallidos, revalidación del sello de seguridad y respuestas `401`/`403` sin `Location`. Detalle en *Implementación en el backend (B3)*.
+- **Pendiente (B4, HU-004):** `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims, las políticas con nombre y la política de reserva (*fallback*).
+
+La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13 ([[persistencia-postgresql]]).
 
 ## Requisitos del PRD que condicionan el diseño
 
@@ -113,6 +118,34 @@ Respuesta de `/me` (ejemplo con los IDs de `db.sql` §13):
 - **Endpoints públicos** (lista explícita, verificada por prueba): `GET /api/health`, `GET /api/health/live`, `GET /api/auth/antiforgery`, `POST /api/auth/login` y `GET /openapi/v1.json` solo en Development. HU-005 y HU-006 añadirán `POST /api/auth/invitations/accept`, `POST /api/auth/password/forgot` y `POST /api/auth/password/reset`.
 - No se registra `MapIdentityApi` ni ninguna ruta `register`, `confirmEmail` o `manage`.
 
+### Implementación en el backend (B3, 2026-10-12)
+
+B3 implementa `GET /api/auth/antiforgery`, `POST /api/auth/login` y `POST /api/auth/logout` con el reparto por capas de [[backend-hexagonal]]. Los valores de la tabla *Parámetros de la sesión* están en `IdentitySettings` (Infrastructure) y `AuthenticationSetup` (Api).
+
+| Capa | Pieza | Papel |
+|---|---|---|
+| `Domain/Users` | `AccountAccess`, `RoleNames`, `AccountStatus`, `Surface` | `AccountAccess.ResolveSurface` aplica los «Perfiles válidos»; `CanSignIn` exige cuenta `Active` **y** perfil válido |
+| `Application/Ports/In/Authentication` | `ISignIn`, `ISignOut` (+ `SignInCommand`, `SignInOutcome`) | Puertos de entrada; el resultado es solo `Succeeded` o `InvalidCredentials`, sin el motivo del fallo (PRD §5) |
+| `Application/Authentication` | `SignIn`, `SignOut` | `SignIn` verifica credenciales y comprueba `CanSignIn` **antes** de emitir la sesión |
+| `Application/Ports/Out` | `ICredentialVerifier` (+ `VerifiedAccount`), `IUserSession` | Verificar correo y contraseña con bloqueo; emitir y cerrar la sesión del canal actual |
+| `Infrastructure/Identity` | `IdentityCredentialVerifier`, `IdentityUserSession`, `DataTicketUserManager`, `DataTicketSignInManager`, `ApplicationUser`, `IdentitySettings` | Adaptadores sobre Identity (abajo) |
+| `Api/Auth` | `AuthenticationSetup`, `AntiforgeryValidationFilter`, `ApiProblems` | Cookie, antiforgery, textos y escritura de ProblemDetails |
+| `Api/Endpoints/Auth` | `AuthEndpoints`, `LoginRequest` | Endpoints mínimos propios y validación de forma del cuerpo |
+
+- **Registro de Identity** (`Infrastructure/DependencyInjection.cs`): `AddIdentityCore<ApplicationUser>` con roles `IdentityRole<Guid>`, almacenes de EF Core sobre `DataTicketDbContext` y proveedores de tokens por defecto; esquema de Identity `Version1` (sin tabla de *passkeys*) y correo único. Los esquemas de autenticación los registra el `Api`.
+- **`DataTicketUserManager` — bloqueo con el reloj de la aplicación.** El `UserManager` estándar de ASP.NET Core 10 calcula el bloqueo con el reloj real (`DateTimeOffset.UtcNow`). Esta clase redefine `IsLockedOutAsync` y `AccessFailedAsync` con el `TimeProvider` inyectado: no hay un reloj paralelo y el bloqueo se prueba con `FakeTimeProvider` ([[estrategia-de-pruebas]]). Al alcanzar el umbral bloquea y reinicia el contador, como Identity.
+- **`DataTicketSignInManager` — sello de seguridad.** Al revalidar el sello (cada 5 min) exige además que la cuenta siga `Active` y con perfil válido (`AccountAccess.CanSignIn`): una cuenta desactivada pierde la sesión aunque su sello no haya cambiado.
+- **`IdentityCredentialVerifier` — tiempos de respuesta.** Comprueba la contraseña con `lockoutOnFailure: true`. Si el correo no existe, la cuenta no tiene contraseña o ya está bloqueada, verifica igualmente la clave recibida contra un hash señuelo (misma parametrización que los reales) para que el tiempo de respuesta no delate el motivo. El señuelo es `DecoyPasswordHash`, un *singleton* que se genera con el `IPasswordHasher<ApplicationUser>` de la aplicación (mismo coste que los hashes reales); todo intento de login cuesta **exactamente una** verificación de hash, y lo fija `LoginHashingCostTests` contando llamadas, sin cronómetros.
+- **`IdentityUserSession` — cookie no persistente.** Emite la sesión con `isPersistent: false`: la cookie vive mientras el navegador esté abierto y su tique expira a las 8 h deslizantes.
+- **Antiforgery.** `AntiforgeryValidationFilter` se aplica al grupo raíz en `Program.cs` (`app.MapGroup("/api").AddEndpointFilter<AntiforgeryValidationFilter>()`), así que cubre todas las mutaciones de los endpoints mapeados **dentro de ese grupo**: todo endpoint de producto debe colgar de él. No se usa el middleware `UseAntiforgery` porque solo cubre formularios. El filtro corre después de la autorización: sin sesión, una ruta protegida responde `401` antes que el `400` de antiforgery.
+- **`401`/`403`.** Los eventos de redirección de la cookie escriben ProblemDetails con `ApiProblems` y nunca emiten `Location`. La respuesta es `application/problem+json` con `traceId` para **cualquier** `Accept` (también `text/html` o `text/plain`): `ApiProblems` delega en `TypedResults.Problem`, que escribe el JSON aunque ningún `IProblemDetailsWriter` acepte la petición.
+- **Cuerpo JSON ilegible.** `RouteHandlerOptions.ThrowOnBadRequest = false` en `Program.cs`: un JSON mal formado responde `400` `problem+json` en todos los entornos (antes, `500` en Development). El título es el del framework («Bad Request»); su idioma queda en [[pendientes]] §4.
+- **Validación del login** (`LoginRequest.Validate`): `400` «Uno o más campos no son válidos.» con `errors.email` / `errors.password`; un cuerpo ausente se trata como campos vacíos. El correo debe ser una dirección simple con dominio de al menos dos etiquetas; la contraseña solo se exige no vacía (sin longitud máxima, ver [[pendientes]] §4).
+- **Data Protection.** Claves en `identity.data_protection_keys` (`PersistKeysToDbContext<DataTicketDbContext>`), nombre de aplicación `DataTicket`; sin cifrado en reposo ([[pendientes]] §4, [[persistencia-postgresql]]).
+
+> [!question] Pendiente — B4 (HU-004)
+> Todavía no existen `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims propia (nombre visible y `company_id`) ni las políticas con nombre. `AddAuthorization()` no define política de reserva: hoy solo exigen sesión los endpoints que llaman a `RequireAuthorization()` (en B3, `POST /api/auth/logout`). El login tampoco comprueba aún que la empresa de la cuenta esté activa ([[hu-007-administrar-empresas-cliente|HU-007]], [[pendientes]] §4).
+
 ### Rutas del SPA
 
 | Ruta | Acceso | Contenido |
@@ -150,4 +183,4 @@ Invitación, restablecimiento y vinculación a un ticket salen por `IEmailSender
 
 ## Relacionado
 
-- [[adr-0004-autenticacion-cookie-mismo-origen]] · [[hu-002-shell-y-navegacion-por-rol]] · [[hu-003-iniciar-y-cerrar-sesion]] · [[hu-004-contexto-de-usuario-y-autorizacion]] · [[glosario]] · [[sistema-de-diseno]] · [[plan-goal-login-y-loop-chat]] · [[roles-y-permisos]] · [[persistencia-postgresql]] · [[entorno-docker]]
+- [[adr-0004-autenticacion-cookie-mismo-origen]] · [[hu-002-shell-y-navegacion-por-rol]] · [[hu-003-iniciar-y-cerrar-sesion]] · [[hu-004-contexto-de-usuario-y-autorizacion]] · [[glosario]] · [[sistema-de-diseno]] · [[plan-goal-login-y-loop-chat]] · [[roles-y-permisos]] · [[persistencia-postgresql]] · [[entorno-docker]] · [[backend-hexagonal]] · [[estrategia-de-pruebas]] · [[pendientes]]

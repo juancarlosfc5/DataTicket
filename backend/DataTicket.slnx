@@ -8,5 +8,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/DataTicket.ArchitectureTests/DataTicket.ArchitectureTests.csproj" />
     <Project Path="tests/DataTicket.IntegrationTests/DataTicket.IntegrationTests.csproj" />
+    <Project Path="tests/DataTicket.UnitTests/DataTicket.UnitTests.csproj" />
   </Folder>
 </Solution>

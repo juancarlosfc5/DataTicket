@@ -14,6 +14,16 @@ Comprobado el 2026-10-09 (B2 del goal del login):
 - `MigrateAsync` sin migraciones registra un `fail` de EF (SELECT a `__EFMigrationsHistory`) que es ruido, no error.
 - En Git Bash de esta máquina, invocar `python` colgó la shell (2 min): usar `perl -0pi -e` o Edit.
 
+Comprobado el 2026-10-12 (correcciones de la revisión de B3):
+
+- Para sustituir o envolver un servicio en una sola prueba: `api.Factory.WithWebHostBuilder(b => b.ConfigureTestServices(...))` crea otro host sobre la misma base y el MISMO `FakeTimeProvider` (hereda `ConfigureWebHost` de la factory). Así se cuenta el uso del `IPasswordHasher` sin cronómetros (`PasswordHasherSpy`).
+- Pruebas que caracterizan código ya correcto (políticas de cookie, constantes del contrato, guardas de entorno): el rojo se demuestra con una mutación temporal del código de producción (copia previa en el scratchpad y `cmp` al restaurar), no solo viendo el verde.
+- Para distinguir `CookieSecurePolicy.Always` de `SameAsRequest` hay que afirmar las opciones (`IOptionsMonitor<CookieAuthenticationOptions>.Get(IdentityConstants.ApplicationScheme)`, `IOptions<AntiforgeryOptions>`): sobre HTTPS ambas emiten la misma cabecera, y con `Always` el antiforgery lanza (500) si la petición llega por HTTP.
+- `TestBrowser` toma el `TimeProvider` del host: con el reloj real descartaba las cookies con `Expires` (el reloj falso arranca en el pasado).
+- Un proyecto de pruebas xunit.v3 (Exe) puede referenciar a otro con `ProjectReference` sin avisos ni descubrimiento duplicado (`ArchitectureTests` → `UnitTests`).
+- Ejecutar una sola clase: `dotnet test --project tests/DataTicket.IntegrationTests --no-build --filter-class "<nombre completo>"`.
+- `perl -0pi -e` con rutas de Windows (`..\..\`) en el patrón falla en silencio: para `.csproj` usar Edit.
+
 Versiones verificadas en NuGet (flatcontainer index.json, solo estables) el 2026-10-09: Testcontainers.PostgreSql 4.16.0 (net8/9/10), Microsoft.AspNetCore.Mvc.Testing 10.0.12, Microsoft.Extensions.TimeProvider.Testing 10.10.0, xunit.v3 4.0.1. SDK local 10.0.201, runtime ASP.NET Core local 10.0.5.
 
 **Why:** evitar repetir los diagnósticos; **How to apply:** al añadir pruebas de integración o tocar la etapa test del Dockerfile. Ver [[aspnetcore10-timeprovider-identity]].

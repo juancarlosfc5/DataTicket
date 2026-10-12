@@ -52,7 +52,7 @@ Catálogo de todas las páginas. **Agentes: leer primero.** Personas: empezar po
 - [[backend-hexagonal]] — Proyectos, regla de dependencias, mapa de puertos y cómo añadir funcionalidades.
 - [[frontend-mvc]] — Estructura por módulos, reglas de capas (oxlint) y módulo de referencia.
 - [[sistema-de-diseno]] — Guía visual obligatoria: estilo Apple + tokens, tipografía Archivo y componentes de `DataTicket.html`; el PRD manda.
-- [[autenticacion-identity]] — Diseño de login con ASP.NET Core Identity (cookie same-origin aceptada; sin implementar).
+- [[autenticacion-identity]] — Login con ASP.NET Core Identity: contrato T-01, backend de HU-003 implementado (B3) y SPA (B5–B6); `/me` y políticas pendientes (B4).
 - [[tiempo-real-signalr]] — Hub `/hubs/tickets`, persistir antes de publicar, reconexión y revocación.
 - [[persistencia-postgresql]] — EF Core + Npgsql, migraciones, diseño de referencia `db.sql`, multiempresa y auditoría.
 - [[entorno-docker]] — Servicios, Compose Watch, variables, Dockerfiles, verificación y problemas frecuentes.

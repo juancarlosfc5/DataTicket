@@ -3,10 +3,10 @@ title: Stack y versiones
 type: arquitectura
 status: vigente
 tags: [arquitectura, versiones]
-sources: ["PRD.md §17", "Registros oficiales consultados el 2026-10-07: MCR, Docker Hub, npm, NuGet, nodejs/Release, dotnet release-metadata, endoflife.date"]
+sources: ["PRD.md §17", "Registros oficiales consultados el 2026-10-07: MCR, Docker Hub, npm, NuGet, nodejs/Release, dotnet release-metadata, endoflife.date", "backend/Directory.Packages.props", "backend/.config/dotnet-tools.json", "NuGet (api.nuget.org) consultado el 2026-10-12 para los paquetes de B3"]
 aliases: [Versiones, Tecnologías]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Stack y versiones
@@ -40,7 +40,18 @@ Versiones verificadas contra los registros oficiales el **2026-10-07**; coincide
 | `Testcontainers.PostgreSql` | 4.16.0 (verificada en NuGet el 2026-10-09; usa `testcontainers/ryuk:0.14.0`) |
 | `Microsoft.AspNetCore.Mvc.Testing` | 10.0.12 |
 | `Microsoft.Extensions.TimeProvider.Testing` | 10.10.0 |
-| Por incorporar: `Microsoft.AspNetCore.Identity.EntityFrameworkCore` | 10.0.12 disponible |
+| `Microsoft.AspNetCore.Identity.EntityFrameworkCore` | 10.0.12 (Infrastructure; desde B3 del goal del login) |
+| `Microsoft.AspNetCore.DataProtection.EntityFrameworkCore` | 10.0.12 (Infrastructure; claves de Data Protection en PostgreSQL; desde B3) |
+| `EFCore.NamingConventions` | 10.0.1 (Infrastructure; `UseSnakeCaseNamingConvention`; desde B3) |
+| `Microsoft.EntityFrameworkCore.Design` | 10.0.12 (Api, como dependencia privada: solo para `dotnet ef`; desde B3) |
+
+Herramientas locales de .NET (`backend/.config/dotnet-tools.json`; se restauran con `cd backend && dotnet tool restore`):
+
+| Herramienta | Versión |
+|---|---|
+| `dotnet-ef` | 10.0.12 (fija, `rollForward: false`; migraciones de [[persistencia-postgresql]]) |
+
+Las cinco versiones añadidas en B3 se comprobaron en NuGet el 2026-10-12: existen y son la última 10.0.x publicada de cada paquete.
 
 SignalR viene incluido en el framework compartido de ASP.NET Core 10.
 
@@ -68,4 +79,4 @@ SignalR viene incluido en el framework compartido de ASP.NET Core 10.
 
 ## Relacionado
 
-- [[entorno-docker]] · [[backend-hexagonal]] · [[frontend-mvc]] · [[analisis-prd-vs-docker-compose]]
+- [[entorno-docker]] · [[backend-hexagonal]] · [[frontend-mvc]] · [[analisis-prd-vs-docker-compose]] · [[persistencia-postgresql]] · [[autenticacion-identity]]

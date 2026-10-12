@@ -21,6 +21,7 @@ COPY src/DataTicket.Infrastructure/DataTicket.Infrastructure.csproj src/DataTick
 COPY src/DataTicket.Api/DataTicket.Api.csproj src/DataTicket.Api/
 COPY tests/DataTicket.ArchitectureTests/DataTicket.ArchitectureTests.csproj tests/DataTicket.ArchitectureTests/
 COPY tests/DataTicket.IntegrationTests/DataTicket.IntegrationTests.csproj tests/DataTicket.IntegrationTests/
+COPY tests/DataTicket.UnitTests/DataTicket.UnitTests.csproj tests/DataTicket.UnitTests/
 RUN dotnet restore DataTicket.slnx
 
 # ---------- dev: hot reload dentro del contenedor ----------
