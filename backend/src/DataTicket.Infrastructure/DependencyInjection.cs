@@ -35,6 +35,8 @@ public static class DependencyInjection
 
         services.AddIdentityStores();
 
+        services.AddScoped<ICompanyDirectory, CompanyDirectory>();
+
         return services;
     }
 
@@ -58,6 +60,7 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<DataTicketDbContext>()
             .AddUserManager<DataTicketUserManager>()
             .AddSignInManager<DataTicketSignInManager>()
+            .AddClaimsPrincipalFactory<DataTicketClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
 
         services.Configure<SecurityStampValidatorOptions>(options =>

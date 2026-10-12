@@ -3,10 +3,10 @@ title: Roles y permisos
 type: concepto
 status: vigente
 tags: [producto, producto/seguridad, producto/roles]
-sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14"]
-aliases: [Reglas de autorización, Permisos, Multiempresa]
+sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14", "backend/src/DataTicket.Api/Auth/AuthorizationPolicies.cs", "backend/src/DataTicket.Api/Auth/PrincipalProfile.cs", "backend/tests/DataTicket.IntegrationTests/Auth/AuthorizationPolicyTests.cs"]
+aliases: [Reglas de autorización, Permisos, Multiempresa, Matriz de políticas]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 ---
 
 # Roles y permisos
@@ -21,10 +21,13 @@ Quién puede ver y hacer qué en DataTicket. La autorización se aplica **en ser
 | Coordinador de empresa | `CompanyCoordinator` | Portal del cliente | Radicar; ver todos los tickets de su empresa | Ver chat interno ni otras empresas (PRD §5) |
 | PM (Elizabeth) | rol `ProductManager` | Espacio interno | Ver todos los tickets; triage; asignar y reasignar; gestionar participantes; acceder siempre al chat; respuesta formal; cierre (PRD §5, §6.5) | — |
 | Administrador | `Administrator` | Espacio interno | Administrar el sistema; agregar o retirar participantes; cubrir triage; respuesta formal; cierre (PRD §5, §6.5) | Ver mensajes y archivos solo por ser admin (PRD §5) |
-| Desarrollo | `Team.Development` | Espacio interno | Trabajar y chatear en los tickets **a los que está asociado** (PRD §5) | Ver detalle o chat sin asociación (PRD §6.2, §10) |
-| Producción | `Team.Production` | Espacio interno | Casos de Producción; Julián lidera (PRD §5) | Ídem Desarrollo |
+| Desarrollo | `Team.Development` (hoy rol de Identity `Development`) | Espacio interno | Trabajar y chatear en los tickets **a los que está asociado** (PRD §5) | Ver detalle o chat sin asociación (PRD §6.2, §10) |
+| Producción | `Team.Production` (hoy rol de Identity `Production`) | Espacio interno | Casos de Producción; Julián lidera (PRD §5) | Ídem Desarrollo |
 
 Personas concretas del piloto: [[equipo-data-global]].
+
+> [!info] Decisión — equipos como roles de Identity, expuestos en `teams`
+> Los equipos se implementan como los roles de Identity `Development` y `Production` (`RoleNames.Teams`), sin tablas de equipos. La API los expone aparte de los roles: campo `teams` de `GET /api/auth/me` e `ICurrentUser.Teams`. Es la decisión de B1 del goal del login, mantenida en B4 sin cambios de esquema; el modelo definitivo sigue abierto para [[hu-009-administrar-usuarios-internos-y-equipos|HU-009]] ([[pendientes]] §1, [[autenticacion-identity]]).
 
 ## Las 7 reglas de autorización (PRD §5)
 
@@ -35,6 +38,39 @@ Personas concretas del piloto: [[equipo-data-global]].
 5. **El admin no ve contenido por ser admin.** En cobertura ve solo los campos de la cola; al tomar un ticket queda asociado **antes** de cargar detalle y adjuntos.
 6. **Opacidad hacia el cliente.** Nunca ve mensajes internos, estados técnicos, URL de PR, nombres de colaboradores internos ni actividad privada de otros clientes.
 7. **Respuesta formal restringida.** Solo Elizabeth o un administrador la envía.
+
+## Políticas de autorización implementadas (B4, HU-004)
+
+Desde el 2026-10-12 el backend registra cuatro políticas con nombre y una política de reserva (`AuthorizationPolicies`, [[autenticacion-identity]]). La matriz siguiente es la que comprueba `AuthorizationPolicyTests` con principales construidos y `SessionAuthorizationTests` con sesiones reales. Las cuatro se declaran en una única tabla de `AuthorizationPolicies` (nombre, exclusiva de internos, condición) de la que derivan el registro y las listas `All` e `InternalOnly`; una política añadida fuera de esa tabla hace fallar la prueba.
+
+| Perfil de la sesión | `ClientUser` | `InternalUser` | `Administrator` | `ProductManagerOrAdministrator` | Reserva |
+|---|---|---|---|---|---|
+| `Requester` con `company_id` | Sí | No | No | No | Sí |
+| `CompanyCoordinator` con `company_id` | Sí | No | No | No | Sí |
+| `ProductManager` (con o sin equipo) | No | Sí | No | Sí | Sí |
+| `Administrator` | No | Sí | Sí | Sí | Sí |
+| Solo equipo `Development` o `Production` | No | Sí | No | No | Sí |
+| Autenticado con perfil no válido | No | No | No | No | Sí |
+| Anónimo | No | No | No | No | No |
+
+Qué exige cada una (se evalúan sobre el perfil leído de los claims de la sesión, el mismo que ve `ICurrentUser`):
+
+| Política | Condición implementada |
+|---|---|
+| `ClientUser` | Perfil válido de cliente: rol `Requester` o `CompanyCoordinator`, ningún rol interno y claim `company_id` |
+| `InternalUser` | Perfil válido interno: al menos uno de `ProductManager`, `Administrator`, `Development` o `Production`, ningún rol de cliente y sin `company_id` |
+| `Administrator` | Perfil válido interno con el rol `Administrator` |
+| `ProductManagerOrAdministrator` | Perfil válido interno con el rol `ProductManager` o `Administrator` |
+| Reserva (*fallback*) | Usuario autenticado, sin mirar el perfil; se aplica a todo endpoint registrado que no declare `AllowAnonymous` |
+
+Reglas que conviene tener presentes:
+
+- **Son la primera barrera, no la única.** Cada caso de uso autoriza además contra el recurso concreto con `ICurrentUser` (PRD §5 regla 2, [[backend-hexagonal]]).
+- **Ninguna concede contenido de tickets.** Ser `Administrator` o pertenecer a un equipo no da acceso al detalle, los adjuntos ni el chat de un ticket (PRD §5.5; invariante 5 de `AGENTS.md` §7; PRD §6.2). Eso lo decidirá la participación en las HU de tickets. `AuthorizationPolicyTests` comprueba que las políticas registradas son exactamente estas cuatro y que no existe ninguna de contenido.
+- **Un perfil no válido no satisface ninguna política con nombre.** Son perfiles no válidos: sin roles, solo con roles desconocidos, cliente sin `company_id` o con uno mal formado, mezcla de roles de cliente e internos, e interno con `company_id`. La sesión sigue autenticada: pasa la reserva y recibe `403` en lo demás.
+- **Un equipo no es un rol.** `Development` y `Production` solo abren `InternalUser`; no satisfacen `Administrator` ni `ProductManagerOrAdministrator`, e `ICurrentUser.IsInRole("Production")` es falso.
+- **Respuestas.** Sin sesión, `401`; con sesión y sin satisfacer la política, `403`; ambas en `application/problem+json`.
+- **Uso actual.** Ningún endpoint de producto usa todavía las políticas con nombre: `logout` y `/me` solo exigen sesión. Las aplicarán las HU posteriores.
 
 ## Cobertura de triage por un administrador
 
@@ -77,6 +113,6 @@ La asociación ocurre **antes** de entregar el detalle (PRD §5, §14.3).
 
 ## Relacionado
 
-- [[autenticacion-identity]] · [[adr-0004-autenticacion-cookie-mismo-origen]]
+- [[autenticacion-identity]] · [[adr-0004-autenticacion-cookie-mismo-origen]] · [[hu-004-contexto-de-usuario-y-autorizacion]] · [[backend-hexagonal]] · [[estrategia-de-pruebas]] · [[pendientes]]
 - [[chat-interno]] · [[flujo-del-ticket]] · [[estados-del-ticket]] · [[auditoria]]
 - [[elizabeth-pm]] · [[equipo-data-global]] · [[glosario]] · [[criterios-de-aceptacion]]

@@ -20,4 +20,13 @@ public static class RoleNames
     public static IReadOnlyList<string> Internal { get; } = [ProductManager, Administrator, Development, Production];
 
     public static IReadOnlyList<string> All { get; } = [.. Internal, .. Client];
+
+    /// <summary>
+    /// Equipos internos. Se guardan como roles, pero la API los expone aparte (campo <c>teams</c> de
+    /// <c>/api/auth/me</c>): pertenecer a un equipo no da acceso a un ticket (PRD §6.2).
+    /// </summary>
+    public static IReadOnlyList<string> Teams { get; } = [Development, Production];
+
+    /// <summary>Roles propiamente dichos (campo <c>roles</c> de <c>/api/auth/me</c>): todos menos los equipos.</summary>
+    public static IReadOnlyList<string> Roles { get; } = [ProductManager, Administrator, Requester, CompanyCoordinator];
 }

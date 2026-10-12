@@ -17,6 +17,7 @@ builder.Services
     .AddInfrastructure(builder.Configuration);
 
 builder.Services.AddDataTicketAuthentication(builder.Environment);
+builder.Services.AddDataTicketAuthorization();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
@@ -39,15 +40,27 @@ app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Con la política de reserva, todo endpoint exige sesión salvo los públicos del contrato, que lo declaran con
+// AllowAnonymous: salud, antiforgery, login y, solo en Development, el documento OpenAPI.
+//
+// REGLA: el contenido se sirve SIEMPRE como endpoint: minimal APIs, MapHealthChecks, MapOpenApi y, cuando lleguen, MapHub y
+// MapStaticAssets. Nunca UseStaticFiles, UseHealthChecks, una UI de Swagger por middleware ni ramas app.Map(...),
+// app.MapWhen(...) o app.Run(...) sin endpoint. La política de reserva solo cubre endpoints: para que una ruta
+// inexistente responda 404 y no 401, EndpointScopedAuthorizationResultHandler deja pasar lo que no tiene endpoint,
+// así que un middleware que sirva contenido después de UseAuthorization lo entregaría a un anónimo.
+// Lo vigilan Api_does_not_serve_content_through_endpointless_middleware (ArchitectureTests) y
+// Anonimo_nunca_recibe_2xx_fuera_de_la_lista_publica (IntegrationTests).
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
 }
 
 app.MapHealthEndpoints(includeDetails: app.Environment.IsDevelopment());
 
-// Grupo raíz de la API: el filtro antiforgery cubre TODAS sus mutaciones (POST, PUT, PATCH, DELETE).
-var api = app.MapGroup("/api").AddEndpointFilter<AntiforgeryValidationFilter>();
+// Grupo raíz de la API: el filtro antiforgery cubre TODAS sus mutaciones (POST, PUT, PATCH, DELETE). Todo endpoint
+// de producto cuelga de este grupo; una prueba de convención delata cualquier mutación mapeada fuera, sea cual sea
+// su ruta (Toda_mutacion_lleva_el_filtro_antiforgery).
+var api = app.MapGroup("/api").RequireAntiforgeryValidation();
 api.MapAuthEndpoints();
 
 await app.RunAsync();

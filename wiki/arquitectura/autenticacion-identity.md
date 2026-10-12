@@ -3,7 +3,7 @@ title: Autenticación con ASP.NET Core Identity
 type: arquitectura
 status: propuesta
 tags: [arquitectura/backend, seguridad, identity]
-sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login", "backend/src/DataTicket.Api/Auth", "backend/src/DataTicket.Api/Endpoints/Auth", "backend/src/DataTicket.Application/Authentication", "backend/src/DataTicket.Infrastructure/Identity"]
+sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login", "backend/src/DataTicket.Api/Auth", "backend/src/DataTicket.Api/Endpoints/Auth", "backend/src/DataTicket.Api/Health", "backend/src/DataTicket.Application/Authentication", "backend/src/DataTicket.Application/Ports", "backend/src/DataTicket.Infrastructure/Identity", "backend/src/DataTicket.Infrastructure/Persistence/CompanyDirectory.cs", "backend/tests/DataTicket.IntegrationTests/Auth", "backend/tests/DataTicket.IntegrationTests/Conventions"]
 aliases: [Identity, Login, Autenticación]
 created: 2026-10-07
 updated: 2026-10-12
@@ -14,7 +14,7 @@ updated: 2026-10-12
 El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2026-10-07). El mecanismo concreto —cookie *same-origin* a través del proxy del frontend— quedó **aceptado** el 2026-10-09 en [[adr-0004-autenticacion-cookie-mismo-origen]]. Lo construye el goal de `goal_login.md` ([[plan-goal-login-y-loop-chat]]) por bloques:
 
 - **Implementado en el backend (B3, HU-003):** antiforgery, login, logout, cookie de sesión, bloqueo por intentos fallidos, revalidación del sello de seguridad y respuestas `401`/`403` sin `Location`. Detalle en *Implementación en el backend (B3)*.
-- **Pendiente (B4, HU-004):** `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims, las políticas con nombre y la política de reserva (*fallback*).
+- **Implementado en el backend (B4, HU-004):** `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims, las políticas con nombre y la política de reserva (*fallback*) con su lista exacta de endpoints públicos. Detalle en *Implementación en el backend (B4)*; tres puntos quedan por ratificar en [[pendientes]].
 
 La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13 ([[persistencia-postgresql]]).
 
@@ -137,14 +137,99 @@ B3 implementa `GET /api/auth/antiforgery`, `POST /api/auth/login` y `POST /api/a
 - **`DataTicketSignInManager` — sello de seguridad.** Al revalidar el sello (cada 5 min) exige además que la cuenta siga `Active` y con perfil válido (`AccountAccess.CanSignIn`): una cuenta desactivada pierde la sesión aunque su sello no haya cambiado.
 - **`IdentityCredentialVerifier` — tiempos de respuesta.** Comprueba la contraseña con `lockoutOnFailure: true`. Si el correo no existe, la cuenta no tiene contraseña o ya está bloqueada, verifica igualmente la clave recibida contra un hash señuelo (misma parametrización que los reales) para que el tiempo de respuesta no delate el motivo. El señuelo es `DecoyPasswordHash`, un *singleton* que se genera con el `IPasswordHasher<ApplicationUser>` de la aplicación (mismo coste que los hashes reales); todo intento de login cuesta **exactamente una** verificación de hash, y lo fija `LoginHashingCostTests` contando llamadas, sin cronómetros.
 - **`IdentityUserSession` — cookie no persistente.** Emite la sesión con `isPersistent: false`: la cookie vive mientras el navegador esté abierto y su tique expira a las 8 h deslizantes.
-- **Antiforgery.** `AntiforgeryValidationFilter` se aplica al grupo raíz en `Program.cs` (`app.MapGroup("/api").AddEndpointFilter<AntiforgeryValidationFilter>()`), así que cubre todas las mutaciones de los endpoints mapeados **dentro de ese grupo**: todo endpoint de producto debe colgar de él. No se usa el middleware `UseAntiforgery` porque solo cubre formularios. El filtro corre después de la autorización: sin sesión, una ruta protegida responde `401` antes que el `400` de antiforgery.
+- **Antiforgery.** `AntiforgeryValidationFilter` se aplica al grupo raíz en `Program.cs`, así que cubre todas las mutaciones de los endpoints mapeados **dentro de ese grupo**: todo endpoint de producto debe colgar de él. Desde B4 el grupo se declara con `app.MapGroup("/api").RequireAntiforgeryValidation()`, que añade el filtro y un metadato marcador (ver *Implementación en el backend (B4)*). No se usa el middleware `UseAntiforgery` porque solo cubre formularios. El filtro corre después de la autorización: sin sesión, una ruta protegida responde `401` antes que el `400` de antiforgery.
 - **`401`/`403`.** Los eventos de redirección de la cookie escriben ProblemDetails con `ApiProblems` y nunca emiten `Location`. La respuesta es `application/problem+json` con `traceId` para **cualquier** `Accept` (también `text/html` o `text/plain`): `ApiProblems` delega en `TypedResults.Problem`, que escribe el JSON aunque ningún `IProblemDetailsWriter` acepte la petición.
 - **Cuerpo JSON ilegible.** `RouteHandlerOptions.ThrowOnBadRequest = false` en `Program.cs`: un JSON mal formado responde `400` `problem+json` en todos los entornos (antes, `500` en Development). El título es el del framework («Bad Request»); su idioma queda en [[pendientes]] §4.
 - **Validación del login** (`LoginRequest.Validate`): `400` «Uno o más campos no son válidos.» con `errors.email` / `errors.password`; un cuerpo ausente se trata como campos vacíos. El correo debe ser una dirección simple con dominio de al menos dos etiquetas; la contraseña solo se exige no vacía (sin longitud máxima, ver [[pendientes]] §4).
 - **Data Protection.** Claves en `identity.data_protection_keys` (`PersistKeysToDbContext<DataTicketDbContext>`), nombre de aplicación `DataTicket`; sin cifrado en reposo ([[pendientes]] §4, [[persistencia-postgresql]]).
 
-> [!question] Pendiente — B4 (HU-004)
-> Todavía no existen `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims propia (nombre visible y `company_id`) ni las políticas con nombre. `AddAuthorization()` no define política de reserva: hoy solo exigen sesión los endpoints que llaman a `RequireAuthorization()` (en B3, `POST /api/auth/logout`). El login tampoco comprueba aún que la empresa de la cuenta esté activa ([[hu-007-administrar-empresas-cliente|HU-007]], [[pendientes]] §4).
+### Implementación en el backend (B4, 2026-10-12)
+
+B4 implementa `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims, las políticas con nombre y la política de reserva ([[hu-004-contexto-de-usuario-y-autorizacion|HU-004]]). No cambia el esquema: no hay migración.
+
+| Capa | Pieza | Papel |
+|---|---|---|
+| `Domain/Users` | `RoleNames.Teams`, `RoleNames.Roles` | Separan los equipos (`Development`, `Production`) de los roles propiamente dichos; de ahí salen `teams` y `roles` |
+| `Application/Ports/Out` | `ICurrentUser`, `ICompanyDirectory` | Usuario de la sesión para los casos de uso; nombre de una empresa por su identificador |
+| `Application/Ports/In/Authentication` | `IGetCurrentUserProfile` (+ `CurrentUserProfile`, `CurrentUserCompany`) | Puerto de entrada de `/me`; no recibe parámetros |
+| `Application/Authentication` | `GetCurrentUserProfile` | Compone el perfil desde `ICurrentUser` e `ICompanyDirectory`; devuelve `null` si la sesión no tiene un perfil válido |
+| `Infrastructure/Identity` | `DataTicketClaimsPrincipalFactory`, `DataTicketClaimTypes` | Claims de la cookie de sesión |
+| `Infrastructure/Persistence` | `CompanyDirectory` | Adaptador de `ICompanyDirectory` sobre EF Core (`dataticket.companies`, consulta sin seguimiento) |
+| `Api/Auth` | `HttpContextCurrentUser`, `PrincipalProfile`, `AuthorizationPolicies`, `EndpointScopedAuthorizationResultHandler`, `AntiforgeryValidationMetadata` | Adaptador de `ICurrentUser`, lectura única de los claims, políticas, alcance de la política de reserva y marcador del filtro antiforgery |
+| `Api/Endpoints/Auth` | `AuthEndpoints` (`GetCurrentUserAsync`), `CurrentUserResponse` | Endpoint `/me` y su JSON |
+
+#### `GET /api/auth/me`
+
+- **Acceso**: exige sesión (`RequireAuthorization()` explícito, además de la política de reserva).
+- **Sin parámetros**: el manejador solo recibe el `HttpContext` (para fijar la cabecera de caché), el caso de uso y el token de cancelación; no enlaza nada de la ruta, la consulta, las cabeceras ni el cuerpo. `MeEndpointTests` lo comprueba con `?userId=`, `?companyId=`, `X-Company-Id`, `X-User-Id` y `X-Forwarded-User`: la respuesta es idéntica, byte a byte, a la que se obtiene sin ellos, en los dos sentidos A↔B (PRD §5 regla 1).
+- **`200`**: el JSON del contrato, con los campos en este orden y ninguno más: `id`, `displayName`, `email`, `surface`, `roles`, `teams`, `company`. `company` es `{ id, name }` para clientes y viaja como `null` (presente, no omitido) para internos. `roles` y `teams` salen en el orden de `RoleNames.Roles` y `RoleNames.Teams`. Si la cuenta no tiene nombre visible, `displayName` es el correo.
+- **`401`** `application/problem+json` «Se requiere iniciar sesión.»: sin cookie, con una cookie que no emitió el servidor o tras cerrar la sesión.
+- **`403`** `application/problem+json` «No tienes permiso para realizar esta acción.»: hay sesión, pero `GetCurrentUserProfile` no obtiene un perfil válido. Ocurre si el perfil no resuelve a una superficie (cliente sin `company_id`, interno con `company_id`, mezcla de roles de cliente e internos, `company_id` repetido o mal formado), si la sesión no trae correo o si la empresa del cliente no existe. No se devuelve ningún dato del usuario.
+- **`Cache-Control: no-store`**: el manejador la fija antes de ejecutar el caso de uso; la prueba lo afirma sobre el `200`.
+
+> [!warning] Contradicción — el contrato de `/me` no lista el `403`
+> La tabla *Endpoints* del contrato T-01 (y la HU-004) solo prevén `200` y `401` para `GET /api/auth/me`. El código responde además `403` cuando la sesión no tiene perfil válido. Es coherente con «falla cerrado» (CHU-07 de HU-004), pero no está ratificado, y el SPA no lo distingue: `fetchCurrentUser` solo trata el `401` como «sin sesión», así que un `403` de `/me` acaba hoy en el estado de error de carga y no en la vista «sin permiso». No se ha cambiado ni el contrato ni el código → [[pendientes]] §1.
+
+#### Claims de la cookie y `DataTicketClaimsPrincipalFactory`
+
+| Dato | Tipo de claim | Origen |
+|---|---|---|
+| Identificador | `ClaimTypes.NameIdentifier` | Identity (estándar) |
+| Correo | `ClaimTypes.Email` | Identity (estándar) |
+| Nombre visible | `display_name` (`DataTicketClaimTypes.DisplayName`) | `ApplicationUser.DisplayName` |
+| Roles y equipos | Un `ClaimTypes.Role` por rol o equipo | Roles de Identity de la cuenta |
+| Empresa | `company_id` (`DataTicketClaimTypes.CompanyId`, GUID con guiones) | `ApplicationUser.CompanyId`, **solo** si el perfil resuelve a cliente |
+
+- La fábrica implementa `IUserClaimsPrincipalFactory<ApplicationUser>` directamente (no hereda de la estándar de Identity) y se registra con `AddClaimsPrincipalFactory<DataTicketClaimsPrincipalFactory>()` en `Infrastructure/DependencyInjection.cs`.
+- **Lista cerrada de claims.** La fábrica emite solo lo que la aplicación decide: id, nombre de usuario, correo, sello de seguridad, `display_name`, roles y `company_id`. **No lee `identity.user_claims` ni `identity.role_claims`**: una fila escrita a mano no cambia la empresa, el nombre ni los roles de nadie (PRD §5 regla 1). Los roles salen únicamente de `identity.user_roles` (`UserManager.GetRolesAsync`), filtrados por `RoleNames.All`. Lo fija `ClaimsFactoryTests` (`Company_id_sale_solo_de_la_cuenta_y_no_de_claims_almacenados`, `Roles_salen_solo_de_user_roles_y_no_de_claims_almacenados`, `Rol_desconocido_de_user_roles_no_llega_a_la_sesion`).
+- **`company_id` solo para clientes.** Se emite si `AccountAccess.ResolveSurface(roles, CompanyId)` da `Client`; una cuenta interna nunca lo lleva.
+- **Los claims se regeneran al revalidar el sello.** La fábrica corre al iniciar sesión y en cada revalidación del sello de seguridad (5 min, `IdentitySettings.SecurityStampValidationInterval`): un cambio de rol, equipo o empresa llega a la cookie sin cerrar la sesión, con un desfase máximo de 5 minutos. `ClaimsFreshnessTests`: a los 4 minutos `/me` aún devuelve los roles anteriores; a los 6, los nuevos.
+- **Falla cerrado con perfil no válido.** Si `AccountAccess.ResolveSurface` no resuelve superficie (cliente sin empresa, interno con empresa, perfil mixto), el principal identifica a la cuenta pero no lleva roles ni `company_id`: solo satisface la política de reserva (`Perfil_no_valido_no_satisface_ninguna_politica_con_nombre`).
+- **Todo contenido es un endpoint.** Como la política de reserva protege endpoints registrados, el Api no sirve nada por middleware sin endpoint (`UseStaticFiles`, `UseHealthChecks`, ramas `app.Map`, UI de Swagger). Está escrito en `Program.cs` y lo vigilan `Api_does_not_serve_content_through_endpointless_middleware` (arquitectura) y `Anonimo_nunca_recibe_2xx_fuera_de_la_lista_publica` (30 rutas no registradas × GET/HEAD/POST, en Development y Production). Límite conocido: un `app.Use` en línea que sirva una ruta fuera de las sondeadas no se detecta.
+
+> [!question] Pendiente — nombre del claim `display_name`
+> El contrato T-01 dice «nombre visible» sin fijar el tipo del claim; el código usa `display_name`. Por ratificar ([[pendientes]] §3b, P-23). El claim `team` que la HU-004 proponía para los equipos no existe: los equipos viajan como `ClaimTypes.Role`.
+
+#### `ICurrentUser`, `HttpContextCurrentUser` y `PrincipalProfile`
+
+- `ICurrentUser` (`Application/Ports/Out`) expone `IsAuthenticated`, `UserId`, `DisplayName`, `Email`, `Surface`, `Roles`, `Teams`, `CompanyId` e `IsInRole(role)`, sin tipos de ASP.NET Core.
+- `PrincipalProfile` (`Api/Auth`, interno) es la **lectura única** de los claims. La usan el adaptador `HttpContextCurrentUser` y las políticas con nombre, para que ambos decidan con las mismas reglas. Solo lee el principal: nunca el cuerpo, la consulta, la ruta ni las cabeceras.
+- **Sesión**: `IsAuthenticated` exige una identidad autenticada cuyo `NameIdentifier` sea un GUID no vacío; en otro caso el perfil es anónimo.
+- **Falla cerrado**: si el perfil no es uno de los «Perfiles válidos», `Surface` es `null`, `Roles` y `Teams` quedan vacíos y `CompanyId` es `null`. La sesión sigue autenticada (por eso la respuesta es `403` y no `401`) y conserva `UserId`, `DisplayName` y `Email`.
+- **`company_id`**: sin claim, `null`; repetido con valores distintos, no GUID o GUID vacío, el perfil no es válido.
+- **Roles y equipos separados**: `Roles` es la intersección con `RoleNames.Roles` y `Teams` con `RoleNames.Teams`; un rol desconocido se ignora. `IsInRole` solo mira `Roles`: un equipo no es un rol.
+- `HttpContextCurrentUser` se registra como servicio *scoped* y lee el principal en cada acceso (el middleware de autenticación puede fijarlo después de que alguien resuelva el servicio); sin `HttpContext` devuelve el perfil anónimo. `CurrentUserAdapterTests` cubre estos casos sin host ni Docker.
+
+#### Políticas con nombre y política de reserva
+
+- `AuthorizationPolicies.AddDataTicketAuthorization()` (llamado desde `Program.cs`) registra las cuatro políticas del contrato, la política de reserva, el adaptador de `ICurrentUser` y el manejador de resultados. La matriz por perfil, tal como está implementada, está en [[roles-y-permisos]].
+- Cada política con nombre exige sesión y una condición sobre `PrincipalProfile`: un perfil no válido no satisface ninguna.
+- **Política de reserva**: `RequireAuthenticatedUser`. No mira el perfil: la satisface cualquier usuario autenticado, también uno sin roles. Todo endpoint registrado sin `AllowAnonymous` exige sesión, aunque no declare ningún metadato de autorización.
+- **Lista pública exacta.** `EndpointAuthorizationConventionTests` recorre la tabla de endpoints y exige **igualdad** con la lista siguiente, escrita como literales en la prueba. Añadir un endpoint anónimo obliga a tocarla; los de HU-005 y HU-006 entrarán así.
+
+| Endpoint público | Dónde se declara `AllowAnonymous` | Entornos |
+|---|---|---|
+| `GET /api/health` | `HealthEndpoints.AsPublicProbe()` | Todos |
+| `GET /api/health/live` | `HealthEndpoints.AsPublicProbe()` | Todos |
+| `GET /api/auth/antiforgery` | `AuthEndpoints` | Todos |
+| `POST /api/auth/login` | `AuthEndpoints` | Todos |
+| `GET /openapi/v1.json` (plantilla `GET /openapi/{documentName}.json`) | `app.MapOpenApi().AllowAnonymous()` en `Program.cs` | Solo Development; fuera de Development no se mapea y responde `404` |
+
+> [!question] Pendiente — propuesta por ratificar: una ruta inexistente responde `404`, no `401`
+> Según la documentación del propio manejador y la nota de implementación de `backend-engineer`, en ASP.NET Core 10 la política de reserva se aplica también a las peticiones que no coinciden con ningún endpoint: un anónimo que pide una ruta inexistente recibiría `401`, y eso rompe CHU-09 de HU-003 (las rutas `register` responden `404`). `EndpointScopedAuthorizationResultHandler` (`IAuthorizationMiddlewareResultHandler`) limita la reserva a los **endpoints registrados**: si la petición no tiene endpoint, sigue por el pipeline y termina en `404`, con o sin sesión; todo endpoint conserva el comportamiento estándar (`401` sin sesión, `403` sin permiso). Lo cubren `EndpointAuthorizationConventionTests` (anónimo, en hosts de Development y de Production) y `SessionAuthorizationTests` (con sesión).
+> **Contrapartida:** un middleware que sirviera contenido sin endpoint y colocado después de `UseAuthorization` (p. ej. archivos estáticos) no quedaría protegido por la reserva. Hoy el Api no tiene ninguno: todo lo que sirve son endpoints. Es una **propuesta en uso, por ratificar** ([[pendientes]] §3b, P-23).
+
+#### Antiforgery: marcador y prueba de convención
+
+- `RequireAntiforgeryValidation()` (extensión de `RouteGroupBuilder`) añade al grupo el filtro `AntiforgeryValidationFilter` y el metadato marcador `AntiforgeryValidationMetadata`. `Program.cs` lo aplica al grupo raíz: `app.MapGroup("/api").RequireAntiforgeryValidation()`.
+- `AntiforgeryConventionTests` exige que todo endpoint bajo `/api` que acepte `POST`, `PUT`, `PATCH` o `DELETE` (o que no restrinja el método) lleve el marcador. Una segunda prueba mapea a propósito mutaciones fuera del grupo y comprueba que se detectan.
+- **Endpoints de salud limitados a `GET`.** `MapHealthChecks` no restringe el método y las sondas se mapean fuera del grupo raíz. `AsPublicProbe()` les añade `HttpMethodMetadata` con `GET`, de modo que no queda ninguna ruta de `/api` que admita una mutación sin pasar por el filtro.
+
+#### Lo que B4 no cubre
+
+- **Empresa activa.** Ni el login ni `/me` comprueban que la empresa del cliente esté activa: `ICompanyDirectory.FindNameAsync` devuelve el nombre de la empresa, esté activa o no. Es tarea de [[hu-007-administrar-empresas-cliente|HU-007]] ([[pendientes]] §4).
+- **Autorización por ticket.** Ninguna política concede contenido de tickets; eso lo decidirá la participación en los casos de uso de las HU de tickets y chat ([[roles-y-permisos]]).
+- **Políticas con nombre sin uso en producto.** Ningún endpoint de producto las usa todavía: `logout` y `/me` solo exigen sesión. Hoy las ejercitan las pruebas ([[estrategia-de-pruebas]]).
 
 ### Rutas del SPA
 

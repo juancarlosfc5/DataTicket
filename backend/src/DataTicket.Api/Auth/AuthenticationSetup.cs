@@ -5,7 +5,8 @@ namespace DataTicket.Api.Auth;
 
 /// <summary>
 /// Autenticación por cookie de Identity y antiforgery por cabecera (contrato T-01 de HU-003, ADR-0004).
-/// Identity (almacenes, gestores, bloqueo, Data Protection) se registra en Infrastructure.
+/// Identity (almacenes, gestores, bloqueo, Data Protection) se registra en Infrastructure; las políticas de
+/// autorización, en <see cref="AuthorizationPolicies"/>.
 /// </summary>
 public static class AuthenticationSetup
 {
@@ -47,8 +48,6 @@ public static class AuthenticationSetup
             options.Cookie.SameSite = SameSiteMode.Strict;
             options.Cookie.SecurePolicy = securePolicy;
         });
-
-        services.AddAuthorization();
 
         return services;
     }

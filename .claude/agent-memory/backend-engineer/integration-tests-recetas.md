@@ -24,6 +24,14 @@ Comprobado el 2026-10-12 (correcciones de la revisión de B3):
 - Ejecutar una sola clase: `dotnet test --project tests/DataTicket.IntegrationTests --no-build --filter-class "<nombre completo>"`.
 - `perl -0pi -e` con rutas de Windows (`..\..\`) en el patrón falla en silencio: para `.csproj` usar Edit.
 
+Comprobado el 2026-10-12 (B4, HU-004):
+
+- Un host SIN base (`OfflineApiFixture`, cadena de conexión inservible) arranca, expone `EndpointDataSource`, `IAuthorizationService` y atiende peticiones anónimas (401/404): las pruebas de convención y de políticas no necesitan Docker.
+- Los `TestEndpoints` viven en un SEGUNDO pipeline (tras `next(app)`): aparecen en el servicio `EndpointDataSource` y en el documento OpenAPI. `No_existe_ruta_register` prohíbe las subcadenas `register`, `manage`, `confirmEmail` y `refresh` en ese documento, y `ProductManager` contiene «manage»: los endpoints de control llevan `.ExcludeFromDescription()` y los resúmenes de OpenAPI no nombran ese rol.
+- xunit.v3 en MTP: `--filter-method "*.NombreA" "*.NombreB"` y `--filter-class "A" "B"` admiten varios valores; `--output Detailed` lista también las pruebas correctas.
+- `JsonObject.ToJsonString()` escapa los caracteres no ASCII (`é` → `é`): un `DoesNotContain("Sintética 02", json)` pasa siempre. Comparar valores con `GetValue<string>()`.
+- Cobertura sin ensuciar el repo: `dotnet test --no-build --coverage --coverage-output-format cobertura --results-directory <scratchpad>`. El 64 % de `DataTicket.Api` es código generado de OpenAPI; las clases propias se leen por `<class>`.
+
 Versiones verificadas en NuGet (flatcontainer index.json, solo estables) el 2026-10-09: Testcontainers.PostgreSql 4.16.0 (net8/9/10), Microsoft.AspNetCore.Mvc.Testing 10.0.12, Microsoft.Extensions.TimeProvider.Testing 10.10.0, xunit.v3 4.0.1. SDK local 10.0.201, runtime ASP.NET Core local 10.0.5.
 
 **Why:** evitar repetir los diagnósticos; **How to apply:** al añadir pruebas de integración o tocar la etapa test del Dockerfile. Ver [[aspnetcore10-timeprovider-identity]].

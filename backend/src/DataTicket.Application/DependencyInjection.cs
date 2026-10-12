@@ -13,6 +13,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ISignIn, SignIn>();
         services.AddScoped<ISignOut, SignOut>();
+        services.AddScoped<IGetCurrentUserProfile, GetCurrentUserProfile>();
 
         return services;
     }

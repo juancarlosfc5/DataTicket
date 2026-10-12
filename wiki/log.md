@@ -311,3 +311,23 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Verificación: `dotnet build` 0/0; `dotnet test` 96/96 (exit 0); `quality-reviewer` 0 CRÍTICO, 0 ALTO; `docker compose up --build -d backend` aplicó la migración al `db` del Compose (9 tablas, 6 roles, sin datos de prueba) y los endpoints responden en `:8080`.
 - Wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[stack-y-versiones]], [[entorno-docker]], [[pendientes]], [[index]]
 - Pendiente: B4 (`ICurrentUser`, claims, políticas, *fallback*, `/api/auth/me` y prueba de convención de antiforgery); B7 y B8. Preguntas abiertas en [[pendientes]]: IDs fijos de roles frente a `db.sql` §12, endurecimiento del login, idioma del 400 genérico.
+
+## [2026-10-12] feature | Goal del login — B4 contexto de usuario y autorización (backend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`)
+- Cambios: puerto `ICurrentUser` con adaptador en `Api`, `DataTicketClaimsPrincipalFactory` (`company_id` solo para clientes y solo desde la cuenta), políticas con nombre, política de reserva autenticada, `GET /api/auth/me`, pruebas de convención (lista pública de anónimos, antiforgery en toda mutación de `/api`, DTO de cliente sin `CompanyId`). Sin migración. Verificado por el orquestador: `dotnet build` 0/0 y `dotnet test` 146/146 (exit 0).
+- Decisión por ratificar: la política de reserva se aplica solo a endpoints registrados, de modo que una ruta inexistente responde 404 también a un anónimo (conserva HU-003 CHU-09); se registra en [[pendientes]].
+- Wiki: en curso con `wiki-keeper` — [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[index]]
+- Pendiente: veredicto de `quality-reviewer` sobre B4, marcar y commitear B4; después B7 y B8.
+
+## [2026-10-12] feature | Goal del login — B4 revisado; correcciones en curso y wiki de B4 al día
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: `quality-reviewer` sobre B4: 0 CRÍTICO, 0 ALTO (2 MEDIO, 6 BAJO); aprueba el 404 para rutas inexistentes con mitigación. `backend-engineer` corrige en `backend/`: los roles de la sesión deben salir solo de `identity.user_roles` (hoy un claim de rol almacenado en `user_claims`/`role_claims` llega a la cookie), la fábrica de claims debe fallar cerrado con perfil no válido, regla «todo contenido es un endpoint» con prueba, convención antiforgery para toda mutación y políticas registradas desde una única tabla. Esos archivos aún no están verificados por el orquestador.
+- Wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[criterios-de-aceptacion]], [[index]]
+- Pendiente: verificar las correcciones, marcar y commitear B4; B7 y B8. Por ratificar en [[pendientes]] (P-23): 404 frente a 401 en rutas inexistentes, 403 de `/me` con perfil no válido y claim `display_name`. Nota para el loop del chat: decidir cómo obtiene `ICurrentUser` el hub de SignalR (`IHttpContextAccessor` no es fiable dentro de las invocaciones).
+
+## [2026-10-12] feature | Goal del login — B4 contexto de usuario y autorización (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`, revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: puerto `ICurrentUser` con adaptador en `Api`, caso de uso `GetCurrentUserProfile`, `DataTicketClaimsPrincipalFactory` con lista cerrada de claims (roles solo de `identity.user_roles`; `company_id` solo para clientes y solo desde la cuenta), cuatro políticas con nombre desde una única tabla, política de reserva autenticada, `GET /api/auth/me`, regla «todo contenido es un endpoint» y pruebas de convención (lista pública, antiforgery en toda mutación, DTO de cliente sin `CompanyId`). Sin migración.
+- Verificación: `dotnet build` 0/0; `dotnet test` 154/154 (exit 0; 84 sin Docker); `quality-reviewer` 0 CRÍTICO, 0 ALTO, con sus 2 MEDIO y 6 BAJO corregidos con prueba.
+- Wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[criterios-de-aceptacion]], [[index]]
+- Pendiente: B7 (sembrador de Development, stack reconstruido y verificación en navegador) y B8. Por ratificar (P-23): 404 en rutas inexistentes, 403 de `/me` con perfil no válido, claim `display_name`; variante estricta del manejador de la reserva.

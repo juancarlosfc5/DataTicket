@@ -6,20 +6,28 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace DataTicket.Api.Endpoints.Auth;
 
 /// <summary>
-/// <c>/api/auth</c> (HU-003): antiforgery, login y logout. Endpoints propios: nunca <c>MapIdentityApi</c>,
-/// que expone <c>/register</c> (prohibido por el PRD §5).
+/// <c>/api/auth</c> (HU-003 y HU-004): antiforgery, login, logout y contexto del usuario. Endpoints propios:
+/// nunca <c>MapIdentityApi</c>, que expone el alta pública de cuentas (prohibida por el PRD §5).
 /// </summary>
+/// <remarks>
+/// Solo <c>antiforgery</c> y <c>login</c> son públicos (<c>AllowAnonymous</c> explícito); el resto queda bajo
+/// la política de reserva, que exige un usuario autenticado.
+/// </remarks>
 public static class AuthEndpoints
 {
+    private const string NoStore = "no-store";
+
     public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder api)
     {
         var auth = api.MapGroup("/auth").WithTags("Autenticación");
 
         auth.MapGet("/antiforgery", GetAntiforgeryToken)
+            .AllowAnonymous()
             .WithName("GetAntiforgeryToken")
             .WithSummary("Emite el token antiforgery para la identidad actual (pídelo de nuevo tras login y logout).");
 
         auth.MapPost("/login", LoginAsync)
+            .AllowAnonymous()
             .WithName("Login")
             .WithSummary("Inicia sesión con correo y contraseña; emite la cookie dataticket.auth.")
             .ProducesProblem(StatusCodes.Status400BadRequest)
@@ -32,13 +40,20 @@ public static class AuthEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
+        auth.MapGet("/me", GetCurrentUserAsync)
+            .RequireAuthorization()
+            .WithName("GetCurrentUser")
+            .WithSummary("Devuelve el usuario de la sesión: identidad, superficie, roles, equipos y empresa (solo cliente).")
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
+
         return api;
     }
 
     private static Ok<AntiforgeryTokenResponse> GetAntiforgeryToken(HttpContext httpContext, IAntiforgery antiforgery)
     {
         var tokens = antiforgery.GetAndStoreTokens(httpContext);
-        httpContext.Response.Headers.CacheControl = "no-store";
+        httpContext.Response.Headers.CacheControl = NoStore;
         return TypedResults.Ok(new AntiforgeryTokenResponse(AuthenticationSetup.AntiforgeryHeaderName, tokens.RequestToken!));
     }
 
@@ -62,6 +77,21 @@ public static class AuthEndpoints
     {
         await signOut.ExecuteAsync(cancellationToken);
         return TypedResults.NoContent();
+    }
+
+    /// <summary>
+    /// No declara parámetros de la petición: la respuesta sale solo de la sesión (cualquier <c>?userId=</c> o
+    /// cabecera de empresa se ignora). Una sesión sin perfil válido no recibe datos: 403.
+    /// </summary>
+    private static async Task<Results<Ok<CurrentUserResponse>, ProblemHttpResult>> GetCurrentUserAsync(
+        HttpContext httpContext, IGetCurrentUserProfile getCurrentUserProfile, CancellationToken cancellationToken)
+    {
+        httpContext.Response.Headers.CacheControl = NoStore;
+
+        var profile = await getCurrentUserProfile.ExecuteAsync(cancellationToken);
+        return profile is null
+            ? TypedResults.Problem(title: ApiProblems.ForbiddenTitle, statusCode: StatusCodes.Status403Forbidden)
+            : TypedResults.Ok(CurrentUserResponse.From(profile));
     }
 }
 
