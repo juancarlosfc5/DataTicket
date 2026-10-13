@@ -6,7 +6,7 @@ tags: [scrum, proceso]
 sources: ["PRD.md §13", "PRD.md §14"]
 aliases: [Tablero Scrum, Backlog, Product Backlog]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Tablero Scrum de DataTicket
@@ -14,7 +14,9 @@ updated: 2026-10-09
 Mapa del backlog: 13 épicas y 47 historias de usuario (HU), alineadas con las fases 0–4 del PRD (§13). Se generó con la skill `scrum-spec-orchestrator/`. El seguimiento de ejecución (checkmark, responsable y fecha) está en `PLAN-DE-TRABAJO.md`, en la raíz del repositorio. El detalle de cada HU vive en su propia nota y aquí no se duplica.
 
 > [!info] Estado del backlog
-> El 2026-10-09 la persona líder del proyecto (juancarlosfc5) aprobó explícitamente en bloque las 13 épicas y las 47 HU: todas están en estado `Aprobada` (`status: vigente`). La aprobación no cierra las decisiones abiertas de la sección final: cada HU las sigue ratificando en su tarea T-01 antes de implementar lo que dependa de ellas.
+> El 2026-10-09 la persona líder del proyecto (juancarlosfc5) aprobó explícitamente en bloque las 13 épicas y las 47 HU (`status: vigente`). La aprobación no cierra las decisiones abiertas de la sección final: cada HU las sigue ratificando en su tarea T-01 antes de implementar lo que dependa de ellas.
+>
+> **Estado al 2026-10-12:** 3 HU `En validación` y 44 `Aprobada`. [[hu-002-shell-y-navegacion-por-rol|HU-002]], [[hu-003-iniciar-y-cerrar-sesion|HU-003]] y [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] se implementaron en la rama `feature/auth-login` (goal de `goal_login.md`) y tienen su matriz de evidencia completa; les falta el PR revisado por otra persona del equipo (y, en HU-002, las capturas adjuntas al PR) para pasar a `Completada`. Las 13 épicas siguen en `Aprobada`.
 
 ## Objetivo
 
@@ -48,7 +50,7 @@ Los sprints son incrementos ordenados por dependencias. No estiman duración ni 
 
 | Sprint | Fase | HU | Incremento |
 |---|---|---|---|
-| 0 | 0 | [[hu-001-integracion-continua\|HU-001]], [[hu-002-shell-y-navegacion-por-rol\|HU-002]], [[hu-003-iniciar-y-cerrar-sesion\|HU-003]], [[hu-004-contexto-de-usuario-y-autorizacion\|HU-004]] | CI, shell, login y autorización base |
+| 0 | 0 | [[hu-001-integracion-continua\|HU-001]], [[hu-002-shell-y-navegacion-por-rol\|HU-002]], [[hu-003-iniciar-y-cerrar-sesion\|HU-003]], [[hu-004-contexto-de-usuario-y-autorizacion\|HU-004]] | CI, shell, login y autorización base (HU-002, HU-003 y HU-004 `En validación` desde el 2026-10-12; HU-001 `Aprobada`) |
 | 1 | 0 (+ HU-011 de la Fase 1) | [[hu-005-invitar-y-activar-cuentas\|HU-005]], [[hu-006-restablecer-contrasena\|HU-006]], [[hu-007-administrar-empresas-cliente\|HU-007]], [[hu-008-administrar-usuarios-cliente\|HU-008]], [[hu-009-administrar-usuarios-internos-y-equipos\|HU-009]], [[hu-010-datos-sinteticos-de-desarrollo\|HU-010]], [[hu-011-registrar-eventos-auditables\|HU-011]] | Cuentas, empresas, equipos, datos sintéticos y puerto de auditoría |
 | 2 | 1 | [[hu-013-radicar-ticket\|HU-013]], [[hu-014-adjuntos-en-radicacion\|HU-014]], [[hu-016-cola-global-de-triage\|HU-016]] | Radicar con adjuntos y verlo en la cola de la PM |
 | 3 | 1 | [[hu-015-ajustar-prioridad-manualmente\|HU-015]], [[hu-017-cola-de-cobertura-y-tomar-ticket\|HU-017]], [[hu-018-asignar-y-agregar-participantes\|HU-018]], [[hu-019-reasignar-y-retirar-participantes\|HU-019]], [[hu-020-detalle-interno-del-ticket\|HU-020]] | Triage completo y detalle interno |
@@ -87,10 +89,9 @@ Las HU no resuelven estas decisiones; las registran como dependencias. Detalle e
 
 | Decisión | HU afectadas |
 |---|---|
-| Aceptar [[adr-0004-autenticacion-cookie-mismo-origen]] | HU-003 a HU-006 |
 | CI en GitHub Actions | HU-001 |
-| Enrutador y librería de estado del frontend | HU-002 |
-| Roles frente a equipos (`Development`/`Production` frente a `Team.*`) | HU-004, HU-009 |
+| Roles frente a equipos (`Development`/`Production` frente a `Team.*`): en uso la opción provisional de `db.sql` (equipos = roles de Identity, expuestos en `teams`); el modelo definitivo sigue abierto | HU-009 (HU-004 aplica la provisional) |
+| Ratificar los valores por defecto de la sesión (P-18, P-22) y las propuestas de autorización en uso (P-23) | HU-002, HU-003, HU-004 |
 | Catálogo de categorías (V-12) y formato del número de ticket (V-16) | HU-013 |
 | Máximo de archivos por solicitud; MIME y firma (V-06) | HU-014, HU-029, HU-033 |
 | Quién ajusta la prioridad (V-03) | HU-015 |
@@ -109,6 +110,14 @@ Las HU no resuelven estas decisiones; las registran como dependencias. Detalle e
 ## Decisiones tomadas al crear el backlog
 
 - [[adr-0008-portal-cliente-en-fase-1]]: la consulta básica del portal del cliente se adelanta a la Fase 1.
+
+## Decisiones cerradas después de crear el backlog
+
+Ya no condicionan el backlog; salieron de la tabla de decisiones pendientes el 2026-10-12.
+
+- [[adr-0004-autenticacion-cookie-mismo-origen]], aceptada el 2026-10-09: cookie de Identity de mismo origen. Afectaba a HU-003 a HU-006.
+- [[adr-0010-enrutador-react-router]], aceptada el 2026-10-09: React Router 8.4.0 en modo librería; por ahora no se adopta una librería de estado de servidor ([[pendientes]] §4). Afectaba a HU-002.
+- [[adr-0009-db-sql-diseno-de-referencia]] y [[adr-0011-estilo-visual-inspirado-en-el-prototipo]], aceptadas el 2026-10-09: esquema de referencia y estilo visual.
 
 ## Relacionado
 

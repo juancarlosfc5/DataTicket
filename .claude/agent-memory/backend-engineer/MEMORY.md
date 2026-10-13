@@ -1,0 +1,5 @@
+- [TimeProvider en Identity/cookie (ASP.NET Core 10)](aspnetcore10-timeprovider-identity.md) — cookie y sello de seguridad siguen DI; lockout de UserManager y tokens usan reloj real
+- [Recetas de pruebas de integración](integration-tests-recetas.md) — Testcontainers perezoso, RequiresDocker, espías, rojo por mutación, Program tras Build corre en la factory, versiones
+- [Identity + EF Core frente a db.sql](identity-efcore-db-sql-mapping.md) — SchemaVersion, historial de migraciones con esquema explícito ($user = dataticket), defaults bool por SQL
+- [ProblemDetails, Accept y ThrowOnBadRequest (ASP.NET Core 10)](aspnetcore10-problemdetails-accept.md) — WriteAsync lanza con Accept text/html; Development da 500 con JSON mal formado
+- [Política de reserva y claims (ASP.NET Core 10)](aspnetcore10-authorization-fallback.md) — FallbackPolicy da 401 sin endpoint; fábrica estándar copia user_claims/role_claims; PolicyMap por reflexión

@@ -2,7 +2,7 @@
 title: "HU-002 — Shell de la aplicación y navegación por rol"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En validación
 tags: [scrum, scrum/historia, arquitectura/frontend, producto/roles]
 sources: ["PRD.md §1", "PRD.md §5", "PRD.md §10", "PRD.md §12"]
 aliases: ["HU-002", "Shell de la aplicación y navegación por rol"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]", "[[hu-001-integracion-continua]]"]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # HU-002 — Shell de la aplicación y navegación por rol
@@ -46,7 +46,7 @@ Hoy `frontend/src/app/App.tsx` solo muestra el estado de salud (`modules/system`
 - Pantallas de entrada, activación y restablecimiento (las implementan [[hu-003-iniciar-y-cerrar-sesion|HU-003]], [[hu-005-invitar-y-activar-cuentas|HU-005]] y [[hu-006-restablecer-contrasena|HU-006]]).
 - Contenido funcional de las secciones (bandejas, radicación, administración): solo marcadores de posición.
 - Elegir enrutador o librería de estado de servidor (decisión abierta).
-- Diseño visual definitivo: depende del ZIP de diseño (PRD §2); se usan los tokens provisionales de `styles/global.css`.
+- Diseño visual definitivo: depende del ZIP de diseño (PRD §2). Actualización 2026-10-09: por [[adr-0011-estilo-visual-inspirado-en-el-prototipo]] el shell usa ya `styles/tokens.css` de [[sistema-de-diseno]] (no los tokens provisionales de `global.css`).
 - Conexión SignalR (`core/realtime`), que llega con [[ep-009-chat-interno-en-tiempo-real]].
 
 ## Requisitos y reglas de negocio
@@ -150,21 +150,21 @@ Firma propuesta del cliente HTTP (ratificar en T-01): `getJson<T>(path, options)
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Bajo  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Bajo  
   Descripción: ratificar con HU-003/HU-004 la forma de `/api/auth/me`, `/api/auth/antiforgery`, el nombre de la cabecera antiforgery, el formato ProblemDetails y las rutas públicas/protegidas del SPA (que también usan los enlaces de correo de HU-005 y HU-006).
-- [ ] **T-02 — Adoptar el enrutador decidido** · Capa: Frontend (app) · Dificultad: Medio  
+- [x] **T-02 — Adoptar el enrutador decidido** · Capa: Frontend (app) · Dificultad: Medio  
   Descripción: bloqueada hasta registrar el ADR de enrutador/estado de servidor. Definir las rutas públicas y protegidas en `src/app` y una guarda que, sin sesión, navegue a `/ingresar?returnUrl=`.
-- [ ] **T-03 — Cliente HTTP con mutaciones (pruebas primero)** · Capa: Frontend (core/http) · Dificultad: Medio  
+- [x] **T-03 — Cliente HTTP con mutaciones (pruebas primero)** · Capa: Frontend (core/http) · Dificultad: Medio  
   Descripción: escribir primero pruebas Vitest con `fetch` simulado: `postJson` envía `Content-Type: application/json`, `credentials: 'same-origin'` y la cabecera antiforgery; `getJson` no la envía; respuesta `application/problem+json` → `HttpError` con `problem.errors`; cuerpo vacío o no JSON → error genérico; 401 invoca el manejador global registrado; el token antiforgery se pide una vez y se invalida tras login/logout. Luego implementar.
-- [ ] **T-04 — Modelo de sesión y navegación (pruebas primero)** · Capa: Frontend (models) · Dificultad: Bajo  
+- [x] **T-04 — Modelo de sesión y navegación (pruebas primero)** · Capa: Frontend (models) · Dificultad: Bajo  
   Descripción: tipo `CurrentUser`, normalización del JSON de `/me` (valores desconocidos de `surface` → tratar como sin acceso), gateway `sessionGateway.fetchCurrentUser()`, función pura `navigationFor(user)` y `sanitizeReturnUrl(value)` (solo rutas relativas internas que empiezan por `/` y no por `//`).
-- [ ] **T-05 — Controlador de sesión** · Capa: Frontend (controllers) · Dificultad: Medio  
+- [x] **T-05 — Controlador de sesión** · Capa: Frontend (controllers) · Dificultad: Medio  
   Descripción: `useSessionController` con estado discriminado `loading | anonymous | authenticated | error`, acción `refresh()` y registro del manejador global de 401; pruebas Vitest del controlador.
-- [ ] **T-06 — Layout y vistas compartidas** · Capa: Frontend (views, shared/ui) · Dificultad: Medio  
+- [x] **T-06 — Layout y vistas compartidas** · Capa: Frontend (views, shared/ui) · Dificultad: Medio  
   Descripción: `AppLayout` (cabecera, navegación, contenido), vista «sin permiso» y estado de carga, puras y accesibles (`role="navigation"`, `role="alert"`); incorporar Testing Library + jsdom y probar el render por perfil.
-- [ ] **T-07 — Cableado en `App`** · Capa: Frontend (app) · Dificultad: Bajo  
+- [x] **T-07 — Cableado en `App`** · Capa: Frontend (app) · Dificultad: Bajo  
   Descripción: sustituir el arranque actual por el shell; conservar el módulo `system` accesible (p. ej. en el pie o en una ruta interna) sin romper sus pruebas.
-- [ ] **T-08 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
+- [x] **T-08 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
   Descripción: entregar cambios para [[frontend-mvc]] (estructura `app`, `core/http`, `shared/ui`, módulo `session`) y [[pendientes]] (enrutador decidido).
 
 ## Criterios de aceptación
@@ -231,47 +231,61 @@ Firma propuesta del cliente HTTP (ratificar en T-01): `getJson<T>(path, options)
 
 ## Definition of Done
 
-- [ ] **DoD-01** — CHU-01 a CHU-10 validados con evidencia.
-- [ ] **DoD-02** — Pruebas Vitest escritas primero y en verde, con nombres por comportamiento: `postJson envía cabecera antiforgery y credenciales same-origin`, `getJson no envía cabecera antiforgery`, `problem+json se mapea a HttpError con errores por campo`, `401 invoca el manejador global`, `navigationFor de Requester no incluye secciones internas`, `navigationFor solo muestra Administración al Administrator`, `sanitizeReturnUrl rechaza //host y URL absolutas`, `AppLayout muestra el nombre del usuario y Cerrar sesión`.
-- [ ] **DoD-03** — `npm --prefix frontend run lint` sin errores (fronteras MVC), `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
-- [ ] **DoD-04** — ADR de enrutador/estado de servidor `aceptada` antes de cerrar T-02 y la decisión tachada en [[pendientes]] §4.
-- [ ] **DoD-05** — Contrato con HU-003/HU-004 coherente: el shell funciona contra la implementación real de `/api/auth/me` y `/api/auth/antiforgery` (verificación manual en `docker compose up --build` documentada en el PR) o contra dobles que respetan el contrato si aquellas aún no se fusionan.
-- [ ] **DoD-06** — `docker compose up --build` sigue levantando; `http://localhost:5173` muestra la entrada sin errores en consola.
+- [x] **DoD-01** — CHU-01 a CHU-10 validados con evidencia.
+- [x] **DoD-02** — Pruebas Vitest escritas primero y en verde, con nombres por comportamiento: `postJson envía cabecera antiforgery y credenciales same-origin`, `getJson no envía cabecera antiforgery`, `problem+json se mapea a HttpError con errores por campo`, `401 invoca el manejador global`, `navigationFor de Requester no incluye secciones internas`, `navigationFor solo muestra Administración al Administrator`, `sanitizeReturnUrl rechaza //host y URL absolutas`, `AppLayout muestra el nombre del usuario y Cerrar sesión`.
+- [x] **DoD-03** — `npm --prefix frontend run lint` sin errores (fronteras MVC), `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
+- [x] **DoD-04** — ADR de enrutador/estado de servidor `aceptada` antes de cerrar T-02 y la decisión tachada en [[pendientes]] §4.
+- [x] **DoD-05** — Contrato con HU-003/HU-004 coherente: el shell funciona contra la implementación real de `/api/auth/me` y `/api/auth/antiforgery` (verificación manual en `docker compose up --build` documentada en el PR) o contra dobles que respetan el contrato si aquellas aún no se fusionan.
+- [x] **DoD-06** — `docker compose up --build` sigue levantando; `http://localhost:5173` muestra la entrada sin errores en consola.
 - [ ] **DoD-07** — Capturas de 360 px y 1280 px adjuntas al PR (CHU-10).
-- [ ] **DoD-08** — Wiki actualizada vía Notas para la wiki: [[frontend-mvc]] (estructura y módulo `session`), [[estrategia-de-pruebas]] (Testing Library incorporado), [[pendientes]].
-- [ ] **DoD-09** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (redirección abierta, fronteras MVC, manejo de 401/403).
+- [x] **DoD-08** — Wiki actualizada vía Notas para la wiki: [[frontend-mvc]] (estructura y módulo `session`), [[estrategia-de-pruebas]] (Testing Library incorporado), [[pendientes]].
+- [x] **DoD-09** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (redirección abierta, fronteras MVC, manejo de 401/403).
 - [ ] **DoD-10** — PR revisado y aprobado por otra persona del equipo; trazabilidad de HU y épica actualizada.
 
 ## Evidencia de validación
 
+Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 de `goal_login.md`, hasta el commit `70137ab`). Base de la evidencia:
+
+- **Suite frontend** (ejecutada por el orquestador el 2026-10-12): `npm --prefix frontend run lint` → 0 advertencias / 0 errores en 58 archivos; `npm --prefix frontend test` → 17 archivos / 152 pruebas en verde; `npm --prefix frontend run build` (`tsc -b && vite build`) → exit 0.
+- **Verificación manual** (orquestador, 2026-10-12): stack reconstruido con `docker compose up --build -d backend frontend` (exit 0); `curl` por el proxy `http://localhost:5173` y navegador integrado, con una cuenta interna (Elizabeth) y una cliente (Ana Pérez) del sembrador de Development. Detalle en `goal_login.md` §3 (B7) y en [[log]].
+- **Resultados**: `Cumple`, `No cumple` y `No verificable` según la skill `scrum-spec-orchestrator`; `Pendiente` indica que todavía no ocurrió lo que hay que validar. Las rutas de las pruebas son relativas a `frontend/src/`.
+
+> [!info] Desviaciones respecto al texto de la HU (2026-10-12)
+> - **Ubicación del layout.** `AppLayout` y la vista «sin permiso» (`ForbiddenView`) viven en `modules/session/views`, no en `src/shared/ui` como proponían *Alcance* y *Componentes afectados*; `shared/ui` contiene `InternalLink`, `BrandMark` y `LoadingView` ([[frontend-mvc]]).
+> - **Anchos de la revisión responsiva.** La primera medición (B5 y B7) se hizo a 375 px y 1440 px, dos de los tres anchos que fija [[sistema-de-diseno]] (375, 768 y 1440 px). CHU-10 pide 360 px y 1280 px: se midieron después, el mismo 2026-10-12. Las capturas adjuntas al PR siguen pendientes (DoD-07).
+> - **Secciones internas por rol.** Además de lo pedido en CHU-06, un interno sin el rol necesario que abre a mano `/interno/triage` o `/interno/administracion` ve «sin permiso» (extensión de UX, *propuesta*; la barrera real es el backend).
+> - **Decisiones.** El *Contexto* y *Fuera de alcance* describen el enrutador como decisión abierta: quedó cerrada con [[adr-0010-enrutador-react-router]] (aceptada el 2026-10-09).
+
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CHU-01 | Pendiente | — | — |
-| CHU-02 | Pendiente | — | — |
-| CHU-03 | Pendiente | — | — |
-| CHU-04 | Pendiente | — | — |
-| CHU-05 | Pendiente | — | — |
-| CHU-06 | Pendiente | — | — |
-| CHU-07 | Pendiente | — | — |
-| CHU-08 | Pendiente | — | — |
-| CHU-09 | Pendiente | — | — |
-| CHU-10 | Pendiente | — | — |
-| DoD-01 | Pendiente | — | — |
-| DoD-02 | Pendiente | — | — |
-| DoD-03 | Pendiente | — | — |
-| DoD-04 | Pendiente | — | — |
-| DoD-05 | Pendiente | — | — |
-| DoD-06 | Pendiente | — | — |
-| DoD-07 | Pendiente | — | — |
-| DoD-08 | Pendiente | — | — |
-| DoD-09 | Pendiente | — | — |
-| DoD-10 | Pendiente | — | — |
+| CHU-01 | Cumple | `app/App.test.tsx` › «Shell: superficie por usuario (CHU-01)»: `la raíz lleva al cliente a /portal y muestra su nombre en la cabecera` y `la raíz lleva al interno a /interno y muestra su nombre en la cabecera` (suite frontend). Verificación manual: `/` → `/interno` con la cuenta interna; la cliente entra a `/portal` con su nombre y su empresa | — |
+| CHU-02 | Cumple | `modules/session/models/navigation.test.ts`: `navigationFor de Requester no incluye secciones internas` (recorre `Requester` y `CompanyCoordinator`: todo destino empieza por `/portal` y ninguna etiqueta contiene «Triage», «Chat», «Administración» ni «Equipo»). Verificación manual: la navegación del portal es Inicio, Mis tickets y Radicar ticket | El render del layout lo cubren `modules/session/views/AppLayout.test.tsx` (`expone una navegación etiquetada con la sección actual marcada`) y el navegador |
+| CHU-03 | Cumple | `navigation.test.ts`: `navigationFor solo muestra Administración al Administrator`, `navigationFor solo muestra Cola de triage al ProductManager` y `un miembro solo de Development no ve Cola de triage ni Administración`. Verificación manual: la PM ve Inicio, Bandeja, Cola de triage y Estado del sistema, y `/interno/administracion` le muestra «Sin permiso» | El comentario del `describe` documenta que es ayuda de navegación y que la barrera es el backend (PRD §5 regla 2) |
+| CHU-04 | Cumple | `App.test.tsx` › «Shell: sesión caducada (CHU-04)»: `sin sesión, una ruta protegida redirige a /ingresar con returnUrl` (→ `/ingresar?returnUrl=%2Finterno%2Fadministracion`) y `un 401 de cualquier petición posterior descarta la sesión y redirige a /ingresar`; › «Entrada /ingresar»: `ante 204 vuelve al returnUrl saneado, también tras un 401 previo`. Verificación manual: sin sesión, `/interno/bandeja` → `/ingresar?returnUrl=%2Finterno%2Fbandeja`; tras ingresar vuelve a `/interno/bandeja` | — |
+| CHU-05 | Cumple | `modules/session/models/returnUrl.test.ts`: `sanitizeReturnUrl rechaza //host y URL absolutas`; `App.test.tsx`: `con sesión activa, /ingresar con returnUrl externo lleva a la superficie por defecto` y `un returnUrl externo no se sigue tras iniciar sesión` | Solo pruebas automáticas: en el stack no se probó a mano un `returnUrl` externo |
+| CHU-06 | Cumple | `App.test.tsx` › «Shell: sin permiso (CHU-06)»: `un cliente que abre /interno/administracion ve sin permiso, sin pedir /api/admin` (texto «No tienes permiso para ver esta página.», enlace «Ir a mi portal» y `/api/auth/me` como única petición) y `un 403 de la API lleva a la vista sin permiso`; `modules/session/views/ForbiddenView.test.tsx`: `anuncia que no hay permiso y enlaza a la superficie propia`. Verificación manual: la cliente en `/interno/bandeja` ve «Sin permiso / Ir a mi portal»; la interna en `/portal`, «Sin permiso» | — |
+| CHU-07 | Cumple | `core/http/httpClient.test.ts`: `postJson envía cabecera antiforgery y credenciales same-origin`, `putJson, patchJson y deleteRequest también envían la cabecera antiforgery`, `usa el nombre de cabecera que indica /api/auth/antiforgery`, `getJson no envía cabecera antiforgery` y `las rutas son relativas a /api y nunca aceptan URL absolutas`. Verificación manual: login y logout reales por el proxy con `X-XSRF-TOKEN` (204) | — |
+| CHU-08 | Cumple | `httpClient.test.ts`: `problem+json se mapea a HttpError con errores por campo` y `502 con cuerpo HTML produce HttpError sin problem y mensaje genérico`; `App.test.tsx`: `si /me responde 502 HTML muestra el mensaje genérico y permite reintentar` | — |
+| CHU-09 | Cumple | `npm --prefix frontend run lint` → «Found 0 warnings and 0 errors» en 58 archivos (2026-10-12). Las fronteras por carpeta están en `frontend/.oxlintrc.json` (`no-restricted-imports`) | — |
+| CHU-10 | Cumple | Navegador integrado contra el stack real (orquestador, 2026-10-12), con sesión de la cuenta interna: a **360 × 740 px** (claro) y a **1280 × 800 px** (oscuro), `scrollWidth = innerWidth` (360 y 1280); los cuatro enlaces de navegación (Inicio, Bandeja, Cola de triage y Estado del sistema) y el botón «Cerrar sesión» quedan dentro del viewport. Antes se había medido a 375 px y 1440 px, en claro y oscuro, en el shell interno y en el portal, con el mismo resultado | A 360 px y 1280 px se midió el shell interno; el portal, a 375 px y 1440 px. Las capturas «adjuntas al PR» que menciona el criterio siguen pendientes: ver DoD-07 |
+| DoD-01 | Cumple | CHU-01 a CHU-10 en `Cumple` (filas anteriores) | — |
+| DoD-02 | Cumple | Las ocho pruebas existen con el nombre exacto y pasan (suite frontend). En `httpClient.test.ts`: `postJson envía cabecera antiforgery y credenciales same-origin`, `getJson no envía cabecera antiforgery`, `problem+json se mapea a HttpError con errores por campo` y `401 invoca el manejador global`. En `navigation.test.ts`: `navigationFor de Requester no incluye secciones internas` y `navigationFor solo muestra Administración al Administrator`. En `returnUrl.test.ts`: `sanitizeReturnUrl rechaza //host y URL absolutas`. En `AppLayout.test.tsx`: `AppLayout muestra el nombre del usuario y Cerrar sesión` | El rojo previo de B5 no quedó registrado en `goal_login.md` ni en [[log]] (sí el de B3 y B4): el «escritas primero» se apoya en la regla de TDD del goal, no en una salida guardada |
+| DoD-03 | Cumple | Suite frontend del 2026-10-12: lint 0/0 en 58 archivos, 152 pruebas en 17 archivos y build con exit 0 | — |
+| DoD-04 | Cumple | [[adr-0010-enrutador-react-router]] con `status: aceptada` (2026-10-09); en [[pendientes]] §4, «Enrutador del frontend» está tachado | La librería de estado de servidor no se adopta por ahora (misma ADR) y sigue como punto abierto en [[pendientes]] §4 |
+| DoD-05 | Cumple | Verificación manual del 2026-10-12: el shell funciona contra `/api/auth/me` y `/api/auth/antiforgery` reales, con una cuenta interna y una cliente | Falta copiar la verificación a la descripción del PR (B8 de `goal_login.md`) |
+| DoD-06 | Cumple | `docker compose up --build -d backend frontend` → exit 0, `backend` healthy y dos arranques seguidos sanos; `http://localhost:5173/ingresar` muestra la entrada | La consola solo registra los `401` esperados de `/api/auth/me` sin sesión; ningún error de script |
+| DoD-07 | Pendiente | — | Aún no hay PR al que adjuntar las capturas de 360 px y 1280 px. La medición a esos anchos ya está hecha (CHU-10); dos capturas anteriores, a 375 px, salieron con artefactos del panel |
+| DoD-08 | Cumple | [[frontend-mvc]] (estructura de `app`, `core/http` y `shared/ui`; módulos `session` y `auth`), [[estrategia-de-pruebas]] (Testing Library + jsdom) y [[pendientes]] §4 (enrutador), al día el 2026-10-12 | — |
+| DoD-09 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B5, B6 y B7 con 0 CRÍTICO / 0 ALTO, y los 4 MEDIO de B5 corregidos en B6 con prueba ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
+| DoD-10 | Pendiente | — | Depende de personas: el PR está sin abrir y falta la revisión y aprobación de otra persona del equipo |
 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 - 2026-10-09 — ADR-0010 (enrutador) y ADR-0011 (estilo visual) aceptados: T-02 desbloqueada. Se ejecuta en el goal de `goal_login.md` (bloque B5).
+- 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
+- 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-08 hechas en B5–B7 y matriz de evidencia completada. Resultado: 18 `Cumple` y 2 `Pendiente` (DoD-07, capturas de 360 px y 1280 px adjuntas al PR; DoD-10, revisión del PR por otra persona). CHU-10 se midió a 360 px y 1280 px ese mismo día. Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
 
 ## Notas y decisiones
 

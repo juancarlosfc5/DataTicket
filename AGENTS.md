@@ -223,7 +223,7 @@ docker compose logs -f backend                    # logs de un servicio
 docker compose down                               # detener (conserva datos); -v borra volúmenes
 cd backend && dotnet build                        # compilar backend (desde backend/: ahí está global.json)
 cd backend && dotnet test                         # pruebas backend (Microsoft.Testing.Platform)
-docker build --target test ./backend              # pruebas backend sin SDK local
+docker build --target test ./backend              # pruebas backend sin SDK local (solo las que no necesitan Docker; la batería completa es dotnet test)
 npm --prefix frontend run lint                    # oxlint (incluye fronteras MVC)
 npm --prefix frontend test                        # vitest
 npm --prefix frontend run build                   # typecheck + build

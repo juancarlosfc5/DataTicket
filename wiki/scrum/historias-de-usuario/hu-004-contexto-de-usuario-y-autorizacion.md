@@ -2,7 +2,7 @@
 title: "HU-004 — Contexto del usuario y autorización por rol"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En validación
 tags: [scrum, scrum/historia, seguridad, identity, producto/roles, arquitectura/backend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §14"]
 aliases: ["HU-004", "Contexto del usuario y autorización por rol"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-003-iniciar-y-cerrar-sesion]]"]
 relacionadas: ["[[hu-002-shell-y-navegacion-por-rol]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-009-administrar-usuarios-internos-y-equipos]]", "[[hu-024-portal-solicitante-consulta-tickets]]", "[[hu-025-portal-coordinador-consulta-tickets]]"]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # HU-004 — Contexto del usuario y autorización por rol
@@ -72,7 +72,7 @@ Tras [[hu-003-iniciar-y-cerrar-sesion|HU-003]] existe la cookie de sesión, pero
 - Épica: [[ep-002-identidad-y-acceso]]
 - Dependencias: [[hu-003-iniciar-y-cerrar-sesion|HU-003]] (Identity, cookie, proyecto de integración).
 - Relacionadas: [[hu-002-shell-y-navegacion-por-rol|HU-002]] (consume `/me`), [[hu-008-administrar-usuarios-cliente|HU-008]] y [[hu-009-administrar-usuarios-internos-y-equipos|HU-009]] (cambian roles, equipos y empresa), [[hu-024-portal-solicitante-consulta-tickets|HU-024]], [[hu-025-portal-coordinador-consulta-tickets|HU-025]].
-- Decisiones: [[adr-0004-autenticacion-cookie-mismo-origen]] (propuesta), [[adr-0002-backend-hexagonal]]. Riesgo abierto: roles frente a equipos (ver Notas).
+- Decisiones: [[adr-0004-autenticacion-cookie-mismo-origen]] (aceptada el 2026-10-09), [[adr-0002-backend-hexagonal]]. Riesgo abierto: roles frente a equipos (ver Notas).
 
 ## Componentes afectados
 
@@ -140,23 +140,23 @@ No admite parámetros: cualquier `?userId=` o cabecera adicional se ignora.
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
   Descripción: fijar el JSON de `/me`, la regla de `surface`, los nombres de políticas y claims (`company_id`, claim de equipo propuesto `team`), la lista de públicos y **cómo se representan los equipos** (rol Identity frente a claim/tabla `Team.*`), registrando la decisión en un ADR o en [[pendientes]] sin resolverla en silencio.
-- [ ] **T-02 — Puerto `ICurrentUser` (pruebas primero)** · Capa: Backend (Application) · Dificultad: Bajo  
+- [x] **T-02 — Puerto `ICurrentUser` (pruebas primero)** · Capa: Backend (Application) · Dificultad: Bajo  
   Descripción: interfaz en `Application/Ports/Out` (`UserId`, `IsAuthenticated`, `Roles`, `Teams`, `CompanyId?`, `IsInRole`), sin dependencias de ASP.NET Core; las `ArchitectureTests` lo verifican.
-- [ ] **T-03 — Adaptador de `ICurrentUser` y fábrica de claims** · Capa: Backend (Api / Infrastructure) · Dificultad: Medio  
+- [x] **T-03 — Adaptador de `ICurrentUser` y fábrica de claims** · Capa: Backend (Api / Infrastructure) · Dificultad: Medio  
   Descripción: pruebas unitarias primero: principal de cliente con `company_id` → `CompanyId` correcto; principal de cliente sin `company_id` → falla cerrada (no autorizado); principal interno → `CompanyId = null`. La fábrica de claims añade roles, equipos y `company_id` solo a cuentas cliente; una cuenta con rol cliente e interno a la vez se rechaza (propuesta).
-- [ ] **T-04 — Políticas y *fallback* (pruebas primero)** · Capa: Backend (Api) · Dificultad: Medio  
+- [x] **T-04 — Políticas y *fallback* (pruebas primero)** · Capa: Backend (Api) · Dificultad: Medio  
   Descripción: pruebas con `IAuthorizationService` y principales construidos para la matriz de CHU-05; luego registrar las políticas, la política de reserva `RequireAuthenticatedUser` y `AllowAnonymous` en los públicos existentes (`/api/health`, `/api/health/live`) y de HU-003.
-- [ ] **T-05 — Endpoint `/api/auth/me`** · Capa: Backend (Api) · Dificultad: Bajo  
+- [x] **T-05 — Endpoint `/api/auth/me`** · Capa: Backend (Api) · Dificultad: Bajo  
   Descripción: prueba de integración primero para cliente e interno; el endpoint compone la respuesta desde `ICurrentUser` y el nombre de la empresa, sin aceptar parámetros.
-- [ ] **T-06 — Prueba de recorrido de endpoints** · Capa: Backend (pruebas) · Dificultad: Medio  
+- [x] **T-06 — Prueba de recorrido de endpoints** · Capa: Backend (pruebas) · Dificultad: Medio  
   Descripción: prueba de integración que obtiene `EndpointDataSource`, recorre todos los `RouteEndpoint` y falla si alguno con metadatos `IAllowAnonymous` no está en la lista explícita; complementa con peticiones anónimas a los endpoints `GET` no públicos esperando `401`.
-- [ ] **T-07 — Prueba de convención de DTOs de cliente** · Capa: Backend (pruebas) · Dificultad: Bajo  
+- [x] **T-07 — Prueba de convención de DTOs de cliente** · Capa: Backend (pruebas) · Dificultad: Bajo  
   Descripción: (propuesta) prueba que inspecciona los tipos de entrada de los endpoints con política `ClientUser` y falla si alguno declara una propiedad `CompanyId`.
-- [ ] **T-08 — Frontend: prueba de contrato de `/me`** · Capa: Frontend (models) · Dificultad: Bajo  
+- [x] **T-08 — Frontend: prueba de contrato de `/me`** · Capa: Frontend (models) · Dificultad: Bajo  
   Descripción: añadir al módulo `session` de HU-002 pruebas Vitest que normalizan los dos ejemplos JSON de esta HU y un `surface` desconocido (→ sin acceso).
-- [ ] **T-09 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
+- [x] **T-09 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
   Descripción: [[autenticacion-identity]] (claims, políticas, públicos), [[roles-y-permisos]] (matriz de políticas), [[backend-hexagonal]] (`ICurrentUser`), [[glosario]] (políticas y claim, si se adoptan), [[pendientes]] (roles frente a equipos).
 
 ## Criterios de aceptación
@@ -223,47 +223,65 @@ No admite parámetros: cualquier `?userId=` o cabecera adicional se ignora.
 
 ## Definition of Done
 
-- [ ] **DoD-01** — CHU-01 a CHU-10 validados con evidencia.
-- [ ] **DoD-02** — Pruebas escritas primero y en verde, con nombres por comportamiento: `Me_de_cliente_incluye_solo_su_empresa`, `Me_de_interno_no_tiene_empresa`, `Me_ignora_userId_y_cabeceras_de_empresa`, `Me_sin_sesion_responde_401`, `Politicas_por_rol_cumplen_la_matriz`, `Solo_la_lista_publica_admite_anonimos`, `Cliente_sin_company_id_falla_cerrado`, `DTOs_de_cliente_no_declaran_CompanyId`.
-- [ ] **DoD-03** — `cd backend && dotnet test` en verde, incluidas `DataTicket.ArchitectureTests`.
-- [ ] **DoD-04** — `npm --prefix frontend run lint`, `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
-- [ ] **DoD-05** — Contrato de `/me` coherente con [[hu-002-shell-y-navegacion-por-rol|HU-002]]: el shell funciona contra el endpoint real en `docker compose up --build` (verificación manual documentada).
-- [ ] **DoD-06** — Decisión sobre la representación de equipos registrada (ADR o entrada actualizada en [[pendientes]]) antes de fusionar.
-- [ ] **DoD-07** — Sin cambios de esquema (si la decisión de equipos los exige, se trasladan a HU-009 con su migración).
-- [ ] **DoD-08** — Wiki actualizada vía Notas para la wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[glosario]], [[pendientes]].
-- [ ] **DoD-09** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (*fallback*, lista de públicos, origen de `company_id`).
+- [x] **DoD-01** — CHU-01 a CHU-10 validados con evidencia.
+- [x] **DoD-02** — Pruebas escritas primero y en verde, con nombres por comportamiento: `Me_de_cliente_incluye_solo_su_empresa`, `Me_de_interno_no_tiene_empresa`, `Me_ignora_userId_y_cabeceras_de_empresa`, `Me_sin_sesion_responde_401`, `Politicas_por_rol_cumplen_la_matriz`, `Solo_la_lista_publica_admite_anonimos`, `Cliente_sin_company_id_falla_cerrado`, `DTOs_de_cliente_no_declaran_CompanyId`.
+- [x] **DoD-03** — `cd backend && dotnet test` en verde, incluidas `DataTicket.ArchitectureTests`.
+- [x] **DoD-04** — `npm --prefix frontend run lint`, `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
+- [x] **DoD-05** — Contrato de `/me` coherente con [[hu-002-shell-y-navegacion-por-rol|HU-002]]: el shell funciona contra el endpoint real en `docker compose up --build` (verificación manual documentada).
+- [x] **DoD-06** — Decisión sobre la representación de equipos registrada (ADR o entrada actualizada en [[pendientes]]) antes de fusionar.
+- [x] **DoD-07** — Sin cambios de esquema (si la decisión de equipos los exige, se trasladan a HU-009 con su migración).
+- [x] **DoD-08** — Wiki actualizada vía Notas para la wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[glosario]], [[pendientes]].
+- [x] **DoD-09** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (*fallback*, lista de públicos, origen de `company_id`).
 - [ ] **DoD-10** — PR revisado y aprobado por otra persona del equipo; trazabilidad de HU y épica actualizada.
 
 ## Evidencia de validación
 
+Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 de `goal_login.md`, hasta el commit `70137ab`). Base de la evidencia:
+
+- **Suite backend** (ejecutada por el orquestador el 2026-10-12): `cd backend && dotnet build` → 0 advertencias / 0 errores; `cd backend && dotnet test` → total 169, error 0, correcto 169 (exit 0). Salvo que se indique otro proyecto, las clases citadas están en `backend/tests/DataTicket.IntegrationTests/`.
+- **Suite frontend** (orquestador, 2026-10-12): `npm --prefix frontend run lint` → 0 advertencias / 0 errores en 58 archivos; `npm --prefix frontend test` → 17 archivos / 152 pruebas en verde; `npm --prefix frontend run build` → exit 0. Rutas relativas a `frontend/src/`.
+- **Verificación manual** (orquestador, 2026-10-12): stack reconstruido con `docker compose up --build -d backend frontend` (exit 0); `curl` por el proxy `http://localhost:5173` y navegador integrado, con una cuenta interna (Elizabeth) y una cliente (Ana Pérez) del sembrador de Development. Detalle en `goal_login.md` §3 (B7) y en [[log]].
+- **Resultados**: `Cumple`, `No cumple` y `No verificable` según la skill `scrum-spec-orchestrator`; `Pendiente` indica que todavía no ocurrió lo que hay que validar.
+
+> [!warning] Desviaciones respecto al texto de la HU (2026-10-12)
+> - **`/me` responde también `403`.** El contrato lista `200` y `401`; el código devuelve además `403` «No tienes permiso para realizar esta acción.» cuando hay sesión pero el perfil no es válido (cliente sin `company_id`, perfil mixto, interno con empresa…). En esos casos `surface` no vale `"internal"` «en otro caso», como proponía la tabla del contrato: no hay superficie. Por ratificar: [[pendientes]] §1 y P-23.
+> - **El claim `team` no existe.** Los equipos viajan en la cookie como `ClaimTypes.Role` (roles de Identity `Development` y `Production`, `RoleNames.Teams`) y se exponen aparte en `teams` y en `ICurrentUser.Teams` ([[autenticacion-identity]]).
+> - **El nombre visible viaja en el claim `display_name`.** El contrato T-01 no fijaba el tipo del claim; por ratificar (P-23).
+> - **Prueba negativa A↔B (CHU-03).** El usuario de la empresa B es `TestAccounts.Company02Requester1`: el correo de ejemplo `luis.gomez@empresa-sintetica-02.test` no está en el catálogo de `db.sql` §13.
+> - **Prueba de convención antiforgery.** Se llama `Toda_mutacion_lleva_el_filtro_antiforgery` (hallazgo BAJO-8 de la revisión de B3); no figura en el DoD-02 de esta HU.
+> - **T-02 y T-03.** `ICurrentUser` expone además `DisplayName`, `Email` y `Surface`. Las pruebas del adaptador (`Auth/CurrentUserAdapterTests`) están en `DataTicket.IntegrationTests`, sin host ni Docker, porque `DataTicket.UnitTests` no referencia `Api`.
+> - **T-07.** La convención de DTO es más amplia que la propuesta: revisa todo endpoint que no sea solo interno, no únicamente los que llevan la política `ClientUser`.
+
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CHU-01 | Pendiente | — | — |
-| CHU-02 | Pendiente | — | — |
-| CHU-03 | Pendiente | — | — |
-| CHU-04 | Pendiente | — | — |
-| CHU-05 | Pendiente | — | — |
-| CHU-06 | Pendiente | — | — |
-| CHU-07 | Pendiente | — | — |
-| CHU-08 | Pendiente | — | — |
-| CHU-09 | Pendiente | — | — |
-| CHU-10 | Pendiente | — | — |
-| DoD-01 | Pendiente | — | — |
-| DoD-02 | Pendiente | — | — |
-| DoD-03 | Pendiente | — | — |
-| DoD-04 | Pendiente | — | — |
-| DoD-05 | Pendiente | — | — |
-| DoD-06 | Pendiente | — | — |
-| DoD-07 | Pendiente | — | — |
-| DoD-08 | Pendiente | — | — |
-| DoD-09 | Pendiente | — | — |
-| DoD-10 | Pendiente | — | — |
+| CHU-01 | Cumple | `Auth/MeEndpointTests.Me_de_cliente_incluye_solo_su_empresa` (`200` con `id`, `displayName`, `email`, `surface = "client"`, `roles = ["Requester"]`, `teams = []` y `company` con el id y el nombre de la Empresa Sintética 01; exactamente los siete campos del contrato) — suite backend. Verificación manual: `/me` de Ana Pérez → `surface: client`, `roles: [Requester]`, `company: {id, name: "Empresa Sintética 01"}` | Los identificadores son los de `db.sql` §13, no los del ejemplo de la HU |
+| CHU-02 | Cumple | `Auth/MeEndpointTests`: `Me_de_interno_no_tiene_empresa` (`surface = "internal"`, `roles = ["ProductManager"]`, `teams = ["Production"]` y `company` presente con valor `null`) y `Me_separa_roles_y_equipos_en_cada_perfil`. Verificación manual: `/me` de Elizabeth → `surface: internal`, `roles: [ProductManager]`, `teams: [Production]`, `company: null` | — |
+| CHU-03 | Cumple | `Auth/MeEndpointTests.Me_ignora_userId_y_cabeceras_de_empresa` (prueba negativa A↔B en los dos sentidos: con `?userId=`, `?companyId=`, `X-Company-Id`, `X-User-Id` y `X-Forwarded-User` la respuesta es idéntica byte a byte a la propia y no contiene el id, el correo ni la empresa del otro usuario) | El usuario de la empresa B es `TestAccounts.Company02Requester1` (ver desviaciones) |
+| CHU-04 | Cumple | `Auth/MeEndpointTests.Me_sin_sesion_responde_401` (sin cookie, con una cookie que no emitió el servidor y tras el logout: `401` `application/problem+json` sin `Location`). Verificación manual: `/me` → 401 después de `POST /api/auth/logout` | «Sesión cerrada» se prueba en el mismo navegador, donde la cookie expira. Una copia de la cookie guardada antes del logout sigue valiendo hasta su expiración o hasta la revalidación del sello: riesgo aceptado en T-01 (P-22) |
+| CHU-05 | Cumple | `Auth/AuthorizationPolicyTests.Politicas_por_rol_cumplen_la_matriz` (16 perfiles × 4 políticas con `IAuthorizationService`), `Auth/SessionAuthorizationTests.Politicas_con_sesion_real_cumplen_la_matriz` y `Auth/AuthorizationPolicyTests.Politicas_son_las_mismas_fuera_de_Development` | — |
+| CHU-06 | Cumple | `Conventions/EndpointAuthorizationConventionTests`: `Solo_la_lista_publica_admite_anonimos` (igualdad exacta en Development y Production), `Endpoints_no_publicos_responden_401_sin_sesion`, `Endpoint_sin_metadatos_exige_sesion` (el endpoint de control sin metadatos responde `401`) y `Anonimo_nunca_recibe_2xx_fuera_de_la_lista_publica`; `Auth/AuthorizationPolicyTests.Politica_de_reserva_exige_usuario_autenticado` | Lista implementada: `GET /api/health`, `GET /api/health/live`, `GET /api/auth/antiforgery`, `POST /api/auth/login` y OpenAPI solo en Development. Las tres rutas públicas de HU-005 y HU-006 que lista el contrato aún no existen. El alcance de la reserva (`404` en rutas inexistentes) está por ratificar (P-23) |
+| CHU-07 | Cumple | `Auth/CurrentUserAdapterTests.Principal_de_cliente_con_company_id_expone_su_empresa`; `Auth/SessionAuthorizationTests`: `ICurrentUser_entrega_la_empresa_de_la_sesion_y_no_la_de_la_peticion` y `Cliente_sin_company_id_falla_cerrado` (`403`); `Conventions/ClientInputConventionTests.DTOs_de_cliente_no_declaran_CompanyId`; `Auth/ClaimsFactoryTests.Company_id_sale_solo_de_la_cuenta_y_no_de_claims_almacenados` | La convención revisa cuerpo, consulta, ruta, cabeceras y `[AsParameters]` de todo endpoint que no sea solo interno |
+| CHU-08 | Cumple | `Auth/AuthorizationPolicyTests.Administrador_no_obtiene_politicas_de_cliente_ni_de_contenido` (las políticas registradas son exactamente las cuatro del contrato, en Development y Production, y el administrador no satisface `ClientUser`) | — |
+| CHU-09 | Cumple | `backend/tests/DataTicket.ArchitectureTests`: `CurrentUserPortTests.CurrentUser_port_lives_in_Application_Ports_Out`, `CurrentUser_port_does_not_expose_AspNetCore_types` y `CurrentUser_adapter_lives_only_in_Api`; `LayerDependencyTests.Application_DoesNotDependOnFrameworks` (suite backend) | — |
+| CHU-10 | Cumple | `modules/session/models/currentUser.test.ts` › «contrato de /me (HU-004 CHU-10)»: `el ejemplo de cliente produce un CurrentUser del portal con su empresa`, `el ejemplo interno produce un CurrentUser interno sin empresa` y `surface "partner" produce un usuario sin acceso`; `app/App.test.tsx`: `un surface desconocido (partner) se trata como sin acceso y muestra sin permiso (HU-004 CHU-10)` (suite frontend) | — |
+| DoD-01 | Cumple | CHU-01 a CHU-10 en `Cumple` (filas anteriores) | — |
+| DoD-02 | Cumple | Las ocho pruebas existen con el nombre exacto y pasan (suite backend): `Me_de_cliente_incluye_solo_su_empresa`, `Me_de_interno_no_tiene_empresa`, `Me_ignora_userId_y_cabeceras_de_empresa`, `Me_sin_sesion_responde_401`, `Politicas_por_rol_cumplen_la_matriz`, `Solo_la_lista_publica_admite_anonimos`, `Cliente_sin_company_id_falla_cerrado` y `DTOs_de_cliente_no_declaran_CompanyId` | Rojo inicial registrado en B4 (`total: 140, error: 38`) y verde de B4 con 154/154 (`goal_login.md` §3) |
+| DoD-03 | Cumple | `cd backend && dotnet test` → total 169, error 0, correcto 169 (exit 0) el 2026-10-12, con las 13 pruebas de `DataTicket.ArchitectureTests` | — |
+| DoD-04 | Cumple | Suite frontend del 2026-10-12: lint 0/0 en 58 archivos, 152 pruebas en 17 archivos y build con exit 0 | — |
+| DoD-05 | Cumple | Verificación manual del 2026-10-12 contra el stack de Compose: el shell consume el `/me` real; la interna entra a `/interno/bandeja` con su navegación y la cliente a `/portal` con la suya | El SPA no distingue el `403` de `/me`: acaba en el estado de error de carga y no en «sin permiso» ([[pendientes]] §1) |
+| DoD-06 | Cumple | [[pendientes]] §1, «roles frente a equipos», con las actualizaciones del 2026-10-09 (B1) y del 2026-10-12 (B4): los equipos son los roles de Identity `Development` y `Production`, expuestos en `teams` | Decisión provisional: el modelo definitivo sigue abierto para HU-009 |
+| DoD-07 | Cumple | B4 no añadió ninguna migración: la única sigue siendo `20261009164647_AddIdentityAndCompanies`, de HU-003; `dotnet ef migrations has-pending-model-changes` → sin cambios (B4, `goal_login.md` §3) | — |
+| DoD-08 | Cumple | [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[glosario]] y [[pendientes]], al día el 2026-10-12 | — |
+| DoD-09 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B4 con 0 CRÍTICO / 0 ALTO y sus 2 MEDIO y BAJO 1–6 corregidos con prueba; B6 y B7 con 0 CRÍTICO / 0 ALTO ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
+| DoD-10 | Pendiente | — | Depende de personas: el PR está sin abrir y falta la revisión y aprobación de otra persona del equipo |
 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 - 2026-10-09 — Se ejecuta en el goal de `goal_login.md` (bloques B1, B4, B6).
+- 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
+- 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-09 hechas en B4 y B6, y matriz de evidencia completada. Resultado: 19 `Cumple` y 1 `Pendiente` (DoD-10, revisión del PR por otra persona). Quedan por ratificar con el equipo P-23 (alcance de la política de reserva, claim `display_name` y `403` de `/me`) y el modelo definitivo de equipos (HU-009). Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
 
 ## Notas y decisiones
 

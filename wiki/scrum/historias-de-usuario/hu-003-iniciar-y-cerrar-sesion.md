@@ -2,7 +2,7 @@
 title: "HU-003 — Iniciar y cerrar sesión"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En validación
 tags: [scrum, scrum/historia, seguridad, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §13"]
 aliases: ["HU-003", "Iniciar y cerrar sesión"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-002-shell-y-navegacion-por-rol]]"]
 relacionadas: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-001-integracion-continua]]"]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # HU-003 — Iniciar y cerrar sesión
@@ -72,9 +72,9 @@ Que el login use **ASP.NET Core Identity** ya está decidido; el mecanismo de se
 ## Dependencias y relaciones
 
 - Épica: [[ep-002-identidad-y-acceso]]
-- Dependencias: aceptación de [[adr-0004-autenticacion-cookie-mismo-origen]] (hoy `propuesta`); [[hu-002-shell-y-navegacion-por-rol|HU-002]] (cliente HTTP con antiforgery, ruta `/ingresar`); PostgreSQL disponible en CI ([[hu-001-integracion-continua|HU-001]], T-05).
+- Dependencias: aceptación de [[adr-0004-autenticacion-cookie-mismo-origen]] (aceptada el 2026-10-09); [[hu-002-shell-y-navegacion-por-rol|HU-002]] (cliente HTTP con antiforgery, ruta `/ingresar`); PostgreSQL disponible en CI ([[hu-001-integracion-continua|HU-001]], T-05).
 - Relacionadas: [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]], [[hu-005-invitar-y-activar-cuentas|HU-005]], [[hu-006-restablecer-contrasena|HU-006]], [[hu-008-administrar-usuarios-cliente|HU-008]] (desactivación), [[hu-010-datos-sinteticos-de-desarrollo|HU-010]] (cuentas para probar a mano).
-- Decisiones: [[adr-0004-autenticacion-cookie-mismo-origen]] (propuesta), [[adr-0002-backend-hexagonal]].
+- Decisiones: [[adr-0004-autenticacion-cookie-mismo-origen]] (aceptada el 2026-10-09), [[adr-0002-backend-hexagonal]].
 
 ## Componentes afectados
 
@@ -130,25 +130,25 @@ Comportamiento común de la API (todas las rutas `/api/**`): sin sesión → `40
 
 ## Tareas de desarrollo
 
-- [ ] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
+- [x] **T-01 — Contrato** · Capa: Transversal · Dificultad: Medio  
   Descripción: con ADR-0004 aceptado, fijar rutas, cuerpos, códigos, nombre de la cabecera antiforgery (`X-XSRF-TOKEN`, propuesta), nombre de la cookie (propuesta: `dataticket.auth`), duración de la sesión deslizante, parámetros de bloqueo, intervalo de revalidación del sello de seguridad y modelo mínimo del estado de la cuenta (`AccountStatus` {`Invited`, `Active`, `Deactivated`}, nombre propuesto, ratificar con HU-005/HU-008 y registrar en el [[glosario]]). Decidir si el cierre de sesión revoca la cookie en servidor (ver Notas).
-- [ ] **T-02 — Proyecto de pruebas de integración** · Capa: Backend (pruebas) · Dificultad: Medio  
+- [x] **T-02 — Proyecto de pruebas de integración** · Capa: Backend (pruebas) · Dificultad: Medio  
   Descripción: crear `DataTicket.IntegrationTests` (nombre propuesto) con `WebApplicationFactory<Program>`, PostgreSQL real (Compose o Testcontainers, según HU-001), base aislada por ejecución y fixture para crear cuentas en cada estado. Añadirlo a `DataTicket.slnx` y a la etapa `restore` de `backend/Dockerfile`.
-- [ ] **T-03 — Pruebas de integración primero** · Capa: Backend (pruebas) · Dificultad: Medio  
+- [x] **T-03 — Pruebas de integración primero** · Capa: Backend (pruebas) · Dificultad: Medio  
   Descripción: escribir en rojo las pruebas de CHU-01 a CHU-10 y CHU-12 (cookie y atributos, `Secure` por entorno, respuestas idénticas, cuenta desactivada/pendiente, bloqueo con reloj controlado, validación, antiforgery, cierre, ausencia de `/register`, 401 sin redirección, persistencia de claves).
-- [ ] **T-04 — Identity y persistencia** · Capa: Backend (Infrastructure) · Dificultad: Alto  
+- [x] **T-04 — Identity y persistencia** · Capa: Backend (Infrastructure) · Dificultad: Alto  
   Descripción: `ApplicationUser : IdentityUser<Guid>` con `DisplayName` y estado de la cuenta; `DataTicketDbContext` hereda de `IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>` e implementa el almacén de claves de Data Protection; `AddIdentityCore` + `SignInManager` + roles; opciones de contraseña y bloqueo; `RequireUniqueEmail = true`. El dominio solo conoce `UserId` ([[backend-hexagonal]]).
-- [ ] **T-05 — Migración EF Core** · Capa: Persistencia · Dificultad: Bajo  
+- [x] **T-05 — Migración EF Core** · Capa: Persistencia · Dificultad: Bajo  
   Descripción: migración inicial (propuesta: `AddIdentity`) con tablas de Identity y de claves de Data Protection en `Infrastructure/Persistence/Migrations`; aplicar en Development al arrancar o por comando, según T-01.
-- [ ] **T-06 — Endpoints, cookie y antiforgery** · Capa: Backend (Api) · Dificultad: Alto  
+- [x] **T-06 — Endpoints, cookie y antiforgery** · Capa: Backend (Api) · Dificultad: Alto  
   Descripción: grupo `/api/auth` con `antiforgery`, `login`, `logout`; `SignInManager.PasswordSignInAsync` con `lockoutOnFailure: true` y comprobación del estado de la cuenta antes de emitir la cookie; opciones de cookie (`HttpOnly`, `SameSite=Lax`, `SecurePolicy=Always` fuera de Development); eventos `OnRedirectToLogin` → 401 y `OnRedirectToAccessDenied` → 403; filtro de endpoint antiforgery para métodos de mutación; no registrar `MapIdentityApi`.
-- [ ] **T-07 — Frontend: modelo y gateway** · Capa: Frontend (models) · Dificultad: Bajo  
+- [x] **T-07 — Frontend: modelo y gateway** · Capa: Frontend (models) · Dificultad: Bajo  
   Descripción: pruebas Vitest primero para la validación local (`email` requerido y con formato, máximo 256; `password` requerida) y para `authGateway.login/logout` (usa `postJson` de HU-002 e invalida el token antiforgery cacheado tras login y logout).
-- [ ] **T-08 — Frontend: controlador** · Capa: Frontend (controllers) · Dificultad: Medio  
+- [x] **T-08 — Frontend: controlador** · Capa: Frontend (controllers) · Dificultad: Medio  
   Descripción: `useLoginController` con estado `idle | submitting | error`, mensaje genérico ante 401, errores por campo ante 400, navegación a `returnUrl` saneado o a la superficie del usuario; acción `logout` en el controlador de sesión.
-- [ ] **T-09 — Frontend: vistas** · Capa: Frontend (views) · Dificultad: Bajo  
+- [x] **T-09 — Frontend: vistas** · Capa: Frontend (views) · Dificultad: Bajo  
   Descripción: `LoginView` pura (correo, contraseña, botón «Ingresar» deshabilitado mientras envía, enlace «¿Olvidaste tu contraseña?» a `/olvide-mi-contrasena`, mensaje en `role="alert"`); pruebas con Testing Library.
-- [ ] **T-10 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
+- [x] **T-10 — Notas para la wiki** · Capa: Documentación · Dificultad: Bajo  
   Descripción: [[autenticacion-identity]] (implementado frente a propuesto), [[adr-0004-autenticacion-cookie-mismo-origen]] (estado), [[persistencia-postgresql]] (primera migración), [[backend-hexagonal]] (estado actual), [[estrategia-de-pruebas]] (proyecto de integración).
 
 ## Criterios de aceptación
@@ -233,59 +233,76 @@ Comportamiento común de la API (todas las rutas `/api/**`): sin sesión → `40
 
 ## Definition of Done
 
-- [ ] **DoD-01** — CHU-01 a CHU-13 validados con evidencia.
-- [ ] **DoD-02** — Pruebas de integración escritas primero y en verde, con nombres por comportamiento: `Login_valido_emite_cookie_HttpOnly_SameSiteLax`, `Login_fuera_de_Development_emite_cookie_Secure`, `Login_con_correo_inexistente_y_clave_incorrecta_responde_igual`, `Login_de_cuenta_desactivada_o_pendiente_responde_401_generico`, `Quinto_fallo_bloquea_y_no_lo_revela`, `Login_valida_limites_de_email`, `Mutacion_sin_antiforgery_responde_400`, `Logout_expira_la_cookie`, `No_existe_ruta_register`, `Api_sin_sesion_responde_401_sin_Location`, `Cookie_sobrevive_reinicio_por_claves_en_PostgreSQL`.
-- [ ] **DoD-03** — Pruebas Vitest de `auth` (modelo, gateway, controlador, vista) en verde.
-- [ ] **DoD-04** — `cd backend && dotnet test` en verde, incluidas `DataTicket.ArchitectureTests` (Identity no se filtra a `Domain`/`Application`).
-- [ ] **DoD-05** — `npm --prefix frontend run lint`, `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
-- [ ] **DoD-06** — Migración EF Core creada, aplicada en local y revisada (tablas de Identity y de claves de Data Protection).
-- [ ] **DoD-07** — `docker compose up --build` levanta; con una cuenta creada por fixture o script local se inicia y cierra sesión en `http://localhost:5173/ingresar` (verificación manual documentada en el PR).
-- [ ] **DoD-08** — [[adr-0004-autenticacion-cookie-mismo-origen]] en estado `aceptada` (o reemplazado) antes de fusionar, y tachado en [[pendientes]] §4.
-- [ ] **DoD-09** — Wiki actualizada vía Notas para la wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]] (estado de la cuenta).
-- [ ] **DoD-10** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (enumeración, cookies, antiforgery, `MapIdentityApi`).
+- [x] **DoD-01** — CHU-01 a CHU-13 validados con evidencia.
+- [x] **DoD-02** — Pruebas de integración escritas primero y en verde, con nombres por comportamiento: `Login_valido_emite_cookie_HttpOnly_SameSiteLax`, `Login_fuera_de_Development_emite_cookie_Secure`, `Login_con_correo_inexistente_y_clave_incorrecta_responde_igual`, `Login_de_cuenta_desactivada_o_pendiente_responde_401_generico`, `Quinto_fallo_bloquea_y_no_lo_revela`, `Login_valida_limites_de_email`, `Mutacion_sin_antiforgery_responde_400`, `Logout_expira_la_cookie`, `No_existe_ruta_register`, `Api_sin_sesion_responde_401_sin_Location`, `Cookie_sobrevive_reinicio_por_claves_en_PostgreSQL`.
+- [x] **DoD-03** — Pruebas Vitest de `auth` (modelo, gateway, controlador, vista) en verde.
+- [x] **DoD-04** — `cd backend && dotnet test` en verde, incluidas `DataTicket.ArchitectureTests` (Identity no se filtra a `Domain`/`Application`).
+- [x] **DoD-05** — `npm --prefix frontend run lint`, `npm --prefix frontend test` y `npm --prefix frontend run build` en verde.
+- [x] **DoD-06** — Migración EF Core creada, aplicada en local y revisada (tablas de Identity y de claves de Data Protection).
+- [x] **DoD-07** — `docker compose up --build` levanta; con una cuenta creada por fixture o script local se inicia y cierra sesión en `http://localhost:5173/ingresar` (verificación manual documentada en el PR).
+- [x] **DoD-08** — [[adr-0004-autenticacion-cookie-mismo-origen]] en estado `aceptada` (o reemplazado) antes de fusionar, y tachado en [[pendientes]] §4.
+- [x] **DoD-09** — Wiki actualizada vía Notas para la wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]] (estado de la cuenta).
+- [x] **DoD-10** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (enumeración, cookies, antiforgery, `MapIdentityApi`).
 - [ ] **DoD-11** — PR revisado y aprobado por otra persona del equipo; trazabilidad de HU y épica actualizada.
 
 ## Evidencia de validación
 
+Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 de `goal_login.md`, hasta el commit `70137ab`). Base de la evidencia:
+
+- **Suite backend** (ejecutada por el orquestador el 2026-10-12): `cd backend && dotnet build` → 0 advertencias / 0 errores; `cd backend && dotnet test` → total 169, error 0, correcto 169 (exit 0). Las clases citadas están en `backend/tests/DataTicket.IntegrationTests/`.
+- **Suite frontend** (orquestador, 2026-10-12): `npm --prefix frontend run lint` → 0 advertencias / 0 errores en 58 archivos; `npm --prefix frontend test` → 17 archivos / 152 pruebas en verde; `npm --prefix frontend run build` → exit 0. Rutas relativas a `frontend/src/`.
+- **Verificación manual** (orquestador, 2026-10-12): stack reconstruido con `docker compose up --build -d backend frontend` (exit 0); `curl` por el proxy `http://localhost:5173` y navegador integrado, con las cuentas del sembrador de Development (una interna, una cliente, una `Invited` y una `Deactivated`). Detalle en `goal_login.md` §3 (B7) y en [[log]].
+- **Resultados**: `Cumple`, `No cumple` y `No verificable` según la skill `scrum-spec-orchestrator`; `Pendiente` indica que todavía no ocurrió lo que hay que validar.
+
+> [!info] Desviaciones respecto al texto de la HU (2026-10-12)
+> - **T-08 — dónde vive el cierre de sesión.** `logout` se implementó en `useLogoutController`, del módulo `auth`, y no como acción del controlador de sesión: así `session` no depende de `auth` ([[frontend-mvc]]).
+> - **T-09 — posición del enlace de recuperación.** «¿Olvidaste tu contraseña?» va **debajo** del botón «Ingresar»; el orden de foco es Correo → Contraseña → Ingresar → enlace ([[sistema-de-diseno]]).
+> - **T-05 — nombre de la migración.** Se llama `AddIdentityAndCompanies` (la propuesta era `AddIdentity`) y crea también `dataticket.companies` ([[persistencia-postgresql]]).
+> - **T-06 — verificación de credenciales.** El endpoint no llama a `SignInManager.PasswordSignInAsync`: delega en el caso de uso `SignIn`, cuyo adaptador usa `CheckPasswordSignInAsync(…, lockoutOnFailure: true)` y emite la sesión por el puerto `IUserSession` ([[autenticacion-identity]]).
+> - **Cuentas para probar a mano.** La HU preveía que no habría cuentas sembradas hasta HU-010 y que la verificación del Sprint 0 sería solo automática. Desde B7 existe un sembrador mínimo solo de Development ([[persistencia-postgresql]]) y el flujo se verificó además a mano contra el stack.
+> - **Decisiones.** El *Contexto* y la *Dificultad* describen ADR-0004 como propuesta: quedó aceptada el 2026-10-09.
+
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CHU-01 | Pendiente | — | — |
-| CHU-02 | Pendiente | — | — |
-| CHU-03 | Pendiente | — | — |
-| CHU-04 | Pendiente | — | — |
-| CHU-05 | Pendiente | — | — |
-| CHU-06 | Pendiente | — | — |
-| CHU-07 | Pendiente | — | — |
-| CHU-08 | Pendiente | — | — |
-| CHU-09 | Pendiente | — | — |
-| CHU-10 | Pendiente | — | — |
-| CHU-11 | Pendiente | — | — |
-| CHU-12 | Pendiente | — | — |
-| CHU-13 | Pendiente | — | — |
-| DoD-01 | Pendiente | — | — |
-| DoD-02 | Pendiente | — | — |
-| DoD-03 | Pendiente | — | — |
-| DoD-04 | Pendiente | — | — |
-| DoD-05 | Pendiente | — | — |
-| DoD-06 | Pendiente | — | — |
-| DoD-07 | Pendiente | — | — |
-| DoD-08 | Pendiente | — | — |
-| DoD-09 | Pendiente | — | — |
-| DoD-10 | Pendiente | — | — |
-| DoD-11 | Pendiente | — | — |
+| CHU-01 | Cumple | `Auth/LoginTests.Login_valido_emite_cookie_HttpOnly_SameSiteLax` (`204`, cookie `HttpOnly`, `SameSite=Lax` y `Path=/`, y la siguiente petición autenticada responde `200`) — suite backend. Verificación manual: `GET /api/auth/antiforgery` 200 → `POST /api/auth/login` 204 con `Set-Cookie: dataticket.auth…; path=/; samesite=lax; httponly` → `GET /api/auth/me` 200 | — |
+| CHU-02 | Cumple | `Auth/SecureCookieTests`: `Login_fuera_de_Development_emite_cookie_Secure` (host «Staging» sobre HTTPS), `Fuera_de_Development_la_politica_Secure_de_las_cookies_es_Always` y `En_Development_la_politica_Secure_de_las_cookies_es_SameAsRequest`. El login en Development sobre `http://localhost` lo cubren `Login_valido_emite_cookie_HttpOnly_SameSiteLax` y la verificación manual por el proxy | Detrás de un proxy que termine TLS hará falta `UseForwardedHeaders` ([[pendientes]] §4); no es parte del criterio |
+| CHU-03 | Cumple | `Auth/LoginTests.Login_con_correo_inexistente_y_clave_incorrecta_responde_igual` (mismo `401` «Correo o contraseña incorrectos.», JSON idéntico sin `traceId` y sin cookie de sesión) | Para la clave incorrecta la prueba usa otra cuenta activa de la empresa 01 (`TestAccounts.Company01Requester2`), no `ana.perez`; el comportamiento verificado es el mismo |
+| CHU-04 | Cumple | `Auth/LoginTests.Login_de_cuenta_desactivada_o_pendiente_responde_401_generico` (a la `Invited` se le fija una contraseña en la prueba; respuesta idéntica a la de un correo inexistente y sin cookie). Verificación manual: las cuentas `Invited` y `Deactivated` del sembrador reciben `401` «Correo o contraseña incorrectos.» | En el stack la cuenta `Invited` no tiene contraseña; el caso con contraseña fijada solo lo cubre la prueba |
+| CHU-05 | Cumple | `Auth/LockoutTests`: `Quinto_fallo_bloquea_y_no_lo_revela` (tras 5 fallos, el sexto intento con la clave correcta da el `401` genérico; a los 14 min sigue bloqueada; pasados 15 min entra con `204` y el contador queda en 0) y `Cuatro_fallos_no_bloquean_y_un_acierto_reinicia_el_contador`; `Auth/SessionContractTests.Parametros_de_Identity_y_de_la_cookie_son_los_del_contrato` | Los valores 5 × 15 min están en uso como *propuesta* (P-18 y P-22 de [[pendientes]]); ratificarlos depende del equipo |
+| CHU-06 | Cumple | `Auth/LoginTests`: `Login_valida_limites_de_email` (257 caracteres, `ana.perez` sin dominio, correo vacío y contraseña vacía → `400` con `errors` en el campo; 256 caracteres exactos → `401` genérico) y `Login_con_JSON_mal_formado_responde_400` | — |
+| CHU-07 | Cumple | `Auth/AntiforgeryTests.Mutacion_sin_antiforgery_responde_400` (login y logout sin cabecera o con el token de otro navegador → `400` con `code: antiforgery_invalid`; la sesión sigue intacta; con el token pedido después del login, el logout responde `204`); `Conventions/AntiforgeryConventionTests.Toda_mutacion_lleva_el_filtro_antiforgery` | — |
+| CHU-08 | Cumple | `Auth/LogoutTests.Logout_expira_la_cookie` (`204`, `Set-Cookie` expirada con `Path=/` y `401` en la siguiente petición). Verificación manual: `POST /api/auth/logout` 204 → `GET /api/auth/me` 401; «Cerrar sesión» con teclado lleva a `/ingresar` | El logout no revoca otras copias de la cookie: riesgo aceptado en T-01 ([[autenticacion-identity]]) |
+| CHU-09 | Cumple | `Auth/RegisterRouteTests.No_existe_ruta_register` (`/api/auth/register`, `/register` y `/api/register` → `404`; el documento OpenAPI no contiene `register`, `confirmEmail`, `manage` ni `refresh`); `Conventions/EndpointAuthorizationConventionTests.Ruta_inexistente_sin_sesion_responde_404`. Verificación manual: `POST /api/auth/register` → 404 | Que una ruta inexistente responda `404` (y no `401`) depende de la propuesta P-23, por ratificar |
+| CHU-10 | Cumple | `Auth/AuthorizationResponseTests`: `Api_sin_sesion_responde_401_sin_Location`, `Api_sin_sesion_con_Accept_text_html_responde_401`, `Api_sin_rol_requerido_responde_403_sin_Location` y `Api_sin_rol_requerido_con_Accept_text_html_responde_403`. Verificación manual: `POST /api/auth/logout` sin sesión con `Accept: text/html` → 401 `application/problem+json` | El `403` se prueba con un endpoint de control del host de pruebas (`/api/test/administrator-only`): aún no hay endpoints de producto con política de rol |
+| CHU-11 | Cumple | `app/App.test.tsx` › «Entrada /ingresar (HU-003 CHU-11)»: `un 401 muestra el mensaje genérico, conserva el correo, vacía la contraseña y rehabilita Ingresar`, `el botón está deshabilitado mientras la petición está en curso`, `ante 204 navega a la superficie del usuario` y `ante 204 vuelve al returnUrl saneado, también tras un 401 previo`; `modules/auth/views/LoginView.test.tsx`: `anuncia el error genérico en role=alert y enfoca la contraseña` y `deshabilita Ingresar mientras se envía` (suite frontend). Verificación manual en el navegador: con la clave incorrecta, mensaje genérico en `role="alert"`, correo conservado y contraseña vacía y enfocada | — |
+| CHU-12 | Cumple | `Auth/DataProtectionKeysTests.Cookie_sobrevive_reinicio_por_claves_en_PostgreSQL` (una segunda `WebApplicationFactory` sobre la misma base acepta la cookie; hay al menos una clave en `identity.data_protection_keys`) | Las claves se guardan sin cifrado en reposo ([[pendientes]] §4) |
+| CHU-13 | Cumple | `Auth/PasswordHashTests.Contrasena_se_guarda_con_hash_estandar_de_Identity` (`password_hash` leído de `identity.users`: formato V3 de Identity, sin la contraseña en claro y verificable con `PasswordHasher`); `Auth/LoginHashingCostTests.Hash_senuelo_se_genera_con_el_hasher_de_la_aplicacion` | «Ningún hash propio ni cifrado reversible» no tiene prueba automática: se apoya en la revisión de B3 y en una búsqueda del 2026-10-12 en `backend/src` (sin usos de SHA, MD5, AES, HMAC ni `Rfc2898`) |
+| DoD-01 | Cumple | CHU-01 a CHU-13 en `Cumple` (filas anteriores) | — |
+| DoD-02 | Cumple | Las once pruebas existen con el nombre exacto y pasan (suite backend): `Login_valido_emite_cookie_HttpOnly_SameSiteLax`, `Login_fuera_de_Development_emite_cookie_Secure`, `Login_con_correo_inexistente_y_clave_incorrecta_responde_igual`, `Login_de_cuenta_desactivada_o_pendiente_responde_401_generico`, `Quinto_fallo_bloquea_y_no_lo_revela`, `Login_valida_limites_de_email`, `Mutacion_sin_antiforgery_responde_400`, `Logout_expira_la_cookie`, `No_existe_ruta_register`, `Api_sin_sesion_responde_401_sin_Location` y `Cookie_sobrevive_reinicio_por_claves_en_PostgreSQL` | El rojo original no quedó registrado (corte de sesión del 2026-10-09). Se comprobó a posteriori el 2026-10-12 en una copia fuera del repo: sin `api.MapAuthEndpoints()` fallan 19 de 70, incluidas las once |
+| DoD-03 | Cumple | `modules/auth`: `models/loginForm.test.ts`, `models/loginState.test.ts`, `models/authGateway.test.ts`, `controllers/useLoginController.test.ts`, `controllers/useLogoutController.test.ts` y `views/LoginView.test.tsx`, en verde dentro de las 152 pruebas de la suite frontend | — |
+| DoD-04 | Cumple | `cd backend && dotnet test` → total 169, error 0, correcto 169 (exit 0) el 2026-10-12, con las 13 pruebas de `DataTicket.ArchitectureTests` (`LayerDependencyTests.Domain_DoesNotDependOnFrameworks` y `Application_DoesNotDependOnFrameworks`, entre otras) | — |
+| DoD-05 | Cumple | Suite frontend del 2026-10-12: lint 0/0 en 58 archivos, 152 pruebas en 17 archivos y build con exit 0 | — |
+| DoD-06 | Cumple | Migración `20261009164647_AddIdentityAndCompanies`; `Persistence/SchemaTests` (tablas, restricciones, índices, valores por defecto y roles de `db.sql`) y `Persistence/MigrationHistoryTests`. `quality-reviewer` la comparó columna a columna con `db.sql` §2–§3 en B3. Aplicada al `db` del Compose con `docker compose up --build -d backend` (9 tablas en `identity` y `dataticket`) | Diferencia menor con `db.sql` §12: los seis roles llevan identificadores fijos ([[pendientes]] §1). En B7 se fijó el historial de migraciones en `public`, sin migración nueva |
+| DoD-07 | Cumple | Verificación manual del 2026-10-12: stack reconstruido (exit 0) e inicio y cierre de sesión en `http://localhost:5173/ingresar` con una cuenta interna y una cliente, también solo con teclado | Las cuentas las crea el sembrador de Development (B7), no un fixture ni un script. Falta copiar la verificación a la descripción del PR (B8 de `goal_login.md`) |
+| DoD-08 | Cumple | [[adr-0004-autenticacion-cookie-mismo-origen]] con `status: aceptada` (2026-10-09); tachado en [[pendientes]] §4 | — |
+| DoD-09 | Cumple | [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]] y [[glosario]] (`AccountStatus`), al día el 2026-10-12 | [[autenticacion-identity]] conserva `status: propuesta` mientras P-22 y P-23 sigan por ratificar |
+| DoD-10 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B2, B3, B6 y B7 con 0 CRÍTICO / 0 ALTO, y los 4 MEDIO de B3 corregidos con prueba ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
+| DoD-11 | Pendiente | — | Depende de personas: el PR está sin abrir y falta la revisión y aprobación de otra persona del equipo |
 
 ## Historial
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
 - 2026-10-09 — ADR-0004 aceptado (DoD-08 cumplido en cuanto a la decisión). Se ejecuta en el goal de `goal_login.md` (bloques B1–B3, B6, B7).
+- 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
+- 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-10 hechas en B2, B3, B6 y B7, y matriz de evidencia completada. Resultado: 23 `Cumple` y 1 `Pendiente` (DoD-11, revisión del PR por otra persona). Quedan por ratificar con el equipo los valores por defecto P-18 y P-22. Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
 
 ## Notas y decisiones
 
 - **Riesgo — revocación al cerrar sesión**: con cookies sin estado, una copia robada de la cookie sigue siendo válida tras el logout hasta su expiración o hasta que cambie el sello de seguridad. Opciones a decidir en T-01: aceptar el riesgo, actualizar el sello al cerrar (cierra todas las sesiones del usuario) o un almacén de sesiones en servidor.
 - **Auditoría**: el PRD §12 no lista el inicio de sesión como evento auditable; registrar intentos fallidos en logs (no en `AuditEntry`) es propuesta, ligada a V-11.
 - **Temporización**: Identity responde más rápido cuando el correo no existe (no calcula hash); igualar tiempos en el login es propuesta a evaluar junto con el limitador de peticiones.
-- **Cuentas para probar a mano**: hasta [[hu-010-datos-sinteticos-de-desarrollo|HU-010]] no hay cuentas sembradas; la verificación del Sprint 0 es automática.
+- **Cuentas para probar a mano**: ~~hasta [[hu-010-datos-sinteticos-de-desarrollo|HU-010]] no hay cuentas sembradas; la verificación del Sprint 0 es automática.~~ Actualización 2026-10-12: desde B7 del goal del login existe un sembrador mínimo solo de Development (una empresa y cinco cuentas de `db.sql` §13.2–13.4, [[persistencia-postgresql]]) y el inicio y cierre de sesión se verificaron a mano contra el stack de Compose, además de con las pruebas automáticas. El juego completo de datos sintéticos sigue siendo de [[hu-010-datos-sinteticos-de-desarrollo|HU-010]].
 - No confundir el puerto propio `IEmailSender` (HU-005) con `Microsoft.AspNetCore.Identity.IEmailSender<TUser>`.
 
 ## Relacionado

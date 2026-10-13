@@ -266,3 +266,139 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
   - `loop_core.md` explica cómo crear el worktree y la rama de trabajo desde `main` al lanzar el loop, después de fusionar `feature/auth-login`. La iteración P0 comprueba la carpeta, la rama y que el login esté en `main`.
 - Verificación: `git worktree list` y `git branch` sin `feature/core`. La carpeta principal (goal en curso en `feature/auth-login`) no se modificó.
 - Wiki: [[plan-goal-login-y-loop-chat]], [[trabajar-con-el-agente]].
+## [2026-10-09] setup | Goal del login — B0 preparación
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: rama `feature/auth-login`; línea base verificada (`dotnet test` 5/5, `oxlint`, `vitest` 3/3, `vite build`); stack de Compose healthy; HU-002, HU-003 y HU-004 pasan a `En desarrollo` con responsable en `PLAN-DE-TRABAJO.md`.
+- Wiki: [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
+- Pendiente: bloques B1–B8.
+
+## [2026-10-09] decision | Goal del login — B1 contrato de autenticación (T-01 de HU-002/003/004)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: contrato de `/api/auth/antiforgery`, `/login`, `/logout`, `/me`, políticas, públicos y rutas del SPA ratificado con los valores por defecto del goal; equipos implementados como roles de Identity (`db.sql`) pero expuestos en `teams`; nuevos términos en el glosario.
+- Wiki: [[autenticacion-identity]], [[glosario]], [[pendientes]] (P-22, roles vs. equipos), [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]]
+- Pendiente: ratificar P-22 con el equipo; decisión definitiva de equipos en HU-009.
+
+## [2026-10-09] infra | Goal del login — B2 infraestructura de pruebas de integración (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`)
+- Cambios: proyecto `DataTicket.IntegrationTests` (`WebApplicationFactory<Program>` + Testcontainers `postgres:18.6`, base aislada por clase, rasgo `RequiresDocker`), catálogo de cuentas de `db.sql` §13, `TimeProvider` en DI sustituible por `FakeTimeProvider`; `Dockerfile` restaura la solución completa. `dotnet test` 19/19.
+- Hallazgo: el bloqueo de `UserManager` y los tokens de `DataProtectorTokenProvider` no respetan `TimeProvider` (relevante para CHU-05 de HU-003 y para HU-005/HU-006).
+- Wiki: [[estrategia-de-pruebas]], [[backend-hexagonal]], [[entorno-docker]], [[stack-y-versiones]]
+- Pendiente: revisión de `quality-reviewer` de B2; B5 (frontend) en curso en paralelo.
+
+## [2026-10-09] feature | Goal del login — B3 y B5 en curso (registro intermedio)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: `frontend-engineer` trabaja en B5 (shell, navegación por rol, `core/http`, tokens) y `backend-engineer` en B3 (Identity, migración, login/logout). Los archivos de `frontend/` y `backend/` aún no están cerrados ni verificados por el orquestador.
+- Wiki: sin cambios de contenido todavía; [[frontend-mvc]], [[estrategia-de-pruebas]], [[autenticacion-identity]] y [[persistencia-postgresql]] se actualizan al cerrar cada bloque.
+- Pendiente: verificación, revisión de `quality-reviewer` y commit de B3 y B5.
+
+## [2026-10-09] feature | Goal del login — B5 shell, navegación por rol y cliente HTTP (frontend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `frontend-engineer`)
+- Cambios: `react-router` 8.4.0, Testing Library + jsdom, `tokens.css` claro/oscuro y Archivo autoalojada; `core/http` con mutaciones, antiforgery y `HttpError`; módulo `session` (modelo, navegación por rol, `sanitizeReturnUrl`, controlador, guardas, layouts, «sin permiso»). lint 0/0, 89 pruebas, build OK. CHU-10 verificado en el navegador integrado (375 px oscuro y 1440 px claro, sin desbordamiento) con un doble del contrato.
+- Wiki: [[frontend-mvc]], [[estrategia-de-pruebas]], [[stack-y-versiones]], [[sistema-de-diseno]], [[glosario]], [[hu-002-shell-y-navegacion-por-rol]]
+- Pendiente: B3 (backend) en curso. Revisión de B5: 0 CRÍTICO, 0 ALTO; 4 MEDIO pasan a B6.
+
+## [2026-10-09] decision | Contrato: código estable del error antiforgery
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: el `400` por antiforgery inválido incluye `"code": "antiforgery_invalid"` para que el SPA invalide su token y reintente una vez (hallazgo MEDIO de la revisión de B5). B5 commiteado (`81dcbab`); B6 en curso con las correcciones MEDIO.
+- Wiki: [[autenticacion-identity]]
+
+## [2026-10-09] feature | Goal del login — B6 entrada y sesión (frontend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `frontend-engineer`)
+- Cambios: módulo `auth` (`/ingresar`, validación local, mensaje genérico, logout real), guarda por sección declarada, reintento único ante `antiforgery_invalid`, aborto del `/me` en curso. lint 0/0, 147 pruebas, build OK; `/ingresar` revisada en el navegador (claro forzado, 375 y 1440 px).
+- Incidencia: el disco C: se llenó (≈3 MB libres); se vaciaron los cachés de npm (9,2 GB) y HTTP de NuGet con sus comandos propios. Docker (`Docker\wsl`, 21,7 GB) es el mayor consumidor.
+- Wiki: [[frontend-mvc]], [[autenticacion-identity]], [[estrategia-de-pruebas]], [[sistema-de-diseno]]
+- Pendiente: B3 (backend) en curso. Revisión de B6: 0 CRÍTICO, 0 ALTO (3 BAJO a B7).
+
+## [2026-10-09] infra | Goal del login — Docker sin respuesta tras el disco lleno (bloqueo)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: correcciones BAJO de la revisión de B6 en el frontend (aviso de logout obsoleto, error de `/me` tras el login con «Reintentar», `method="post"`), 150 pruebas en verde, sin commit (entran con B7). B3 del backend a medio camino (migración `AddIdentityAndCompanies` creada).
+- Incidencia: tras llenarse el disco C:, `docker version` no responde (procesos de Docker Desktop/WSL vivos). Según las reglas del goal, se detiene la ejecución y se consulta a la persona líder.
+- Wiki: [[entorno-docker]] (sin cambios de contenido)
+- Pendiente: recuperar Docker; terminar B3, luego B4, B7 y B8.
+
+## [2026-10-12] feature | Goal del login — reanudación tras recuperar Docker; B3 verificado y en revisión
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: la persona líder reinició Docker y liberó disco (58 GB libres; 5 servicios arriba, `db` y `backend` healthy); el orquestador no modificó Docker. B3 del backend, que quedó sin informe por el corte de sesión, se verificó de nuevo: `dotnet build` 0 advertencias / 0 errores y `dotnet test` 70/70 (exit 0). Rojo de TDD comprobado a posteriori en una copia fuera del repo: sin `api.MapAuthEndpoints()` fallan 19 de 70, incluidas las 11 pruebas del DoD-02 de HU-003.
+- Hallazgo: la base `db` del Compose aún no tiene la migración `AddIdentityAndCompanies` (el `backend` del stack corre la imagen anterior); se aplicará al reconstruir el servicio, después de la revisión.
+- Wiki: sin cambios de contenido; [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]] y [[glosario]] se actualizan al cerrar B3.
+- Pendiente: veredicto de `quality-reviewer` sobre B3, cierre de wiki y commit de B3; después B4, B7 y B8.
+
+## [2026-10-12] feature | Goal del login — B3 revisado; correcciones en curso y wiki de B3 al día
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: `quality-reviewer` sobre B3: 0 CRÍTICO, 0 ALTO (4 MEDIO, 10 BAJO); la migración `AddIdentityAndCompanies` coincide con `db.sql` §2–§3. `backend-engineer` está corrigiendo en `backend/` los MEDIO y BAJO de la revisión (401/403 con cualquier `Accept`, política `Secure`, defensa de tiempos con hash señuelo del hasher inyectado, JSON mal formado, migración solo en Development, reglas de arquitectura); esos archivos aún no están verificados por el orquestador.
+- Wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[stack-y-versiones]], [[entorno-docker]], [[pendientes]], [[index]]
+- Pendiente: verificar las correcciones, aplicar la migración al `db` del Compose reconstruyendo `backend`, marcar y commitear B3. Preguntas abiertas en [[pendientes]]: IDs fijos de roles frente a `db.sql` §12, estado `propuesta` de [[autenticacion-identity]], endurecimiento del login y cookie no persistente.
+
+## [2026-10-12] feature | Goal del login — B3 iniciar y cerrar sesión (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`, revisión de `quality-reviewer`)
+- Cambios: Identity sobre `DataTicketDbContext`, migración `AddIdentityAndCompanies`, endpoints `antiforgery`/`login`/`logout`, cookie, bloqueo con `TimeProvider`, sello de seguridad y claves de Data Protection en PostgreSQL. Correcciones de la revisión: 401/403 `problem+json` con cualquier `Accept` (antes 500), JSON mal formado → 400, hash señuelo `DecoyPasswordHash` con el hasher de la aplicación, reglas de arquitectura para `DataTicket.UnitTests` y la ubicación de los puertos.
+- Verificación: `dotnet build` 0/0; `dotnet test` 96/96 (exit 0); `quality-reviewer` 0 CRÍTICO, 0 ALTO; `docker compose up --build -d backend` aplicó la migración al `db` del Compose (9 tablas, 6 roles, sin datos de prueba) y los endpoints responden en `:8080`.
+- Wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[stack-y-versiones]], [[entorno-docker]], [[pendientes]], [[index]]
+- Pendiente: B4 (`ICurrentUser`, claims, políticas, *fallback*, `/api/auth/me` y prueba de convención de antiforgery); B7 y B8. Preguntas abiertas en [[pendientes]]: IDs fijos de roles frente a `db.sql` §12, endurecimiento del login, idioma del 400 genérico.
+
+## [2026-10-12] feature | Goal del login — B4 contexto de usuario y autorización (backend, en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`)
+- Cambios: puerto `ICurrentUser` con adaptador en `Api`, `DataTicketClaimsPrincipalFactory` (`company_id` solo para clientes y solo desde la cuenta), políticas con nombre, política de reserva autenticada, `GET /api/auth/me`, pruebas de convención (lista pública de anónimos, antiforgery en toda mutación de `/api`, DTO de cliente sin `CompanyId`). Sin migración. Verificado por el orquestador: `dotnet build` 0/0 y `dotnet test` 146/146 (exit 0).
+- Decisión por ratificar: la política de reserva se aplica solo a endpoints registrados, de modo que una ruta inexistente responde 404 también a un anónimo (conserva HU-003 CHU-09); se registra en [[pendientes]].
+- Wiki: en curso con `wiki-keeper` — [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[index]]
+- Pendiente: veredicto de `quality-reviewer` sobre B4, marcar y commitear B4; después B7 y B8.
+
+## [2026-10-12] feature | Goal del login — B4 revisado; correcciones en curso y wiki de B4 al día
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: `quality-reviewer` sobre B4: 0 CRÍTICO, 0 ALTO (2 MEDIO, 6 BAJO); aprueba el 404 para rutas inexistentes con mitigación. `backend-engineer` corrige en `backend/`: los roles de la sesión deben salir solo de `identity.user_roles` (hoy un claim de rol almacenado en `user_claims`/`role_claims` llega a la cookie), la fábrica de claims debe fallar cerrado con perfil no válido, regla «todo contenido es un endpoint» con prueba, convención antiforgery para toda mutación y políticas registradas desde una única tabla. Esos archivos aún no están verificados por el orquestador.
+- Wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[criterios-de-aceptacion]], [[index]]
+- Pendiente: verificar las correcciones, marcar y commitear B4; B7 y B8. Por ratificar en [[pendientes]] (P-23): 404 frente a 401 en rutas inexistentes, 403 de `/me` con perfil no válido y claim `display_name`. Nota para el loop del chat: decidir cómo obtiene `ICurrentUser` el hub de SignalR (`IHttpContextAccessor` no es fiable dentro de las invocaciones).
+
+## [2026-10-12] feature | Goal del login — B4 contexto de usuario y autorización (backend)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; implementación de `backend-engineer`, revisión de `quality-reviewer`, wiki de `wiki-keeper`)
+- Cambios: puerto `ICurrentUser` con adaptador en `Api`, caso de uso `GetCurrentUserProfile`, `DataTicketClaimsPrincipalFactory` con lista cerrada de claims (roles solo de `identity.user_roles`; `company_id` solo para clientes y solo desde la cuenta), cuatro políticas con nombre desde una única tabla, política de reserva autenticada, `GET /api/auth/me`, regla «todo contenido es un endpoint» y pruebas de convención (lista pública, antiforgery en toda mutación, DTO de cliente sin `CompanyId`). Sin migración.
+- Verificación: `dotnet build` 0/0; `dotnet test` 154/154 (exit 0; 84 sin Docker); `quality-reviewer` 0 CRÍTICO, 0 ALTO, con sus 2 MEDIO y 6 BAJO corregidos con prueba.
+- Wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[criterios-de-aceptacion]], [[index]]
+- Pendiente: B7 (sembrador de Development, stack reconstruido y verificación en navegador) y B8. Por ratificar (P-23): 404 en rutas inexistentes, 403 de `/me` con perfil no válido, claim `display_name`; variante estricta del manejador de la reserva.
+
+## [2026-10-12] feature | Goal del login — B7 en curso: sembrador mínimo de Development
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: B4 commiteado (`a6c4d5f`). `backend-engineer` implementa en `backend/` el sembrador solo de Development (subconjunto mínimo de `db.sql` §13.2–13.4 con los mismos IDs, idempotente, con doble guarda de entorno y configuración); esos archivos aún no están verificados por el orquestador. Las tres correcciones BAJO del frontend pendientes desde B6 siguen sin commit y entran en B7 (lint 0/0, 150 pruebas, build OK).
+- Wiki: sin cambios de contenido todavía; [[entorno-docker]], [[persistencia-postgresql]] y [[autenticacion-identity]] se actualizan al cerrar B7.
+- Pendiente: verificar el sembrador, `docker compose up --build -d backend frontend`, comprobación con `curl` y en el navegador integrado (cuenta interna y cliente, claro/oscuro, 375/1440 px, teclado); después B8.
+
+## [2026-10-12] fix | Goal del login — B7: el backend del stack no arrancaba por segunda vez (historial de migraciones)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: sembrador de Development implementado por `backend-engineer` y verificado (`dotnet test` 167/167). Al reconstruir `backend` y `frontend` con `docker compose up --build -d`, el backend falló al arrancar: reaplicaba `AddIdentityAndCompanies` (`42P07: relation "companies" already exists`).
+- Causa (comprobada en solo lectura): el usuario de PostgreSQL del Compose se llama `dataticket`, como el esquema de la migración, y `search_path` es `"$user", public`; la tabla de historial de EF Core no tenía esquema explícito, así que se creó en `public` en el primer arranque y se buscó en `dataticket` en el segundo. Las pruebas usan otro usuario y no lo detectaban. Quedó una tabla vacía `dataticket."__EFMigrationsHistory"` creada por el arranque fallido; no se ha tocado el `db` a mano.
+- Wiki: sin cambios de contenido todavía; [[persistencia-postgresql]] y [[entorno-docker]] se actualizan al verificar el arreglo.
+- Pendiente: arreglo en curso (esquema explícito del historial + prueba de regresión con dos arranques), reconstruir el stack y seguir con B7.
+
+## [2026-10-12] feature | Goal del login — B7: stack reconstruido y verificado con curl y navegador (en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; sembrador y arreglo de `backend-engineer`)
+- Cambios: sembrador solo de Development (`Infrastructure/Seeding`) y arreglo del historial de migraciones (`MigrationsHistoryTable` en `public` + `MigrationHistoryTests`; Testcontainers con el usuario del Compose). `dotnet test` 169/169 (exit 0). `docker compose up --build -d backend frontend` (exit 0); dos arranques seguidos sanos; 1 empresa y 5 cuentas sembradas.
+- Verificación: por el proxy de `:5173`, `antiforgery` 200 → `login` 204 → `/me` 200 → `logout` 204 → `/me` 401 con Elizabeth (interna) y Ana Pérez (cliente); `Invited` y `Deactivated` → 401 genérico. Navegador integrado: sin sesión `/interno/bandeja` → `/ingresar?returnUrl=…`; intento fallido con mensaje genérico; ingreso por teclado a `/interno/bandeja` y a `/portal`; «sin permiso» fuera de la superficie o sección; cierre de sesión por teclado → `/ingresar`; claro y oscuro, 375 y 1440 px sin desbordamiento (`scrollWidth = innerWidth`), foco visible. Hallazgo de teclado: en `/ingresar` el enlace «¿Olvidaste tu contraseña?» queda entre Correo y Contraseña en el orden de tabulación; `frontend-engineer` lo corrige.
+- Wiki: [[persistencia-postgresql]], [[entorno-docker]], [[estrategia-de-pruebas]], [[backend-hexagonal]], [[pendientes]]
+- Pendiente: veredicto de `quality-reviewer` sobre B7, corrección del orden de foco, reconstruir `frontend`, marcar y commitear B7; después B8.
+
+## [2026-10-12] fix | Goal del login — B7: orden de foco y alto del botón en `/ingresar`
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; orden de foco de `frontend-engineer`)
+- Cambios: el enlace «¿Olvidaste tu contraseña?» pasa debajo de «Ingresar» (orden de foco Correo → Contraseña → Ingresar → enlace, igual que el DOM). `src/main.tsx` importa `tokens.css` y `global.css` antes que `App`: los estilos base se cargaban después de los del módulo y `.btn` dejaba «Ingresar» en 30 px en vez de 48 px.
+- Verificación: lint 0/0, 152 pruebas, build OK (exit 0); `docker compose up --build -d frontend`; en el navegador, botón de 48 px a 375 y 1440 px, sin desbordamiento, orden de foco comprobado con Tab.
+- Wiki: [[sistema-de-diseno]], [[frontend-mvc]]
+- Pendiente: veredicto de `quality-reviewer` sobre B7, marcar y commitear B7; después B8.
+
+## [2026-10-12] feature | Goal del login — B7 integración y verificación manual
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; `backend-engineer`, `frontend-engineer`, revisión de `quality-reviewer`)
+- Cambios: sembrador solo de Development; historial de migraciones fijado en `public` (el backend del stack no arrancaba por segunda vez); `appsettings.Development.json` excluido de la publicación; en `/ingresar`, orden de foco corregido y estilos base importados antes que `App`; correcciones menores pendientes de B6 (aviso de logout, error de `/me` tras el login, `method="post"`).
+- Verificación: `dotnet build` 0/0 y `dotnet test` 169/169 (exit 0); lint 0/0, 152 pruebas Vitest y build (exit 0); `docker compose up --build -d backend frontend` (exit 0), dos arranques sanos; flujo completo con `curl` y en el navegador integrado con una cuenta interna y una cliente; `quality-reviewer` 0 CRÍTICO, 0 ALTO (su MEDIO, corregido).
+- Wiki: [[persistencia-postgresql]], [[entorno-docker]], [[estrategia-de-pruebas]], [[backend-hexagonal]], [[sistema-de-diseno]], [[frontend-mvc]], [[pendientes]]
+- Pendiente: B8 (revisión final de la rama, matrices de las HU, verificación final y borrador del PR). Residuo local: tabla vacía `dataticket."__EFMigrationsHistory"` en el `db` del Compose (inofensiva; no se tocó).
+
+## [2026-10-12] docs | Goal del login — B8 en curso: revisión final de la rama y aclaración del alcance de `docker build --target test`
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`)
+- Cambios: revisión final de `feature/auth-login` frente a `main` (8 commits): 0 CRÍTICO, 0 ALTO abiertos; 2 MEDIO de wiki (tablero y matrices de las HU, en curso con `wiki-keeper`) y 8 BAJO. `AGENTS.md` §10 y `backend/CLAUDE.md` aclaran que `docker build --target test` ejecuta solo las pruebas que no necesitan Docker (excluye `Category=RequiresDocker`); la batería completa es `cd backend && dotnet test`. HU-002 CHU-10 medido también a 360 y 1280 px en el navegador contra el stack (navegación y «Cerrar sesión» dentro del viewport, `scrollWidth = innerWidth`).
+- Wiki: sin cambios de contenido en esta entrada; las matrices de [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]] y [[hu-004-contexto-de-usuario-y-autorizacion]], [[tablero-scrum]] y [[pendientes]] se cierran con B8.
+- Pendiente: cierre de wiki de B8, verificación final de los cuatro comandos, commit de B8 y borrador del PR. Decisión de la persona líder: la contraseña sintética aparece literal en los criterios de HU-003 y HU-005 (viene de `main`).
+
+## [2026-10-12] docs | Goal del login — B8 calidad y cierre
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; revisión de `quality-reviewer`, matrices y lint de `wiki-keeper`)
+- Cambios: revisión final de la rama `feature/auth-login` (0 CRÍTICO, 0 ALTO abiertos). HU-002, HU-003 y HU-004 pasan a `En validación` con su matriz de evidencia completa (18/20, 23/24 y 19/20 filas en `Cumple`; lo pendiente depende del PR y de su revisión por otra persona). Tablero, épicas EP-001 y EP-002 y `PLAN-DE-TRABAJO.md` actualizados. Lint acotado de la wiki: 0 enlaces rotos. Hallazgos BAJO de la revisión final registrados en [[pendientes]] §4.
+- Verificación final: `cd backend && dotnet test` 169/169 (exit 0); `npm --prefix frontend run lint` sin hallazgos (exit 0); `npm --prefix frontend test` 17 archivos / 152 pruebas (exit 0); `npm --prefix frontend run build` (exit 0).
+- Wiki: [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]], [[tablero-scrum]], [[ep-001-fundaciones-tecnicas]], [[ep-002-identidad-y-acceso]], [[estrategia-de-pruebas]], [[glosario]], [[autenticacion-identity]], [[entorno-docker]], [[backend-hexagonal]], [[frontend-mvc]], [[vision-general]], [[pendientes]], [[index]]
+- Pendiente: abrir el PR (sin push todavía) y su revisión por otra persona; capturas de 360/1280 px en el PR; ratificar P-18, P-22 y P-23; decidir sobre la contraseña sintética escrita en los criterios de HU-003 y HU-005; después, `loop_chat.md`.

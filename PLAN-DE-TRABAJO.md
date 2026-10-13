@@ -19,12 +19,13 @@ El detalle de cada épica e historia de usuario (HU) está en la wiki: [tablero 
 Estados Scrum de una HU: `Pendiente de aprobación` → `Aprobada` → `En desarrollo` → `En validación` → `Completada` (o `Bloqueada`).
 Al crear el backlog (2026-10-07), todas las HU quedaron en `Pendiente de aprobación`.
 El 2026-10-09 la persona líder del proyecto aprobó todas las épicas y HU: su estado actual es `Aprobada`.
+Desde el 2026-10-12, HU-002, HU-003 y HU-004 están `En validación`: su matriz de evidencia está completa en cada nota y falta el PR revisado por otra persona del equipo.
 
 ## Ejecución automatizada en curso
 
 | Archivo de control | Alcance | Estado |
 |---|---|---|
-| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | Listo para ejecutar |
+| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | En ejecución (rama `feature/auth-login`): B0–B7 hechos y B8 (cierre) en curso; las tres HU `En validación` desde el 2026-10-12 |
 | [loop_chat.md](loop_chat.md) | EP-009: HU-026 a HU-032 (`/loop`, después del goal) | Listo para ejecutar |
 | [loop_core.md](loop_core.md) | 35 HU restantes de las fases 0 a 4 (`/loop` en paralelo con el chat; se ejecuta en un worktree creado desde `main`) | Listo para ejecutar |
 
@@ -34,7 +35,7 @@ Plan y decisiones: [wiki/sintesis/plan-goal-login-y-loop-chat.md](wiki/sintesis/
 
 | Fase | Prioridad | HU | Completadas | Estado |
 |---|---|---:|---:|---|
-| 0 — Base técnica | Bloqueante | 10 | 0 | Pendiente |
+| 0 — Base técnica | Bloqueante | 10 | 0 | En curso (3 HU en validación) |
 | 1 — Piloto operativo | P0 | 15 | 0 | Pendiente |
 | 2 — Colaboración y entrega | P0 | 13 | 0 | Pendiente |
 | 3 — Operación medible | P1 | 4 | 0 | Pendiente |
@@ -52,12 +53,12 @@ Resultado esperado: monolito modular .NET 10, React/TypeScript, PostgreSQL, aute
 ### EP-001 — Fundaciones técnicas y calidad continua · [épica](wiki/scrum/epicas/ep-001-fundaciones-tecnicas.md)
 
 - [ ] [HU-001 — Integración continua en cada PR](wiki/scrum/historias-de-usuario/hu-001-integracion-continua.md) · Sprint 0 · Responsable: ______ · Fecha: ______
-- [ ] [HU-002 — Shell de la aplicación y navegación por rol](wiki/scrum/historias-de-usuario/hu-002-shell-y-navegacion-por-rol.md) · Sprint 0 · Responsable: ______ · Fecha: ______
+- [ ] [HU-002 — Shell de la aplicación y navegación por rol](wiki/scrum/historias-de-usuario/hu-002-shell-y-navegacion-por-rol.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en validación desde 2026-10-12) · Fecha: ______
 
 ### EP-002 — Identidad y acceso · [épica](wiki/scrum/epicas/ep-002-identidad-y-acceso.md)
 
-- [ ] [HU-003 — Iniciar y cerrar sesión](wiki/scrum/historias-de-usuario/hu-003-iniciar-y-cerrar-sesion.md) · Sprint 0 · Responsable: ______ · Fecha: ______
-- [ ] [HU-004 — Contexto del usuario y autorización por rol](wiki/scrum/historias-de-usuario/hu-004-contexto-de-usuario-y-autorizacion.md) · Sprint 0 · Responsable: ______ · Fecha: ______
+- [ ] [HU-003 — Iniciar y cerrar sesión](wiki/scrum/historias-de-usuario/hu-003-iniciar-y-cerrar-sesion.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en validación desde 2026-10-12) · Fecha: ______
+- [ ] [HU-004 — Contexto del usuario y autorización por rol](wiki/scrum/historias-de-usuario/hu-004-contexto-de-usuario-y-autorizacion.md) · Sprint 0 · Responsable: juancarlosfc5 (`/goal` goal_login.md, en validación desde 2026-10-12) · Fecha: ______
 - [ ] [HU-005 — Invitar y activar cuentas](wiki/scrum/historias-de-usuario/hu-005-invitar-y-activar-cuentas.md) · Sprint 1 · Responsable: ______ · Fecha: ______
 - [ ] [HU-006 — Restablecer contraseña sin enumeración](wiki/scrum/historias-de-usuario/hu-006-restablecer-contrasena.md) · Sprint 1 · Responsable: ______ · Fecha: ______
 

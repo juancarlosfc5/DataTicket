@@ -3,10 +3,10 @@ title: Pendientes, dudas y contradicciones
 type: pendientes
 status: vigente
 tags: [pendientes, decision]
-sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)"]
+sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)", "Revisión del código de B3 del goal del login (2026-10-12)", "Revisión del código de B4 del goal del login (2026-10-12)", "Validación de HU-002, HU-003 y HU-004 en B8 del goal del login (2026-10-12)"]
 aliases: [Preguntas abiertas, Decisiones pendientes, Contradicciones]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Pendientes, dudas y contradicciones
@@ -30,6 +30,8 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 > [!warning] Contradicción — roles frente a equipos
 > [[autenticacion-identity]] define `Development` y `Production` como roles de Identity. En cambio, [[glosario]], [[roles-y-permisos]] y [[modelo-de-dominio]] los tratan como equipos (`Team.Development`, `Team.Production`), separados de `Roles[]`. Hay que decidir el modelo antes de [[hu-004-contexto-de-usuario-y-autorizacion]] y [[hu-009-administrar-usuarios-internos-y-equipos]].
 > Actualización 2026-10-09: `db.sql` usa provisionalmente la opción de [[autenticacion-identity]] y siembra seis roles, entre ellos `Development` y `Production`, sin tablas de equipos. Si se eligen equipos separados, hay que añadir esas tablas al diseño de referencia y a la migración de HU-009 ([[persistencia-postgresql]]).
+> Actualización 2026-10-09 (B1 de `goal_login.md`, DoD-06 de HU-004): se **implementa** la opción de `db.sql` (equipos = roles de Identity `Development`/`Production`), pero `/api/auth/me` los expone en un campo `teams` separado de `roles`, de modo que el contrato del frontend no cambia si HU-009 adopta tablas de equipos. La decisión definitiva sigue abierta para HU-009.
+> Actualización 2026-10-12 (B4 de `goal_login.md`, DoD-06 de HU-004): el código **mantiene la decisión de B1**, sin cambios de esquema ni migración. Los equipos son los roles de Identity `Development` y `Production` (`RoleNames.Teams`), viajan en la cookie como `ClaimTypes.Role` y se exponen aparte en `teams` de `/api/auth/me` y en `ICurrentUser.Teams`; `ICurrentUser.Roles` e `IsInRole` no los incluyen. El claim `team` que la HU-004 proponía en sus notas no se creó. La decisión definitiva sigue abierta para HU-009 → [[roles-y-permisos]], [[autenticacion-identity]].
 
 > [!success] Resuelta 2026-10-09 — DB-first frente a migraciones code-first
 > `db.sql` (raíz) fue un paso previo de validación del esquema y no el mecanismo de implementación. La persona líder del proyecto lo aprobó como **diseño de referencia**. La base de datos se implementa con migraciones de EF Core, como piden [[persistencia-postgresql]] y los DoD de las HU, sin cambios en estas. Decisión: [[adr-0009-db-sql-diseno-de-referencia]].
@@ -39,6 +41,12 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 
 > [!warning] Contradicción — métrica "primera respuesta"
 > PRD §13 (fase 3) menciona "medición de primera respuesta", métrica que §4 no define (solo define tiempo hasta respuesta formal) → [[dashboard-y-metricas]].
+
+> [!warning] Contradicción menor — identificadores de los roles de referencia (2026-10-12)
+> `db.sql` §12 genera al azar el `id` (`DEFAULT uuidv7()`) y el `concurrency_stamp` (`gen_random_uuid()`) de los seis roles. La migración `AddIdentityAndCompanies` (B3) los siembra con `HasData` y valores fijos (`a8000000-0000-7000-8000-00000000000N`), porque el modelo de EF Core debe ser estable entre migraciones. No cambia el comportamiento: los roles se referencian por `normalized_name`. Se aplicó el código y `db.sql` no se tocó. **Acción:** decidir si se alinea `db.sql` §12 con los identificadores fijos, como pide [[adr-0009-db-sql-diseno-de-referencia]] cuando una HU se aparta del diseño → [[persistencia-postgresql]].
+
+> [!warning] Contradicción menor — `GET /api/auth/me` responde `403` y el contrato solo lista `200` y `401` (2026-10-12)
+> El contrato T-01 ([[autenticacion-identity]], tabla *Endpoints*) y [[hu-004-contexto-de-usuario-y-autorizacion]] prevén para `/me` solo `200` y `401`. El código de B4 responde además `403` «No tienes permiso para realizar esta acción.» cuando hay sesión pero el perfil no es válido (cliente sin `company_id`, perfil mixto, interno con empresa, `company_id` mal formado, sesión sin correo o empresa inexistente). Es coherente con el «falla cerrado» de CHU-07, pero amplía el contrato. Por lo que se lee en el código (no hay prueba que acote cuándo ocurre), el login y la revalidación del sello ya rechazan los perfiles no válidos, así que el `403` quedaría para la ventana de hasta 5 minutos entre un cambio que invalida el perfil y la siguiente revalidación, y para el caso de los claims de tipo rol de §4, donde la cookie y `identity.user_roles` discrepan de forma permanente. El SPA no lo distingue: `fetchCurrentUser` solo trata el `401` como «sin sesión», de modo que un `403` de `/me` acaba en el estado de error de carga y no en la vista «sin permiso». No se tocó ni el contrato ni el código. **Acción:** ratificar el `403` (y añadirlo al contrato y al SPA) o decidir otra respuesta (p. ej. `401` y cerrar la sesión) → [[autenticacion-identity]].
 
 ## 2. Decisiones de producto pendientes antes de producción (PRD §16)
 
@@ -106,6 +114,8 @@ Las HU de [[tablero-scrum]] cubren los vacíos del PRD con **propuestas** marcad
 | P-19 | **Radicación:** los internos no radican en nombre de un cliente (403); descripción de hasta 10 000 caracteres; categorías semilla provisionales ("Incidente", "Requerimiento", "Consulta") sujetas a V-12 | HU-013 | [[flujo-del-ticket]] |
 | P-20 | **Formularios configurables:** hasta 30 campos y de 2 a 50 opciones; tipos `ShortText`, `LongText`, `Number`, `Date`, `SingleChoice` y `MultipleChoice`; solo los campos marcados como consultables se filtran en las bandejas internas. Almacenamiento: ver V-23 | HU-043 a HU-047 | [[formularios-configurables]] |
 | P-21 | **Datos sintéticos:** la semilla usa los nombres reales del equipo interno con correos ficticios `@dataticket.local`; hay que confirmarlo | HU-010 | [[equipo-del-repositorio]] |
+| P-22 | **Sesión (valores por defecto del goal del login, en uso):** cookie `dataticket.auth` con expiración deslizante de 8 h; antiforgery `X-XSRF-TOKEN` renovado tras login/logout; sello de seguridad revalidado cada 5 min; el logout no revoca otras sesiones (riesgo aceptado); perfiles de rol mixtos (cliente + interno) no inician sesión | HU-002, HU-003, HU-004 | [[autenticacion-identity]] |
+| P-23 | **Autorización (B4 del goal del login, en uso, por ratificar):** (a) **`404` frente a `401` en rutas inexistentes.** La política de reserva se limita a los endpoints registrados (`EndpointScopedAuthorizationResultHandler`): una ruta que no existe responde `404` también a un anónimo, para conservar CHU-09 de HU-003; sin ese manejador ASP.NET Core 10 respondería `401`. Contrapartida: un middleware futuro que sirva contenido sin endpoint y colocado después de `UseAuthorization` (p. ej. archivos estáticos) no quedaría cubierto por la reserva; hoy el Api no tiene ninguno. (b) **Nombre del claim `display_name`** para el nombre visible: el contrato T-01 no fijaba el tipo del claim. (c) El `403` de `/me` con perfil no válido: ver la contradicción de §1 | HU-003, HU-004 | [[autenticacion-identity]] |
 
 Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DTO, acciones de auditoría, eventos del hub) se agregan a [[glosario]] cuando se ratifiquen en la T-01 de cada HU, antes de usarlos en código.
 
@@ -124,6 +134,53 @@ Los **nombres de código nuevos** que proponen las HU (casos de uso, puertos, DT
 - [ ] Máximo de archivos por solicitud (radicación, respuesta formal): define el límite de cuerpo del backend; nginx admite hoy 50 MB en `/api/` → [[archivos-adjuntos]], [[entorno-docker]].
 - [ ] Content-Security-Policy del SPA: requiere conocer el dominio público del Blob para `img-src`/`connect-src` → [[entorno-docker]].
 - [ ] Al desplegar tras un proxy/TLS: `UseForwardedHeaders` con proxies conocidos, `AllowedHosts` fijo y `X-Forwarded-Proto` correcto → [[autenticacion-identity]].
+  - Ampliación 2026-10-12 (B3): fuera de Development las cookies `dataticket.auth` y `dataticket.xsrf` usan `CookieSecurePolicy.Always`, y con esa política antiforgery exige que la petición llegue por HTTPS. Tras un proxy que termina TLS el backend recibe HTTP: sin `UseForwardedHeaders` (hoy no está en `Program.cs`) el token antiforgery no se emite ni se valida y el login no funciona. Es comportamiento del framework y ninguna prueba del repositorio lo cubre todavía. Previsiblemente afecta también a probar la imagen `runtime` por HTTP en local → [[entorno-docker]].
+
+Endurecimiento del login, detectado al cerrar B3 del goal del login (2026-10-12). Ninguno bloquea B3; deben resolverse antes de un entorno compartido:
+
+- [ ] **Claves de Data Protection sin cifrar en reposo.** Se guardan en `identity.data_protection_keys` con `PersistKeysToDbContext`, sin `ProtectKeysWith*`: quien lea esa tabla o un respaldo puede falsificar cookies de sesión y tokens. Elegir el mecanismo de cifrado junto con la infraestructura (§16.1) → [[autenticacion-identity]], [[persistencia-postgresql]].
+- [ ] **`POST /api/auth/login` sin limitador de peticiones y `password` sin longitud máxima.** El bloqueo por cuenta (5 intentos, P-18) no frena un barrido de muchas cuentas, y cada intento cuesta un cálculo de hash (también para correos inexistentes, por el hash señuelo). Definir un limitador y un máximo de longitud para `password` → [[autenticacion-identity]].
+- [ ] **El login aún no rechaza a los usuarios de empresas inactivas.** `AccountAccess.CanSignIn` solo mira el estado de la cuenta y el perfil, tanto al iniciar sesión como al revalidar el sello. P-18 propone que desactivar una empresa bloquee el acceso de sus usuarios; es una tarea de [[hu-007-administrar-empresas-cliente]] → [[autenticacion-identity]].
+  - Ampliación 2026-10-12 (B4): `GET /api/auth/me` tampoco lo comprueba. `GetCurrentUserProfile` solo exige que la empresa **exista**: `ICompanyDirectory.FindNameAsync` devuelve el nombre sin mirar `Company.IsActive`, así que el usuario de una empresa desactivada seguiría recibiendo `200` con su empresa y satisfaciendo `ClientUser` (lectura del código: ninguna ruta consulta `IsActive` y ninguna prueba cubre empresas inactivas). HU-007 tendrá que decidir dónde se corta (login, revalidación del sello, `/me` y políticas) y con qué respuesta.
+- [ ] **FK compuesta de `tickets` hacia `identity.users (id, company_id)`.** `ux_users_id_company` se creó con SQL porque `company_id` admite nulos y no puede ser clave alternativa en EF Core; por lo mismo, la FK `tickets(requester_id, company_id)` del invariante 1 tendrá que crearse con SQL en la migración de [[hu-013-radicar-ticket]], no con `HasPrincipalKey` → [[persistencia-postgresql]].
+- [x] ~~**Comprobar en Compose la migración al arrancar.**~~ Comprobado el 2026-10-12 al reconstruir `backend` → [[entorno-docker]].
+- [ ] **Idioma del `400` por JSON mal formado.** El título es el del framework («Bad Request», en inglés); el contrato T-01 no lo fija. Decidir si se traduce como el resto de errores → [[autenticacion-identity]].
+- [ ] **ProblemDetails de `UseStatusCodePages` y del manejador de excepciones con `Accept` no JSON.** Con `Accept: text/html`, un `400` generado por el framework sale como `text/plain`, y el `401` del login es `problem+json` sin `traceId`. No filtra información; unificar el formato → [[autenticacion-identity]].
+- [ ] **Aviso de `dotnet watch` en el contenedor `backend`:** no puede leer `obj\Debug/net10.0/staticwebassets.development.json` (separador de Windows en el `obj` compartido con el host). No impide el arranque → [[entorno-docker]].
+
+Autorización, detectado al cerrar B4 del goal del login (2026-10-12). No bloquea B4; conviene resolverlo antes de [[hu-009-administrar-usuarios-internos-y-equipos]], que es la primera HU que escribe roles desde la aplicación:
+
+- [x] ~~**Una fila de tipo rol en `identity.user_claims` llega a la cookie como rol.**~~ Resuelto el 2026-10-12 dentro de B4 (hallazgo MEDIO de `quality-reviewer`): la fábrica emite una lista cerrada de claims y los roles salen solo de `identity.user_roles` → [[autenticacion-identity]].
+- [ ] **Variante estricta del manejador de la política de reserva.** Hoy una petición sin endpoint sigue su curso (y termina en `404`); la alternativa es responder `404` sin continuar cuando no hay endpoint y la autorización no tuvo éxito. Cierra del todo el hueco del middleware sin endpoint, pero exige un punto de extensión en el Api para que el host de pruebas registre sus `TestEndpoints` en la tabla de rutas real. Mitigado por ahora con la regla «todo contenido es un endpoint» y sus dos pruebas → [[autenticacion-identity]].
+
+Entorno y datos de desarrollo, detectado en B7 del goal del login (2026-10-12):
+
+- [x] ~~**`appsettings.Development.json` viajaba en la imagen `runtime` del backend**~~ con la clave del sembrador activa y su contraseña sintética. Resuelto el 2026-10-12 (MEDIO de `quality-reviewer` en B7): `DataTicket.Api.csproj` lo excluye de la publicación (`CopyToPublishDirectory="Never"`); comprobado con `dotnet publish` (solo sale `appsettings.json`) → [[entorno-docker]].
+- [ ] **Reconciliar el sembrador mínimo con [[hu-010-datos-sinteticos-de-desarrollo]]** en su T-01: dónde se activa `Seed:Enabled` (hoy `appsettings.Development.json`; la HU propone `Seed__Enabled` en Compose), la interfaz `IDevelopmentSeeder` que propone la HU, y el sello de seguridad aleatorio frente al determinista de `db.sql` §13.
+- [ ] **Rol que migra en un despliegue real**: desde PostgreSQL 15 solo el dueño de la base crea objetos en `public`; si se migra con otro rol necesitará `CREATE` sobre `public` (historial) además de poder crear los esquemas `identity` y `dataticket` → [[persistencia-postgresql]].
+- [ ] **Residuo local**: las bases migradas con B3 antes del arreglo del historial conservan una tabla vacía `dataticket."__EFMigrationsHistory"`; inofensiva, desaparece con `docker compose down -v` → [[entorno-docker]].
+- [ ] **Sembrador: arranques concurrentes e idempotencia solo por id.** Dos backends que arranquen a la vez sobre una base vacía harían caer al segundo con `23505` (sin duplicados: la transacción revierte y el reinicio omite lo existente); y una cuenta o empresa con el mismo correo o nombre pero otro id impediría arrancar en Development. Tenerlo en cuenta al ampliar el sembrador en [[hu-010-datos-sinteticos-de-desarrollo]] (p. ej. `pg_advisory_xact_lock`). Además, ninguna prueba fija las fechas `created_at` de `db.sql` §13.
+- [ ] **`/ingresar` con el backend caído**: si falla el `/me` inicial se muestra «Algo salió mal / Reintentar» en vez del formulario; es razonable, pero solo tiene prueba el fallo tras el login → [[frontend-mvc]].
+- [ ] **Ratificar las propuestas de B4 en uso** (P-23 de §3b y la contradicción del `403` de `/me` en §1): alcance de la política de reserva (`404` en rutas inexistentes), nombre del claim `display_name` y respuesta de `/me` con perfil no válido → [[autenticacion-identity]].
+
+Validación de HU-002, HU-003 y HU-004, detectado en B8 del goal del login (2026-10-12). Ninguno impide el estado `En validación`; los tres primeros condicionan pasar a `Completada`:
+
+- [ ] **PR revisado por otra persona del equipo** (DoD-10 de HU-002, DoD-11 de HU-003 y DoD-10 de HU-004): el PR de `feature/auth-login` está sin abrir → [[flujo-de-trabajo-github]].
+- [ ] **Capturas de 360 px y 1280 px adjuntas al PR** (DoD-07 de [[hu-002-shell-y-navegacion-por-rol]]): la medición ya está hecha; faltan las capturas en el PR.
+- [ ] **Ratificar P-18, P-22 y P-23** con el equipo: están en uso y las matrices de las HU las citan como *propuesta*. Mientras tanto [[autenticacion-identity]] conserva `status: propuesta`, aunque casi todo su contenido está implementado; decidir si pasa a `vigente` al ratificarlas.
+- [ ] **Anchos de la revisión responsiva sin unificar.** CHU-10 de HU-002 pide 360 px y 1280 px; [[sistema-de-diseno]] fija 375, 768 y 1440 px. Se midió a 360, 375, 1280 y 1440 px (a 360 y 1280 px, solo el shell interno); 768 px no se midió. Elegir un único juego de anchos para las HU siguientes.
+- [ ] **Redacción de CHU-04 de [[hu-004-contexto-de-usuario-y-autorizacion]]**: pide `401` «con una cookie de una sesión cerrada». Se cumple en el navegador que cerró la sesión (la cookie expira), pero una copia guardada antes del logout sigue valiendo hasta su expiración o la revalidación del sello: es el riesgo aceptado de P-22. Conviene que el criterio lo diga para que no se lea como revocación en servidor.
+- [ ] **Rojo de TDD sin registrar en el frontend.** `goal_login.md` y [[log]] guardan el rojo de B3 (a posteriori) y de B4, pero no el de B5 ni el de B6: el «escritas primero» de DoD-02 de HU-002 y DoD-03 de HU-003 se apoya en la regla del goal. Para el loop del chat, pegar la salida en rojo en el archivo de control → [[estrategia-de-pruebas]].
+
+Hallazgos BAJO de la revisión final de la rama `feature/auth-login` (`quality-reviewer`, 2026-10-12; 0 CRÍTICO y 0 ALTO). Ninguno bloquea el PR:
+
+- [ ] **Contraseña sintética escrita en los criterios de [[hu-003-iniciar-y-cerrar-sesion]] y [[hu-005-invitar-y-activar-cuentas]].** Viene de `main`; desde B7 es la de las cuentas sembradas en local. La regla del goal pide no escribir credenciales en la wiki: decidir si se sustituye por una referencia a `Seed:DefaultPassword` / `db.sql` §13 (son criterios ya aprobados, decide la persona líder).
+- [ ] **Identidad obsoleta entre pestañas.** Si en otra pestaña se cierra sesión y entra otra cuenta, la siguiente mutación de la primera pestaña se ejecuta con la cuenta nueva mientras la interfaz muestra la anterior. Hoy solo existen login y logout; antes de la primera HU con mutaciones de negocio, revalidar `/me` al recuperar el foco o tras un `antiforgery_invalid` y abortar si cambió el usuario → [[frontend-mvc]].
+- [ ] **Error de `/me` sin salida.** `SessionErrorView` solo ofrece «Reintentar»; con un `403` (perfil que se vuelve no válido) convendría ofrecer también «Cerrar sesión» → [[frontend-mvc]].
+- [ ] **Validación local del correo más laxa que la del servidor** (`ana@empresa` pasa en el SPA y el backend exige un punto en el dominio): produce un `400` evitable y dos textos para el mismo error. Hoy es deliberado ([[autenticacion-identity]]); decidir si se alinea.
+- [ ] **Títulos en inglés de los ProblemDetails del framework** (`404 "Not Found"`, `400 "Bad Request"`): `userMessageFor` mostraría ese título si un 4xx así llegara a una pantalla → [[autenticacion-identity]].
+- [ ] **Limpieza menor del frontend**: `LoginView` tiene una función de 99 líneas (casi todo JSX; extraer la cabecera o la tarjeta) y `AppLayout.test.tsx` imprime «Not implemented: navigation to another Document» (ruido de jsdom; la prueba pasa).
+- [ ] **Decidir cómo obtiene `ICurrentUser` el hub de SignalR** antes de `loop_chat.md`: el adaptador actual depende de `IHttpContextAccessor`, que no es fiable dentro de las invocaciones del hub, y el principal queda fijado al conectar → [[tiempo-real-signalr]].
 
 ## 5. Equipo y colaboración
 

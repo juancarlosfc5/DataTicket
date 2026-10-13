@@ -3,10 +3,10 @@ title: Criterios de aceptación del MVP
 type: concepto
 status: vigente
 tags: [producto, producto/aceptacion]
-sources: ["PRD.md §14"]
+sources: ["PRD.md §14", "backend/tests/DataTicket.IntegrationTests (avance de CA-01 en B4 del goal del login)"]
 aliases: [Criterios de aceptación, CA, Definition of Done del MVP]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 ---
 
 # Criterios de aceptación del MVP
@@ -17,6 +17,8 @@ Los 15 criterios que el MVP debe cumplir (PRD §14), como lista de verificación
 
 - [ ] **CA-01** — Una cuenta de cliente de la empresa A no puede listar, consultar ni descargar desde el portal un ticket de la empresa B; el control se verifica en backend.
   - Página: [[roles-y-permisos]]
+  - Avance 2026-10-12 ([[hu-004-contexto-de-usuario-y-autorizacion|HU-004]], B4 del goal del login) — **cubierta la parte de contexto del usuario; el criterio sigue abierto.** La empresa de un usuario cliente sale solo de la sesión (claim `company_id`), nunca de la petición. Pruebas negativas A↔B: `MeEndpointTests.Me_ignora_userId_y_cabeceras_de_empresa` (sobre `GET /api/auth/me`) y `SessionAuthorizationTests.ICurrentUser_entrega_la_empresa_de_la_sesion_y_no_la_de_la_peticion` (sobre `ICurrentUser`); además la convención `ClientInputConventionTests` impide que un endpoint de cliente reciba la empresa ([[autenticacion-identity]], [[estrategia-de-pruebas]]).
+  - Falta: listar, consultar y descargar tickets entre empresas → [[hu-024-portal-solicitante-consulta-tickets|HU-024]] y [[hu-025-portal-coordinador-consulta-tickets|HU-025]]. No se marca hasta entonces.
 - [ ] **CA-02** — El solicitante ve sus tickets y el coordinador los de su empresa; ambos ven solo estado resumido, datos de radicación y respuesta formal final.
   - Página: [[roles-y-permisos]] · [[estados-del-ticket]]
 - [ ] **CA-03** — Un ticket nuevo aparece en la cola global de Elizabeth. El administrador de cobertura ve solo los campos de cola y, al abrirlo, queda asociado antes de recibir descripción, archivos y chat.

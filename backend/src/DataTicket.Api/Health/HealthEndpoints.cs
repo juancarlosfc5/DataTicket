@@ -20,16 +20,23 @@ public static class HealthEndpoints
         {
             Predicate = _ => false,
             ResponseWriter = (context, report) => WriteJsonAsync(context, report, includeDetails: false),
-        });
+        }).AsPublicProbe();
 
         endpoints.MapHealthChecks("/api/health", new HealthCheckOptions
         {
             Predicate = registration => registration.Tags.Contains(DependencyInjection.ReadinessTag),
             ResponseWriter = (context, report) => WriteJsonAsync(context, report, includeDetails),
-        });
+        }).AsPublicProbe();
 
         return endpoints;
     }
+
+    /// <summary>
+    /// Sondas públicas del contrato: solo GET y sin sesión. <c>MapHealthChecks</c> acepta cualquier método si no se
+    /// restringe; al limitarlo a GET no queda ninguna ruta de <c>/api</c> que admita POST fuera del filtro antiforgery.
+    /// </summary>
+    private static void AsPublicProbe(this IEndpointConventionBuilder builder) =>
+        builder.WithMetadata(new HttpMethodMetadata([HttpMethods.Get])).AllowAnonymous();
 
     private static Task WriteJsonAsync(HttpContext context, HealthReport report, bool includeDetails)
     {

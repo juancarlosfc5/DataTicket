@@ -3,10 +3,10 @@ title: Entorno Docker
 type: arquitectura
 status: vigente
 tags: [arquitectura/infra, docker]
-sources: ["docker-compose.yml", "backend/Dockerfile", "frontend/Dockerfile", ".env.example", "PRD.md §15"]
+sources: ["docker-compose.yml", "backend/Dockerfile", "frontend/Dockerfile", ".env.example", "PRD.md §15", "backend/src/DataTicket.Api/Program.cs", "backend/src/DataTicket.Api/appsettings.Development.json"]
 aliases: [Docker Compose, Entorno local, Contenedores]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-12
 ---
 
 # Entorno Docker
@@ -62,14 +62,30 @@ Configuración que Compose inyecta al backend (contrato para los adaptadores):
 
 Las claves de correo y Blob aún no las consume el código; los adaptadores deben usarlas. Verificar `DevelopmentStorageProxyUri` con el SDK de Azure Storage al implementar.
 
+### Migraciones al arrancar (desde B3 del goal del login)
+
+En Development el backend **aplica las migraciones de EF Core al arrancar**, antes de atender peticiones: crea los esquemas `identity` y `dataticket` en el servicio `db` sin pasos manuales ([[persistencia-postgresql]]).
+
+- Lo activa `Persistence:ApplyMigrationsOnStartup: true`, que viene de `backend/src/DataTicket.Api/appsettings.Development.json`; Compose no la inyecta. `Program.cs` solo honra la clave cuando el entorno es Development (el servicio `backend` fija `ASPNETCORE_ENVIRONMENT=Development`). La imagen `runtime` no migra sola.
+- B3 cambió `backend/Directory.Packages.props`: un stack levantado sin `--watch` conserva la imagen anterior y no migra hasta reconstruirla con `docker compose up -d --build backend`.
+- Tras `docker compose down -v` la base queda vacía; el siguiente arranque del backend la vuelve a migrar y **siembra el subconjunto mínimo de cuentas de Development** (`Seed:Enabled` en `appsettings.Development.json`; detalle en [[persistencia-postgresql]]). El juego completo de datos de prueba es de [[hu-010-datos-sinteticos-de-desarrollo|HU-010]].
+- Si ejecutas el backend fuera de Docker, migra la base a la que apunte `ConnectionStrings:DataTicket` (por defecto `localhost:5432`): revisa antes el caso del PostgreSQL nativo de *Problemas frecuentes*.
+
+> [!info] Comprobado en Compose (2026-10-12)
+> Tras `docker compose up --build -d backend` (solo ese servicio, sin tocar volúmenes) el backend quedó *healthy* y aplicó `20261009164647_AddIdentityAndCompanies`: 9 tablas en `identity` y `dataticket`, historial con `product_version` 10.0.12, 6 roles, 0 usuarios y 0 empresas. El primer arranque registra un `fail` de EF Core al consultar `__EFMigrationsHistory` (la tabla aún no existe): es esperado.
+
 ## Etapas de los Dockerfiles
 
 | Archivo | Etapas | Validación |
 |---|---|---|
-| `backend/Dockerfile` | `restore` → `dev` · `test` · `build` → `runtime` (`aspnet:10.0`, usuario `app` no root) | `docker build --target test ./backend` ejecuta las pruebas |
+| `backend/Dockerfile` | `restore` → `dev` · `test` · `build` → `runtime` (`aspnet:10.0`, usuario `app` no root) | `docker build --target test ./backend` ejecuta las pruebas que no necesitan Docker (filtra `Category=RequiresDocker`); las de integración con Testcontainers corren con `cd backend && dotnet test` en el anfitrión |
 | `frontend/Dockerfile` | `deps` → `dev` · `build` → `runtime` (`nginxinc/nginx-unprivileged:1.30-alpine`) | nginx sirve el SPA y hace proxy de `/api` y `/hubs` (WebSocket) a `${BACKEND_UPSTREAM}` |
 
-Al crear un proyecto .NET nuevo, agrega su `.csproj` a la etapa `restore`.
+La imagen `runtime` del backend **no incluye `appsettings.Development.json`** (desde B7, 2026-10-12): `DataTicket.Api.csproj` lo excluye de la publicación (`CopyToPublishDirectory="Never"`), porque activa la migración al arrancar y el sembrador de Development y trae su contraseña sintética. `dotnet publish` solo emite `appsettings.json`.
+
+Al crear un proyecto .NET nuevo (también de `tests/`), agrega su `.csproj` a la etapa `restore`: desde 2026-10-09 esa etapa restaura toda la solución `DataTicket.slnx`.
+
+Las pruebas de integración crean contenedores efímeros de Testcontainers (`postgres:18.6` y `testcontainers/ryuk:0.14.0`) que se eliminan solos; nunca usan el servicio `db` de Compose.
 
 ### nginx (imagen runtime del frontend)
 
@@ -96,6 +112,9 @@ Al crear un proyecto .NET nuevo, agrega su `.csproj` a la etapa `restore`.
 - Compose Watch: cambios sincronizados y `dotnet watch` aplicó hot reload.
 - Imágenes runtime: backend 351 MB (uid `app`), frontend 90 MB.
 - Tras la revisión de código: puertos en `127.0.0.1`; en runtime, `/api/health` sin detalle, `index.html` con `no-cache` y cabeceras de seguridad, POST de 12 MB aceptado por nginx, backend recreado alcanzado sin reiniciar nginx.
+- 2026-10-12 (B3 del goal del login): `backend` reconstruido; `GET :8080/api/health` → 200, `GET /api/auth/antiforgery` → 200, `POST /api/auth/logout` sin sesión con `Accept: text/html` → 401 `application/problem+json`, `POST /api/auth/register` → 404. `dotnet watch` avisa de que no puede leer `obj\Debug/net10.0/staticwebassets.development.json` (ruta con separador de Windows en el `obj` montado); no impide el arranque.
+- 2026-10-12 (B7 del goal del login): `docker compose up --build -d backend frontend` (exit 0). El primer intento destapó un fallo: en su segundo arranque el backend reaplicaba la migración (`42P07`) porque el historial de EF Core no tenía esquema explícito ([[persistencia-postgresql]]); corregido y comprobado con dos arranques seguidos (`Sembrador de Development: 1 empresas creadas… 5 cuentas creadas` y, tras reiniciar, `0 … creadas (… ya existían)`). Por el proxy de `:5173`: `antiforgery` 200, `login` 204 con cookie `dataticket.auth` `HttpOnly; SameSite=Lax`, `/me` 200 (interna y cliente), `logout` 204, `/me` 401; cuentas `Invited` y `Deactivated` → 401 genérico.
+- Las bases migradas con B3 antes de ese arreglo pueden conservar una tabla vacía `dataticket."__EFMigrationsHistory"`: es inofensiva (EF solo usa la de `public`) y desaparece con `docker compose down -v`.
 
 ## Problemas frecuentes
 
@@ -107,4 +126,4 @@ Al crear un proyecto .NET nuevo, agrega su `.csproj` a la etapa `restore`.
 
 ## Relacionado
 
-- [[arquitectura-general]] · [[stack-y-versiones]] · [[adr-0001-monorepo-contenedorizado]] · [[adr-0007-entorno-local-compose-watch]] · [[analisis-prd-vs-docker-compose]]
+- [[arquitectura-general]] · [[stack-y-versiones]] · [[adr-0001-monorepo-contenedorizado]] · [[adr-0007-entorno-local-compose-watch]] · [[analisis-prd-vs-docker-compose]] · [[persistencia-postgresql]] · [[autenticacion-identity]]

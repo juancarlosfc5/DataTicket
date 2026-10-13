@@ -56,6 +56,19 @@ public sealed class LayerDependencyTests
         AssertDoesNotReference(Infrastructure.AssemblyReference.Assembly, [ApiAssembly]);
     }
 
+    [Fact]
+    public void UnitTests_DoNotDependOnAdapters()
+    {
+        // Las pruebas unitarias ejercitan dominio y casos de uso con dobles de los puertos.
+        AssertDoesNotReference(UnitTests.AssemblyReference.Assembly, [InfrastructureAssembly, ApiAssembly]);
+    }
+
+    [Fact]
+    public void UnitTests_DoNotDependOnFrameworks()
+    {
+        AssertDoesNotReferencePrefixes(UnitTests.AssemblyReference.Assembly, FrameworkPrefixes);
+    }
+
     private static void AssertDoesNotReference(Assembly assembly, IReadOnlyCollection<string> forbidden)
     {
         var violations = ReferencedNames(assembly).Where(forbidden.Contains).ToList();

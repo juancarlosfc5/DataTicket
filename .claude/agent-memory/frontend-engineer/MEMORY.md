@@ -1,0 +1,2 @@
+- [Versiones verificadas](dependency-versions.md) — react-router 8.4.0, Testing Library, jsdom 30.1.2, Archivo 5.3.0: peers/engines comprobados 2026-10-09
+- [Trampas de pruebas y lint](frontend-testing-traps.md) — RR8 navigate en transición, banner duplicado, cleanup RTL, mock.calls en tsc, resumen de oxlint
