@@ -31,6 +31,7 @@ Implementa `db.sql` §2, §3 y los roles de §12, según [[adr-0009-db-sql-disen
 
 - **Nombres.** `UseSnakeCaseNamingConvention` (paquete `EFCore.NamingConventions`, [[stack-y-versiones]]) pone tablas y columnas en snake_case. Los nombres de claves, restricciones e índices de `db.sql` (`pk_users`, `fk_users_company`, `ck_users_account_status`, `ux_users_normalized_email`…) se fijan en `Persistence/Configurations`, que se aplican **después** del modelo base de Identity.
 - **Historial de migraciones.** La convención también cambia las columnas de `__EFMigrationsHistory` a `migration_id` y `product_version`; el nombre de la tabla se conserva (comprobado al generar la migración en B3). No conviene mezclarla con una base migrada sin la convención.
+- **El historial vive siempre en `public`** (B7, 2026-10-12): `AddInfrastructure` fija `MigrationsHistoryTable("__EFMigrationsHistory", "public")` (`Schemas.MigrationsHistory`). Sin esquema explícito EF Core crea y busca la tabla en el primer esquema existente del `search_path` (`"$user", public`); como el usuario de PostgreSQL del Compose se llama `dataticket`, igual que el esquema de la aplicación, el primer arranque la creaba en `public` y el segundo la buscaba en `dataticket`, no la encontraba y reaplicaba la migración inicial (`42P07: relation "companies" already exists`). Lo cubre `MigrationHistoryTests` (dos arranques sobre una base con `search_path = dataticket, public`, y recuperación con un historial vacío sobrante). **Regla derivada: ningún objeto SQL de la aplicación va sin esquema explícito.** No hubo migración nueva ni cambió el snapshot.
 - **Creado con SQL en la migración** (`migrationBuilder.Sql`), porque EF Core no lo modela sin cambiar su semántica:
   - valores por defecto de columnas que la aplicación siempre escribe: `email_confirmed`, `phone_number_confirmed`, `two_factor_enabled` (`false`), `lockout_enabled` (`true`), `access_failed_count` (`0`), `account_status` (`'Invited'`) y `companies.is_active` (`true`). Un booleano con `DEFAULT true` en el modelo haría que EF omitiera el valor `false` al insertar;
   - `ux_users_id_company`, `UNIQUE (id, company_id)` en `identity.users`: `company_id` admite nulos y no puede ser clave alternativa en EF. Es el destino de la futura FK compuesta de `tickets` (invariante 1);
@@ -47,6 +48,15 @@ Implementa `db.sql` §2, §3 y los roles de §12, según [[adr-0009-db-sql-disen
 - **Development:** el Api las aplica al arrancar (`DatabaseMigrations.ApplyAsync`) si `Persistence:ApplyMigrationsOnStartup` es `true`, valor de `appsettings.Development.json`. `Program.cs` solo honra la clave en Development ([[entorno-docker]]).
 - **Otros entornos:** no se aplican solas; se ejecutan por comando o en el despliegue. El procedimiento está por definir con la infraestructura (PRD §16.1, [[pendientes]] §2).
 - **Pruebas de integración:** cada base aislada se migra con `MigrateAsync`, nunca con `EnsureCreated` ([[estrategia-de-pruebas]]).
+
+### Sembrador de Development (B7, 2026-10-12)
+
+`Infrastructure/Seeding/DevelopmentSeeder` corre al arrancar, después de migrar, **solo en Development y solo con `Seed:Enabled = true`** (ambas claves, `Seed:Enabled` y `Seed:DefaultPassword`, están únicamente en `appsettings.Development.json`). Fuera de Development la clave se ignora con una advertencia en el log y `SeedAsync` se niega a ejecutarse aunque se invoque directamente.
+
+- Siembra el subconjunto mínimo de `db.sql` §13.2–13.4 con **los mismos IDs**: la Empresa Sintética 01 y cinco cuentas (Elizabeth `ProductManager` + `Production`, Laura `Development`, `ana.perez` `Requester` activa, una `Invited` sin contraseña y una `Deactivated`).
+- Es idempotente: omite por id lo que ya existe sin modificarlo y repone lo que falte, en una transacción. La contraseña sintética es la de `db.sql` §13, se guarda solo como hash de Identity y no se escribe en el log.
+- `DevelopmentSeedCatalog` (producción, 5 cuentas) se compara fila a fila con el catálogo de pruebas `TestAccounts` (`Catalogo_del_sembrador_coincide_con_el_de_db_sql`); la fuente de verdad sigue siendo `db.sql` §13.
+- El juego completo de datos sintéticos es de [[hu-010-datos-sinteticos-de-desarrollo]], que amplía este sembrador.
 
 ## Diseño de referencia (`db.sql`)
 

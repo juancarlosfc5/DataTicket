@@ -24,7 +24,7 @@ describe('useLogoutController', () => {
     let release: (response: Response) => void = () => undefined
     const fetchMock = stubLogout(() => new Promise<Response>((resolve) => (release = resolve)))
     const onSignedOut = vi.fn()
-    const { result } = renderHook(() => useLogoutController({ onSignedOut }))
+    const { result } = renderHook(() => useLogoutController({ onSignedOut, userId: "u1" }))
 
     let pending: Promise<void> = Promise.resolve()
     act(() => {
@@ -45,7 +45,7 @@ describe('useLogoutController', () => {
   it('si el backend responde 401 igual descarta la sesión local', async () => {
     stubLogout(() => new Response(JSON.stringify({ status: 401 }), { status: 401, headers: { 'Content-Type': 'application/problem+json' } }))
     const onSignedOut = vi.fn()
-    const { result } = renderHook(() => useLogoutController({ onSignedOut }))
+    const { result } = renderHook(() => useLogoutController({ onSignedOut, userId: "u1" }))
 
     await act(() => result.current.signOut())
 
@@ -56,12 +56,31 @@ describe('useLogoutController', () => {
   it('otros errores conservan la sesión y muestran el mensaje genérico', async () => {
     stubLogout(() => new Response('<html></html>', { status: 503, headers: { 'Content-Type': 'text/html' } }))
     const onSignedOut = vi.fn()
-    const { result } = renderHook(() => useLogoutController({ onSignedOut }))
+    const { result } = renderHook(() => useLogoutController({ onSignedOut, userId: "u1" }))
 
     await act(() => result.current.signOut())
 
     expect(onSignedOut).not.toHaveBeenCalled()
     expect(result.current.errorMessage).toBe(GENERIC_ERROR_MESSAGE)
     expect(result.current.isSigningOut).toBe(false)
+  })
+})
+
+describe('useLogoutController — aviso de fallo', () => {
+  it('olvida el aviso de un cierre fallido cuando la sesión cambia, aunque vuelva el mismo usuario', async () => {
+    stubLogout(() => new Response('<html></html>', { status: 503, headers: { 'Content-Type': 'text/html' } }))
+    const { result, rerender } = renderHook(
+      ({ userId }: { userId: string | null }) => useLogoutController({ onSignedOut: vi.fn(), userId }),
+      { initialProps: { userId: 'u1' as string | null } },
+    )
+
+    await act(() => result.current.signOut())
+    expect(result.current.errorMessage).toBe(GENERIC_ERROR_MESSAGE)
+
+    rerender({ userId: null })
+    expect(result.current.errorMessage).toBeNull()
+
+    rerender({ userId: 'u1' })
+    expect(result.current.errorMessage).toBeNull()
   })
 })

@@ -8,6 +8,7 @@ import { sanitizeReturnUrl } from '../modules/session/models/returnUrl'
 import { ForbiddenView } from '../modules/session/views/ForbiddenView'
 import { PublicPlaceholderView } from '../modules/session/views/PublicPlaceholderView'
 import { SectionPlaceholderView } from '../modules/session/views/SectionPlaceholderView'
+import { SessionErrorView } from '../modules/session/views/SessionErrorView'
 import { useHealthController } from '../modules/system/controllers/useHealthController'
 import { HealthStatusView } from '../modules/system/views/HealthStatusView'
 import { LoadingView } from '../shared/ui/LoadingView'
@@ -95,5 +96,7 @@ export function SignInPage({ session }: { readonly session: SessionController })
     const target = sanitizeReturnUrl(searchParams.get('returnUrl'), homePathFor(state.user))
     return <Navigate to={target} replace />
   }
+  // `/me` falló (p. ej. 5xx justo después de un login correcto): ofrecer reintento, no un formulario vacío.
+  if (state.kind === 'error') return <SessionErrorView message={state.message} onRetry={session.refresh} />
   return <LoginPage onSignedIn={session.refresh} />
 }

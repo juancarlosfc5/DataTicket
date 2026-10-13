@@ -331,3 +331,37 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Verificación: `dotnet build` 0/0; `dotnet test` 154/154 (exit 0; 84 sin Docker); `quality-reviewer` 0 CRÍTICO, 0 ALTO, con sus 2 MEDIO y 6 BAJO corregidos con prueba.
 - Wiki: [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]], [[pendientes]], [[criterios-de-aceptacion]], [[index]]
 - Pendiente: B7 (sembrador de Development, stack reconstruido y verificación en navegador) y B8. Por ratificar (P-23): 404 en rutas inexistentes, 403 de `/me` con perfil no válido, claim `display_name`; variante estricta del manejador de la reserva.
+
+## [2026-10-12] feature | Goal del login — B7 en curso: sembrador mínimo de Development
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: B4 commiteado (`a6c4d5f`). `backend-engineer` implementa en `backend/` el sembrador solo de Development (subconjunto mínimo de `db.sql` §13.2–13.4 con los mismos IDs, idempotente, con doble guarda de entorno y configuración); esos archivos aún no están verificados por el orquestador. Las tres correcciones BAJO del frontend pendientes desde B6 siguen sin commit y entran en B7 (lint 0/0, 150 pruebas, build OK).
+- Wiki: sin cambios de contenido todavía; [[entorno-docker]], [[persistencia-postgresql]] y [[autenticacion-identity]] se actualizan al cerrar B7.
+- Pendiente: verificar el sembrador, `docker compose up --build -d backend frontend`, comprobación con `curl` y en el navegador integrado (cuenta interna y cliente, claro/oscuro, 375/1440 px, teclado); después B8.
+
+## [2026-10-12] fix | Goal del login — B7: el backend del stack no arrancaba por segunda vez (historial de migraciones)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`)
+- Cambios: sembrador de Development implementado por `backend-engineer` y verificado (`dotnet test` 167/167). Al reconstruir `backend` y `frontend` con `docker compose up --build -d`, el backend falló al arrancar: reaplicaba `AddIdentityAndCompanies` (`42P07: relation "companies" already exists`).
+- Causa (comprobada en solo lectura): el usuario de PostgreSQL del Compose se llama `dataticket`, como el esquema de la migración, y `search_path` es `"$user", public`; la tabla de historial de EF Core no tenía esquema explícito, así que se creó en `public` en el primer arranque y se buscó en `dataticket` en el segundo. Las pruebas usan otro usuario y no lo detectaban. Quedó una tabla vacía `dataticket."__EFMigrationsHistory"` creada por el arranque fallido; no se ha tocado el `db` a mano.
+- Wiki: sin cambios de contenido todavía; [[persistencia-postgresql]] y [[entorno-docker]] se actualizan al verificar el arreglo.
+- Pendiente: arreglo en curso (esquema explícito del historial + prueba de regresión con dos arranques), reconstruir el stack y seguir con B7.
+
+## [2026-10-12] feature | Goal del login — B7: stack reconstruido y verificado con curl y navegador (en revisión)
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; sembrador y arreglo de `backend-engineer`)
+- Cambios: sembrador solo de Development (`Infrastructure/Seeding`) y arreglo del historial de migraciones (`MigrationsHistoryTable` en `public` + `MigrationHistoryTests`; Testcontainers con el usuario del Compose). `dotnet test` 169/169 (exit 0). `docker compose up --build -d backend frontend` (exit 0); dos arranques seguidos sanos; 1 empresa y 5 cuentas sembradas.
+- Verificación: por el proxy de `:5173`, `antiforgery` 200 → `login` 204 → `/me` 200 → `logout` 204 → `/me` 401 con Elizabeth (interna) y Ana Pérez (cliente); `Invited` y `Deactivated` → 401 genérico. Navegador integrado: sin sesión `/interno/bandeja` → `/ingresar?returnUrl=…`; intento fallido con mensaje genérico; ingreso por teclado a `/interno/bandeja` y a `/portal`; «sin permiso» fuera de la superficie o sección; cierre de sesión por teclado → `/ingresar`; claro y oscuro, 375 y 1440 px sin desbordamiento (`scrollWidth = innerWidth`), foco visible. Hallazgo de teclado: en `/ingresar` el enlace «¿Olvidaste tu contraseña?» queda entre Correo y Contraseña en el orden de tabulación; `frontend-engineer` lo corrige.
+- Wiki: [[persistencia-postgresql]], [[entorno-docker]], [[estrategia-de-pruebas]], [[backend-hexagonal]], [[pendientes]]
+- Pendiente: veredicto de `quality-reviewer` sobre B7, corrección del orden de foco, reconstruir `frontend`, marcar y commitear B7; después B8.
+
+## [2026-10-12] fix | Goal del login — B7: orden de foco y alto del botón en `/ingresar`
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; orden de foco de `frontend-engineer`)
+- Cambios: el enlace «¿Olvidaste tu contraseña?» pasa debajo de «Ingresar» (orden de foco Correo → Contraseña → Ingresar → enlace, igual que el DOM). `src/main.tsx` importa `tokens.css` y `global.css` antes que `App`: los estilos base se cargaban después de los del módulo y `.btn` dejaba «Ingresar» en 30 px en vez de 48 px.
+- Verificación: lint 0/0, 152 pruebas, build OK (exit 0); `docker compose up --build -d frontend`; en el navegador, botón de 48 px a 375 y 1440 px, sin desbordamiento, orden de foco comprobado con Tab.
+- Wiki: [[sistema-de-diseno]], [[frontend-mvc]]
+- Pendiente: veredicto de `quality-reviewer` sobre B7, marcar y commitear B7; después B8.
+
+## [2026-10-12] feature | Goal del login — B7 integración y verificación manual
+- Autor: juancarlosfc5 (orquestador, `/goal` de `goal_login.md`; `backend-engineer`, `frontend-engineer`, revisión de `quality-reviewer`)
+- Cambios: sembrador solo de Development; historial de migraciones fijado en `public` (el backend del stack no arrancaba por segunda vez); `appsettings.Development.json` excluido de la publicación; en `/ingresar`, orden de foco corregido y estilos base importados antes que `App`; correcciones menores pendientes de B6 (aviso de logout, error de `/me` tras el login, `method="post"`).
+- Verificación: `dotnet build` 0/0 y `dotnet test` 169/169 (exit 0); lint 0/0, 152 pruebas Vitest y build (exit 0); `docker compose up --build -d backend frontend` (exit 0), dos arranques sanos; flujo completo con `curl` y en el navegador integrado con una cuenta interna y una cliente; `quality-reviewer` 0 CRÍTICO, 0 ALTO (su MEDIO, corregido).
+- Wiki: [[persistencia-postgresql]], [[entorno-docker]], [[estrategia-de-pruebas]], [[backend-hexagonal]], [[sistema-de-diseno]], [[frontend-mvc]], [[pendientes]]
+- Pendiente: B8 (revisión final de la rama, matrices de las HU, verificación final y borrador del PR). Residuo local: tabla vacía `dataticket."__EFMigrationsHistory"` en el `db` del Compose (inofensiva; no se tocó).

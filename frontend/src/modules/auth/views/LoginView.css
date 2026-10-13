@@ -150,14 +150,6 @@
   gap: var(--space-2);
 }
 
-.signin-field__label-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-1) var(--space-3);
-}
-
 .signin-field__label {
   font-weight: var(--weight-semibold);
 }
@@ -199,21 +191,9 @@
   font-weight: var(--weight-semibold);
 }
 
-.signin__link {
-  border-radius: var(--r-s);
-  color: var(--accent);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  text-decoration: none;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .signin-field__input:hover:not(:focus) {
     border-color: var(--ink-3);
-  }
-
-  .signin__link:hover {
-    text-decoration: underline;
   }
 }
 
@@ -228,6 +208,42 @@
 
 .signin__submit:disabled {
   cursor: progress;
+}
+
+/*
+ * Ayuda secundaria: va después de «Ingresar» en el DOM y a la vista, así el tabulador recorre
+ * Correo → Contraseña → Ingresar → enlace (WCAG 2.4.3 y 1.3.2) sin tabIndex.
+ * El enlace mide --touch-target de alto; los márgenes negativos descuentan ese aire del hueco y
+ * del relleno de la tarjeta para que el texto quede a un paso del botón, no flotando.
+ */
+.signin__help {
+  display: flex;
+  justify-content: center;
+  margin: calc(-1 * var(--space-3)) 0;
+}
+
+.signin__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding-inline: var(--space-3);
+  border-radius: var(--r);
+  color: var(--accent);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  text-decoration: none;
+  text-underline-offset: var(--space-1);
+}
+
+.signin__link:active {
+  color: var(--accent-hover);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .signin__link:hover {
+    text-decoration: underline;
+  }
 }
 
 .signin__foot {

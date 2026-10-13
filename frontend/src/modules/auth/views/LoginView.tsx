@@ -59,7 +59,14 @@ export function LoginView({ state, onEmailChange, onPasswordChange, onSubmit, on
             </p>
           </section>
 
-          <form className="signin__card" noValidate aria-labelledby="signin-form-title" onSubmit={handleSubmit}>
+          {/* method="post": defensa en profundidad; si el JS fallara, la contraseña nunca va en la URL. */}
+          <form
+            className="signin__card"
+            method="post"
+            noValidate
+            aria-labelledby="signin-form-title"
+            onSubmit={handleSubmit}
+          >
             <h2 id="signin-form-title" className="signin__card-title">
               Iniciar sesión
             </h2>
@@ -91,16 +98,18 @@ export function LoginView({ state, onEmailChange, onPasswordChange, onSubmit, on
               value={state.password}
               error={fieldErrors.password}
               onChange={onPasswordChange}
-              aside={
-                <InternalLink className="signin__link" to={FORGOT_PASSWORD_PATH} onNavigate={onNavigate}>
-                  ¿Olvidaste tu contraseña?
-                </InternalLink>
-              }
             />
 
             <button type="submit" className="btn btn--primary signin__submit" disabled={isSubmitting}>
               {isSubmitting ? 'Ingresando…' : 'Ingresar'}
             </button>
+
+            {/* Tras la acción principal, en el DOM y a la vista: Tab va de Correo a Contraseña y a Ingresar. */}
+            <p className="signin__help">
+              <InternalLink className="signin__link" to={FORGOT_PASSWORD_PATH} onNavigate={onNavigate}>
+                ¿Olvidaste tu contraseña?
+              </InternalLink>
+            </p>
           </form>
         </div>
 

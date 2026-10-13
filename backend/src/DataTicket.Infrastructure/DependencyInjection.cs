@@ -1,9 +1,11 @@
 using DataTicket.Application.Ports.Out;
 using DataTicket.Infrastructure.Identity;
 using DataTicket.Infrastructure.Persistence;
+using DataTicket.Infrastructure.Seeding;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,8 +28,11 @@ public static class DependencyInjection
                 $"Falta la cadena de conexión 'ConnectionStrings:{ConnectionStringName}'.");
         }
 
+        // El historial de migraciones lleva esquema explícito: no puede depender del search_path de la sesión.
         services.AddDbContext<DataTicketDbContext>(options => options
-            .UseNpgsql(connectionString)
+            .UseNpgsql(
+                connectionString,
+                npgsql => npgsql.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.MigrationsHistory))
             .UseSnakeCaseNamingConvention());
 
         services.AddHealthChecks()
@@ -36,6 +41,10 @@ public static class DependencyInjection
         services.AddIdentityStores();
 
         services.AddScoped<ICompanyDirectory, CompanyDirectory>();
+
+        // Sembrador de Development: se registra siempre, pero solo actúa en Development y con Seed:Enabled.
+        services.AddOptions<DevelopmentSeedOptions>().Bind(configuration.GetSection(DevelopmentSeedOptions.SectionName));
+        services.AddScoped<DevelopmentSeeder>();
 
         return services;
     }

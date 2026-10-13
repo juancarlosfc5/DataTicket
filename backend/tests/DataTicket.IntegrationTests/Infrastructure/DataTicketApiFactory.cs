@@ -1,4 +1,5 @@
 using DataTicket.Infrastructure.Persistence;
+using DataTicket.Infrastructure.Seeding;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 using InfrastructureRegistration = DataTicket.Infrastructure.DependencyInjection;
 
@@ -33,6 +35,22 @@ public sealed record ApiFactoryOptions
     /// las fixtures migran de forma explícita para controlar los fallos.
     /// </summary>
     public bool ApplyMigrationsOnStartup { get; init; }
+
+    /// <summary>
+    /// Valor de <c>Seed:Enabled</c>. Por defecto <c>false</c>, aunque <c>appsettings.Development.json</c> lo
+    /// active: las pruebas siembran su propio catálogo (<c>TestDataSeeder</c>), con los mismos IDs que el
+    /// sembrador de Development. Solo las pruebas del sembrador lo activan.
+    /// </summary>
+    public bool SeedEnabled { get; init; }
+
+    /// <summary>
+    /// Valor de <c>Seed:DefaultPassword</c>. <c>null</c> deja el de la configuración del Api (el de
+    /// <c>appsettings.Development.json</c> en Development; ninguno en los demás entornos).
+    /// </summary>
+    public string? SeedDefaultPassword { get; init; }
+
+    /// <summary>Proveedor de log adicional, para que una prueba lea lo que registra el host.</summary>
+    public ILoggerProvider? LoggerProvider { get; init; }
 }
 
 /// <summary>
@@ -61,10 +79,20 @@ public sealed class DataTicketApiFactory(ApiFactoryOptions options) : WebApplica
         // y tiene prioridad sobre appsettings.{Environment}.json.
         builder.UseSetting($"ConnectionStrings:{InfrastructureRegistration.ConnectionStringName}", Options.ConnectionString);
         builder.UseSetting(DatabaseMigrations.ApplyOnStartupKey, Options.ApplyMigrationsOnStartup ? "true" : "false");
+        builder.UseSetting(DevelopmentSeedOptions.EnabledKey, Options.SeedEnabled ? "true" : "false");
+        if (Options.SeedDefaultPassword is { } seedPassword)
+        {
+            builder.UseSetting(DevelopmentSeedOptions.DefaultPasswordKey, seedPassword);
+        }
 
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton<IStartupFilter, TestEndpoints>();
+
+            if (Options.LoggerProvider is { } loggerProvider)
+            {
+                services.AddSingleton(loggerProvider);
+            }
 
             if (Options.TimeProvider is { } fakeTime)
             {

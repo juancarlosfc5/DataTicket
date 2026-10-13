@@ -4,6 +4,7 @@ using DataTicket.Api.Health;
 using DataTicket.Application;
 using DataTicket.Infrastructure;
 using DataTicket.Infrastructure.Persistence;
+using DataTicket.Infrastructure.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,11 @@ if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>(Database
 {
     await DatabaseMigrations.ApplyAsync(app.Services, app.Lifetime.ApplicationStopping);
 }
+
+// Cuentas sintéticas mínimas para entrar al stack local (subconjunto de db.sql §13). Doble guarda, dentro del
+// propio sembrador: solo siembra si el entorno es Development Y Seed:Enabled es true (appsettings.Development.json).
+// Fuera de Development la clave se ignora y solo deja una advertencia en el log.
+await DevelopmentSeeder.RunIfEnabledAsync(app.Services, app.Lifetime.ApplicationStopping);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();

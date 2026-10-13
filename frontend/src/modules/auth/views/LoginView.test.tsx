@@ -96,3 +96,58 @@ describe('LoginView', () => {
     expect(document.querySelector('img')).toBeNull()
   })
 })
+
+describe('LoginView — orden de foco', () => {
+  it('el tabulador recorre Correo, Contraseña, Ingresar y el enlace de recuperación, en ese orden', async () => {
+    const user = userEvent.setup()
+    renderView()
+    const email = screen.getByLabelText('Correo')
+    const password = screen.getByLabelText('Contraseña')
+    const submit = screen.getByRole('button', { name: 'Ingresar' })
+    const recovery = screen.getByRole('link', { name: '¿Olvidaste tu contraseña?' })
+
+    await user.tab()
+    expect(email).toHaveFocus()
+    await user.tab()
+    expect(password).toHaveFocus()
+    await user.tab()
+    expect(submit).toHaveFocus()
+    await user.tab()
+    expect(recovery).toHaveFocus()
+
+    await user.tab({ shift: true })
+    expect(submit).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(password).toHaveFocus()
+  })
+
+  it('el orden del DOM es el del foco y ningún control fuerza un tabIndex positivo', () => {
+    const { view } = renderView({
+      status: { kind: 'error', message: 'Correo o contraseña incorrectos.', fieldErrors: {} },
+      attempt: 1,
+      focus: { target: 'password', attempt: 1 },
+    })
+
+    const focusables = [...view.container.querySelectorAll<HTMLElement>('input, button, a[href]')]
+    expect(focusables).toEqual([
+      screen.getByLabelText('Correo'),
+      screen.getByLabelText('Contraseña'),
+      screen.getByRole('button', { name: 'Ingresar' }),
+      screen.getByRole('link', { name: '¿Olvidaste tu contraseña?' }),
+    ])
+    const forcedOrder = [...view.container.querySelectorAll<HTMLElement>('[tabindex]')].filter(
+      (element) => element.tabIndex > 0,
+    )
+    expect(forcedOrder).toEqual([])
+  })
+})
+
+describe('LoginView — defensa en profundidad', () => {
+  it('el formulario usa POST: la contraseña nunca puede acabar en la URL', () => {
+    renderView()
+
+    const form = screen.getByRole('form', { name: 'Iniciar sesión' })
+    expect(form).toHaveAttribute('method', 'post')
+    expect(form).toHaveAttribute('novalidate')
+  })
+})

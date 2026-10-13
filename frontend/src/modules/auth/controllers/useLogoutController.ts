@@ -7,6 +7,8 @@ const UNAUTHORIZED = 401
 export interface LogoutControllerOptions {
   /** Descarta la sesión en memoria (la guarda lleva entonces a `/ingresar`). */
   readonly onSignedOut: () => void
+  /** Usuario de la sesión actual (`null` sin sesión). Al cambiar, se olvida el aviso de un fallo anterior. */
+  readonly userId: string | null
 }
 
 export interface LogoutController {
@@ -19,9 +21,17 @@ export interface LogoutController {
  * «Cerrar sesión»: `POST /api/auth/logout` y, si responde 204 o 401 (ya no había sesión),
  * descarta la sesión local. Otros fallos conservan la sesión y muestran el mensaje genérico.
  */
-export function useLogoutController({ onSignedOut }: LogoutControllerOptions): LogoutController {
+export function useLogoutController({ onSignedOut, userId }: LogoutControllerOptions): LogoutController {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [sessionUserId, setSessionUserId] = useState(userId)
+
+  // Cambio de sesión (cierre, caducidad o nueva entrada): el aviso anterior ya no aplica.
+  // Ajuste de estado durante el render (patrón de React para reaccionar a una prop), sin efecto.
+  if (sessionUserId !== userId) {
+    setSessionUserId(userId)
+    setErrorMessage(null)
+  }
   const inFlightRef = useRef(false)
   const onSignedOutRef = useRef(onSignedOut)
 

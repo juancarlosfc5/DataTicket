@@ -16,4 +16,13 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <!--
+      appsettings.Development.json activa la migración y el sembrador de Development y trae su
+      contraseña sintética: no viaja en la publicación (imagen runtime). Así, fuera del entorno de
+      desarrollo, un ASPNETCORE_ENVIRONMENT mal puesto no basta para sembrar cuentas.
+    -->
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
 </Project>

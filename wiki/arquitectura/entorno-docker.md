@@ -68,7 +68,7 @@ En Development el backend **aplica las migraciones de EF Core al arrancar**, ant
 
 - Lo activa `Persistence:ApplyMigrationsOnStartup: true`, que viene de `backend/src/DataTicket.Api/appsettings.Development.json`; Compose no la inyecta. `Program.cs` solo honra la clave cuando el entorno es Development (el servicio `backend` fija `ASPNETCORE_ENVIRONMENT=Development`). La imagen `runtime` no migra sola.
 - B3 cambió `backend/Directory.Packages.props`: un stack levantado sin `--watch` conserva la imagen anterior y no migra hasta reconstruirla con `docker compose up -d --build backend`.
-- Tras `docker compose down -v` la base queda vacía y el siguiente arranque del backend la vuelve a migrar. Los datos de prueba no se cargan aquí: el sembrador de Development es de [[hu-010-datos-sinteticos-de-desarrollo|HU-010]].
+- Tras `docker compose down -v` la base queda vacía; el siguiente arranque del backend la vuelve a migrar y **siembra el subconjunto mínimo de cuentas de Development** (`Seed:Enabled` en `appsettings.Development.json`; detalle en [[persistencia-postgresql]]). El juego completo de datos de prueba es de [[hu-010-datos-sinteticos-de-desarrollo|HU-010]].
 - Si ejecutas el backend fuera de Docker, migra la base a la que apunte `ConnectionStrings:DataTicket` (por defecto `localhost:5432`): revisa antes el caso del PostgreSQL nativo de *Problemas frecuentes*.
 
 > [!info] Comprobado en Compose (2026-10-12)
@@ -111,6 +111,8 @@ Las pruebas de integración crean contenedores efímeros de Testcontainers (`pos
 - Imágenes runtime: backend 351 MB (uid `app`), frontend 90 MB.
 - Tras la revisión de código: puertos en `127.0.0.1`; en runtime, `/api/health` sin detalle, `index.html` con `no-cache` y cabeceras de seguridad, POST de 12 MB aceptado por nginx, backend recreado alcanzado sin reiniciar nginx.
 - 2026-10-12 (B3 del goal del login): `backend` reconstruido; `GET :8080/api/health` → 200, `GET /api/auth/antiforgery` → 200, `POST /api/auth/logout` sin sesión con `Accept: text/html` → 401 `application/problem+json`, `POST /api/auth/register` → 404. `dotnet watch` avisa de que no puede leer `obj\Debug/net10.0/staticwebassets.development.json` (ruta con separador de Windows en el `obj` montado); no impide el arranque.
+- 2026-10-12 (B7 del goal del login): `docker compose up --build -d backend frontend` (exit 0). El primer intento destapó un fallo: en su segundo arranque el backend reaplicaba la migración (`42P07`) porque el historial de EF Core no tenía esquema explícito ([[persistencia-postgresql]]); corregido y comprobado con dos arranques seguidos (`Sembrador de Development: 1 empresas creadas… 5 cuentas creadas` y, tras reiniciar, `0 … creadas (… ya existían)`). Por el proxy de `:5173`: `antiforgery` 200, `login` 204 con cookie `dataticket.auth` `HttpOnly; SameSite=Lax`, `/me` 200 (interna y cliente), `logout` 204, `/me` 401; cuentas `Invited` y `Deactivated` → 401 genérico.
+- Las bases migradas con B3 antes de ese arreglo pueden conservar una tabla vacía `dataticket."__EFMigrationsHistory"`: es inofensiva (EF solo usa la de `public`) y desaparece con `docker compose down -v`.
 
 ## Problemas frecuentes
 

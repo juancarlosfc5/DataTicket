@@ -6,7 +6,7 @@ tags: [arquitectura/frontend, mvc, react]
 sources: ["PRD.md §7, §10", "frontend/"]
 aliases: [Frontend, MVC en React]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Frontend MVC
@@ -34,6 +34,9 @@ frontend/src/
 ├── styles/tokens.css        tokens claro/oscuro de [[sistema-de-diseno]]
 └── styles/global.css        base y primitivas sobre los tokens
 ```
+
+> [!info] Orden de los estilos
+> `src/main.tsx` importa `tokens.css` y `global.css` **antes** que `App`. El CSS de cada módulo se emite en el orden de importación y, a igual especificidad, gana el último: si los estilos base se cargaran después, sus clases (`.btn`, …) pisarían los ajustes de los módulos. Pasó en B7: «Ingresar» medía 30 px en vez de 48 px.
 
 ```mermaid
 flowchart LR

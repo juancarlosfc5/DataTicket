@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactNode, Ref } from 'react'
+import type { HTMLAttributes, Ref } from 'react'
 
 interface LoginFieldProps {
   readonly ref: Ref<HTMLInputElement>
@@ -10,21 +10,19 @@ interface LoginFieldProps {
   readonly value: string
   readonly error: string | undefined
   readonly onChange: (value: string) => void
-  /** Contenido junto a la etiqueta (p. ej. el enlace de recuperación). */
-  readonly aside?: ReactNode
 }
 
-/** Campo del formulario de entrada: etiqueta, control y error asociado por `aria-describedby`. */
-export function LoginField({ ref, id, label, type, autoComplete, inputMode, value, error, onChange, aside }: LoginFieldProps) {
+/**
+ * Campo del formulario de entrada: etiqueta, control y error asociado por `aria-describedby`.
+ * Entre la etiqueta y el control no cabe nada enfocable: rompería el orden Correo → Contraseña.
+ */
+export function LoginField({ ref, id, label, type, autoComplete, inputMode, value, error, onChange }: LoginFieldProps) {
   const errorId = `${id}-error`
   return (
     <div className={`signin-field${error ? ' signin-field--invalid' : ''}`}>
-      <div className="signin-field__label-row">
-        <label className="signin-field__label" htmlFor={id}>
-          {label}
-        </label>
-        {aside}
-      </div>
+      <label className="signin-field__label" htmlFor={id}>
+        {label}
+      </label>
       <input
         ref={ref}
         id={id}

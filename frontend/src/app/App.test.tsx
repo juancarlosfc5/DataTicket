@@ -408,3 +408,36 @@ describe('Entrada /ingresar (HU-003 CHU-11)', () => {
     expect(requestedUrls(fetchMock)).toEqual(['/api/auth/me'])
   })
 })
+
+describe('Entrada /ingresar — /me falla tras el login', () => {
+  it('muestra el error con Reintentar en vez del formulario y, al reintentar, entra', async () => {
+    const user = userEvent.setup()
+    let signedIn = false
+    let meAfterLogin = 0
+    mockApi({
+      '/api/auth/me': (init) => {
+        if (!signedIn) return problem(401, 'Se requiere iniciar sesión.')(init)
+        meAfterLogin += 1
+        return meAfterLogin === 1
+          ? new Response('<html>Bad Gateway</html>', { status: 502, headers: { 'Content-Type': 'text/html' } })
+          : Response.json(CLIENT_ME)
+      },
+      '/api/auth/antiforgery': ok(ANTIFORGERY),
+      '/api/auth/login': () => {
+        signedIn = true
+        return new Response(null, { status: 204 })
+      },
+    })
+    renderAt('/ingresar')
+
+    await user.type(await screen.findByLabelText('Correo'), 'ana.perez@empresa-sintetica-01.test')
+    await user.type(screen.getByLabelText('Contraseña'), 'Clave-Sintetica-2026')
+    await user.click(screen.getByRole('button', { name: 'Ingresar' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos completar la operación. Inténtalo de nuevo.')
+    expect(screen.queryByLabelText('Correo')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }))
+    await waitFor(() => expect(currentLocation()).toBe('/portal'))
+  })
+})

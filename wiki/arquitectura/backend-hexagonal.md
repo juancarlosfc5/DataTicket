@@ -104,6 +104,7 @@ Nombres según [[glosario]]. Es una guía de partida: se ajusta al implementar y
 | Dominio: `Domain/Users` (`AccountStatus`, `RoleNames`, `Surface`, `AccountAccess`), `Domain/Companies` (`Company`) y `Domain/Common` (`Timestamps`) | Hecho (B3) |
 | Puertos reales: `Application/Ports/In/Authentication` (`ISignIn`, `ISignOut`) y `Application/Ports/Out` (`ICredentialVerifier`, `IUserSession`); casos de uso `SignIn` y `SignOut` en `Application/Authentication` | Hecho (B3) |
 | Adaptadores de Identity en `Infrastructure/Identity` (`ApplicationUser`, `DataTicketUserManager`, `DataTicketSignInManager`, `IdentityCredentialVerifier`, `IdentityUserSession`, `IdentitySettings`) | Hecho (B3) |
+| Sembrador solo de Development en `Infrastructure/Seeding` (`DevelopmentSeeder`, `DevelopmentSeedCatalog`, `DevelopmentSeedOptions`); `Program.cs` solo lo invoca tras migrar (B7) | Hecho |
 | `Api/Auth` (`AuthenticationSetup`, `AntiforgeryValidationFilter`, `ApiProblems`) y `Api/Endpoints/Auth` (`AuthEndpoints`, `LoginRequest`): antiforgery, login y logout | Hecho (B3) |
 | Proyecto `DataTicket.UnitTests`: referencia solo `Domain` y `Application` (dobles de los puertos, sin Docker ni base de datos) ([[estrategia-de-pruebas]]) | Hecho (B3) |
 | `GET /api/auth/me`: puertos `ICurrentUser`, `ICompanyDirectory` e `IGetCurrentUserProfile`, caso de uso `GetCurrentUserProfile` y adaptadores `HttpContextCurrentUser` (+ `PrincipalProfile`) y `CompanyDirectory` | Hecho (B4, HU-004) |

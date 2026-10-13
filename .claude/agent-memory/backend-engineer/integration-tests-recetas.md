@@ -32,6 +32,15 @@ Comprobado el 2026-10-12 (B4, HU-004):
 - `JsonObject.ToJsonString()` escapa los caracteres no ASCII (`é` → `é`): un `DoesNotContain("Sintética 02", json)` pasa siempre. Comparar valores con `GetValue<string>()`.
 - Cobertura sin ensuciar el repo: `dotnet test --no-build --coverage --coverage-output-format cobertura --results-directory <scratchpad>`. El 64 % de `DataTicket.Api` es código generado de OpenAPI; las clases propias se leen por `<class>`.
 
+Comprobado el 2026-10-12 (B7, sembrador de Development):
+
+- El código de `Program` posterior a `builder.Build()` (migración, sembrador) SÍ se ejecuta en `WebApplicationFactory`, al arrancar el host (primer acceso a `factory.Services`). Una excepción ahí sale por `factory.Services` (basta `Assert.ThrowsAny` y recorrer `InnerException`).
+- Los hosts de prueba en Development leen `appsettings.Development.json` del Api: una clave activada allí (p. ej. `Seed:Enabled`) afecta a TODAS las fixtures. `DataTicketApiFactory` la fuerza a `false` con `UseSetting` por defecto (`ApiFactoryOptions.SeedEnabled`); si no, el sembrador chocaría con `TestDataSeeder` (mismos IDs) y los hosts sin base fallarían al arrancar.
+- Una clase de pruebas puede recibir el `PostgreSqlContainerFixture` (fixture de ensamblado) directamente en el constructor y pedir una base vacía por prueba; para hosts que no son de Development, migrar antes con un host Development desechable.
+- `UserManager.CreateAsync`/`AddToRolesAsync` participan en una transacción abierta con `dbContext.Database.BeginTransactionAsync` (mismo `DbContext` con ámbito).
+- Mutación con código inalcanzable (`&& false`): compilar con `dotnet build -p:TreatWarningsAsErrors=false`; `-warnaserror-` no existe en `dotnet build` (MSB1001) y, si el build falla, `--no-build` ejecuta los binarios viejos y da un verde falso. Comprobar siempre la línea «0 Errores» antes de leer el resultado.
+- `IPasswordHasher<ApplicationUser>` es de ámbito: resolverlo desde un `CreateAsyncScope()`, no desde el proveedor raíz.
+
 Versiones verificadas en NuGet (flatcontainer index.json, solo estables) el 2026-10-09: Testcontainers.PostgreSql 4.16.0 (net8/9/10), Microsoft.AspNetCore.Mvc.Testing 10.0.12, Microsoft.Extensions.TimeProvider.Testing 10.10.0, xunit.v3 4.0.1. SDK local 10.0.201, runtime ASP.NET Core local 10.0.5.
 
 **Why:** evitar repetir los diagnósticos; **How to apply:** al añadir pruebas de integración o tocar la etapa test del Dockerfile. Ver [[aspnetcore10-timeprovider-identity]].

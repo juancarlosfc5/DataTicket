@@ -25,6 +25,15 @@ Desarrollo guiado por pruebas: primero la prueba que falla, luego la implementac
 - Cobertura: `cd backend && dotnet test --coverage --coverage-output-format cobertura` (extensión `Microsoft.Testing.Extensions.CodeCoverage`; reporte en `backend/TestResults/`, ignorado por git).
 - Sin SDK local: `docker build --target test ./backend` (solo las pruebas sin Docker; ver abajo).
 
+### Estado tras B7 del goal del login (2026-10-12)
+
+`cd backend && dotnet test`: 169 pruebas en verde; 87 no necesitan Docker.
+
+- **El contenedor de Testcontainers usa el mismo usuario y base que el Compose (`dataticket`)**, a propósito: con el usuario `postgres` el esquema actual era siempre `public` y la suite no veía el fallo del historial de migraciones que sí ocurría en el stack. `CreateDatabaseAsync(searchPath, ct)` permite fijar el `search_path` de una base de prueba.
+- **`MigrationHistoryTests`**: segundo arranque sobre una base migrada y recuperación con un historial vacío sobrante.
+- **Sembrador** (`Seeding/`): una base vacía por prueba; cubre creación, idempotencia, reposición, negativa fuera de Development (Staging y Production con la clave activa), fallo claro si falta la contraseña y ausencia de la contraseña en el log (`CapturingLoggerProvider`). Los hosts de prueba fuerzan `Seed:Enabled = false` por defecto (`ApiFactoryOptions.SeedEnabled`) para no chocar con `TestDataSeeder`.
+- **Lección**: una comprobación en el stack real (dos arranques seguidos) encontró lo que ninguna prueba ni revisión había visto; por eso B7 exige reconstruir y probar con `curl` y navegador.
+
 ### Estado tras B4 del goal del login (2026-10-12)
 
 `cd backend && dotnet test`: 154 pruebas en verde; 84 no necesitan Docker (`OfflineApiFixture` permite probar políticas y convenciones sin base). `DataTicket.ArchitectureTests`: 13 pruebas.

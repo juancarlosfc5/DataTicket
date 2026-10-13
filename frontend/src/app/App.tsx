@@ -12,7 +12,10 @@ export function App() {
   })
   // «Cerrar sesión»: POST /api/auth/logout y, después, descartar la sesión en memoria
   // (la guarda lleva a /ingresar sin returnUrl).
-  const signOut = useLogoutController({ onSignedOut: session.endSession })
+  const signOut = useLogoutController({
+    onSignedOut: session.endSession,
+    userId: session.state.kind === 'authenticated' ? session.state.user.id : null,
+  })
 
   return <AppRoutes session={session} signOut={signOut} />
 }

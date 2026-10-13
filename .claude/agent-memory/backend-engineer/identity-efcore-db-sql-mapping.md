@@ -16,4 +16,10 @@ Comprobado el 2026-10-09 (B3 del goal del login, migración `AddIdentityAndCompa
 - `dotnet ef migrations script --no-build` justo tras `migrations add` usa el ensamblado viejo (sale solo la tabla de historial): compilar antes.
 - Los logs del host solo se ven en la salida de MTP cuando la prueba falla; para inspeccionarlos, una prueba sonda temporal con `Assert.Fail`.
 
-**How to apply:** al tocar Identity, migraciones o fixtures de integración. Ver [[integration-tests-recetas]] y [[aspnetcore10-timeprovider-identity]].
+Comprobado el 2026-10-12 (B7, fallo de arranque 42P07 en el Compose):
+
+- **`__EFMigrationsHistory` sin esquema explícito depende del `search_path`**: EF la crea y la busca en el primer esquema EXISTENTE. Con `search_path = "$user", public` y un usuario de PostgreSQL llamado igual que un esquema de la app (Compose: usuario y esquema `dataticket`), el primer arranque deja el historial en `public` (el esquema aún no existe) y el segundo lo busca en `dataticket`, no lo ve, crea otro vacío y reaplica la migración inicial → `42P07 relation "companies" already exists`. Arreglo: `UseNpgsql(cs, o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "public"))`; no cambia el modelo ni el snapshot (`dotnet ef migrations has-pending-model-changes` limpio) y el script generado califica `public."__EFMigrationsHistory"`.
+- Testcontainers usa por defecto el usuario `postgres`, que no reproduce esa condición: la fixture ahora arranca con `WithUsername("dataticket").WithDatabase("dataticket")`, como el Compose (sin el arreglo, 74 de 124 pruebas de integración fallaban). Para reproducirlo sin depender del usuario: `ALTER DATABASE … SET search_path = dataticket, public` por la conexión de administración ANTES de abrir sesiones contra la base (solo rige para sesiones nuevas; el pool de Npgsql es por cadena de conexión).
+- `dotnet ef … --no-build` funciona con el manifiesto de `backend/.config` tras `dotnet tool restore`; `has-pending-model-changes` no conecta a la base.
+
+**How to apply:** al tocar Identity, migraciones o fixtures de integración; cualquier objeto SQL sin esquema explícito es sospechoso en el Compose. Ver [[integration-tests-recetas]] y [[aspnetcore10-timeprovider-identity]].

@@ -6,7 +6,7 @@ tags: [arquitectura/frontend, diseno, ui]
 sources: ["DataTicket.html", "Instrucción de la persona líder del proyecto (2026-10-09)"]
 aliases: [Sistema de diseño, Guía visual, Tokens de diseño, Estilo visual]
 created: 2026-10-09
-updated: 2026-10-09
+updated: 2026-10-12
 ---
 
 # Sistema de diseño del frontend
@@ -71,7 +71,7 @@ Los nombres del prototipo no son los del dominio. Este mapeo es una **propuesta*
 - **Campos**: alto de 32 px; foco con borde `--accent` y anillo `0 0 0 3px` al 22 %. El error va debajo del campo y lo anuncia `role="alert"`.
 - **Bandeja**: barra lateral de 236 px, barra superior de 52 px, filtros en chips (con borde punteado si están vacíos y sólido en `accent-soft` si están activos) y tabla con cabecera fija y filas de 46 px.
 - **Detalle**: hilo centrado de 840 px como máximo, compositor con borde que se ilumina con `:focus-within` y panel lateral de datos.
-- **Entrada (`/ingresar`, HU-003, implementada en B6)**: un único formulario de correo y contraseña, como pide la HU. Implementación: clase `.theme-light` (reutiliza el bloque claro de tokens con `color-scheme: light`), marca arriba, título con «DataTicket» en azul de marca y filete azul/verde, tarjeta de 420 px con filete superior, dos columnas por encima de 900 px y una por debajo; la tarjeta entra con `@starting-style` (320 ms, `--ease-out`) y `prefers-reduced-motion` anula el movimiento. Tokens añadidos: `--text-lead`, `--leading-display`, `--field-height-lg`, `--control-height-lg`, `--ring-width`, `--signin-card-width`, `--signin-frame-max`. Del prototipo se toma solo el lenguaje visual: fondo claro con el azul y el verde de marca, título grande con `font-stretch`, campos de 46 px y botón de 48 px. Mensaje de error genérico único (invariante 9).
+- **Entrada (`/ingresar`, HU-003, implementada en B6)**: un único formulario de correo y contraseña, como pide la HU. Implementación: clase `.theme-light` (reutiliza el bloque claro de tokens con `color-scheme: light`), marca arriba, título con «DataTicket» en azul de marca y filete azul/verde, tarjeta de 420 px con filete superior, dos columnas por encima de 900 px y una por debajo; la tarjeta entra con `@starting-style` (320 ms, `--ease-out`) y `prefers-reduced-motion` anula el movimiento. Tokens añadidos: `--text-lead`, `--leading-display`, `--field-height-lg`, `--control-height-lg`, `--ring-width`, `--signin-card-width`, `--signin-frame-max`. Del prototipo se toma solo el lenguaje visual: fondo claro con el azul y el verde de marca, título grande con `font-stretch`, campos de 46 px y botón de 48 px. Mensaje de error genérico único (invariante 9). Desde B7 (2026-10-12): el enlace «¿Olvidaste tu contraseña?» va **debajo** de «Ingresar», centrado y con alto `--touch-target`; el orden de foco es Correo → Contraseña → Ingresar → enlace, y coincide con el DOM y con la vista (WCAG 2.4.3 y 1.3.2), sin `tabIndex` positivos. El botón «Ingresar» mide `--control-height-lg` (48 px).
 - **Avisos**: *toast* centrado abajo (fondo `--ink`) que entra en 180 ms; cajón lateral de 720 px; modal de 470 px.
 
 ## Estilo Apple (skill `apple-design`)
