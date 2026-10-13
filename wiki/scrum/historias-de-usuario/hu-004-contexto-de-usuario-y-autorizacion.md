@@ -273,7 +273,7 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 | DoD-07 | Cumple | B4 no añadió ninguna migración: la única sigue siendo `20261009164647_AddIdentityAndCompanies`, de HU-003; `dotnet ef migrations has-pending-model-changes` → sin cambios (B4, `goal_login.md` §3) | — |
 | DoD-08 | Cumple | [[autenticacion-identity]], [[roles-y-permisos]], [[backend-hexagonal]], [[glosario]] y [[pendientes]], al día el 2026-10-12 | — |
 | DoD-09 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B4 con 0 CRÍTICO / 0 ALTO y sus 2 MEDIO y BAJO 1–6 corregidos con prueba; B6 y B7 con 0 CRÍTICO / 0 ALTO ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
-| DoD-10 | Pendiente | — | Depende de personas: el PR está sin abrir y falta la revisión y aprobación de otra persona del equipo |
+| DoD-10 | Pendiente | — | Depende de personas: la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) por instrucción de la persona líder, sin Pull Request; sigue faltando la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado |
 
 ## Historial
 
@@ -282,6 +282,7 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 - 2026-10-09 — Se ejecuta en el goal de `goal_login.md` (bloques B1, B4, B6).
 - 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
 - 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-09 hechas en B4 y B6, y matriz de evidencia completada. Resultado: 19 `Cumple` y 1 `Pendiente` (DoD-10, revisión del PR por otra persona). Quedan por ratificar con el equipo P-23 (alcance de la política de reserva, claim `display_name` y `403` de `/me`) y el modelo definitivo de equipos (HU-009). Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
+- 2026-10-12 — La rama `feature/auth-login` se fusionó en `main` (`718e0a8`) y se publicó en `origin`, por instrucción de la persona líder y sin Pull Request. La HU **sigue `En validación`**: falta la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado ([[pendientes]] §1).
 
 ## Notas y decisiones
 

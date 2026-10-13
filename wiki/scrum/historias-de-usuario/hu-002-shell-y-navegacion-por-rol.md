@@ -274,10 +274,10 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 | DoD-04 | Cumple | [[adr-0010-enrutador-react-router]] con `status: aceptada` (2026-10-09); en [[pendientes]] §4, «Enrutador del frontend» está tachado | La librería de estado de servidor no se adopta por ahora (misma ADR) y sigue como punto abierto en [[pendientes]] §4 |
 | DoD-05 | Cumple | Verificación manual del 2026-10-12: el shell funciona contra `/api/auth/me` y `/api/auth/antiforgery` reales, con una cuenta interna y una cliente | Falta copiar la verificación a la descripción del PR (B8 de `goal_login.md`) |
 | DoD-06 | Cumple | `docker compose up --build -d backend frontend` → exit 0, `backend` healthy y dos arranques seguidos sanos; `http://localhost:5173/ingresar` muestra la entrada | La consola solo registra los `401` esperados de `/api/auth/me` sin sesión; ningún error de script |
-| DoD-07 | Pendiente | — | Aún no hay PR al que adjuntar las capturas de 360 px y 1280 px. La medición a esos anchos ya está hecha (CHU-10); dos capturas anteriores, a 375 px, salieron con artefactos del panel |
+| DoD-07 | Pendiente | — | No hubo PR al que adjuntar las capturas de 360 px y 1280 px (la rama se fusionó directamente en `main` el 2026-10-12); deben adjuntarse a la revisión posterior. La medición a esos anchos ya está hecha (CHU-10); dos capturas anteriores, a 375 px, salieron con artefactos del panel |
 | DoD-08 | Cumple | [[frontend-mvc]] (estructura de `app`, `core/http` y `shared/ui`; módulos `session` y `auth`), [[estrategia-de-pruebas]] (Testing Library + jsdom) y [[pendientes]] §4 (enrutador), al día el 2026-10-12 | — |
 | DoD-09 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B5, B6 y B7 con 0 CRÍTICO / 0 ALTO, y los 4 MEDIO de B5 corregidos en B6 con prueba ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
-| DoD-10 | Pendiente | — | Depende de personas: el PR está sin abrir y falta la revisión y aprobación de otra persona del equipo |
+| DoD-10 | Pendiente | — | Depende de personas: la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) por instrucción de la persona líder, sin Pull Request; sigue faltando la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado |
 
 ## Historial
 
@@ -286,6 +286,7 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 - 2026-10-09 — ADR-0010 (enrutador) y ADR-0011 (estilo visual) aceptados: T-02 desbloqueada. Se ejecuta en el goal de `goal_login.md` (bloque B5).
 - 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
 - 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-08 hechas en B5–B7 y matriz de evidencia completada. Resultado: 18 `Cumple` y 2 `Pendiente` (DoD-07, capturas de 360 px y 1280 px adjuntas al PR; DoD-10, revisión del PR por otra persona). CHU-10 se midió a 360 px y 1280 px ese mismo día. Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
+- 2026-10-12 — La rama `feature/auth-login` se fusionó en `main` (`718e0a8`) y se publicó en `origin`, por instrucción de la persona líder y sin Pull Request. La HU **sigue `En validación`**: falta la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado ([[pendientes]] §1).
 
 ## Notas y decisiones
 

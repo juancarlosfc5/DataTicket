@@ -16,7 +16,7 @@ Mapa del backlog: 13 épicas y 47 historias de usuario (HU), alineadas con las f
 > [!info] Estado del backlog
 > El 2026-10-09 la persona líder del proyecto (juancarlosfc5) aprobó explícitamente en bloque las 13 épicas y las 47 HU (`status: vigente`). La aprobación no cierra las decisiones abiertas de la sección final: cada HU las sigue ratificando en su tarea T-01 antes de implementar lo que dependa de ellas.
 >
-> **Estado al 2026-10-12:** 3 HU `En validación` y 44 `Aprobada`. [[hu-002-shell-y-navegacion-por-rol|HU-002]], [[hu-003-iniciar-y-cerrar-sesion|HU-003]] y [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] se implementaron en la rama `feature/auth-login` (goal de `goal_login.md`) y tienen su matriz de evidencia completa; les falta el PR revisado por otra persona del equipo (y, en HU-002, las capturas adjuntas al PR) para pasar a `Completada`. Las 13 épicas siguen en `Aprobada`.
+> **Estado al 2026-10-12:** 3 HU `En validación` y 44 `Aprobada`. [[hu-002-shell-y-navegacion-por-rol|HU-002]], [[hu-003-iniciar-y-cerrar-sesion|HU-003]] y [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] se implementaron en la rama `feature/auth-login` (goal de `goal_login.md`) y tienen su matriz de evidencia completa; la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) sin Pull Request, y les falta la revisión de otra persona del equipo (y, en HU-002, las capturas de 360/1280 px) para pasar a `Completada` ([[pendientes]] §1). Las 13 épicas siguen en `Aprobada`.
 
 ## Objetivo
 

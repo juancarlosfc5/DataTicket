@@ -73,7 +73,7 @@ Fase 0 — Base técnica (PRD §13). Prioridad: bloqueante.
 - [[hu-002-shell-y-navegacion-por-rol|HU-002 — Shell de la aplicación y navegación por rol]]
 
 > [!info] Avance al 2026-10-12
-> - HU-002 está `En validación`: implementada en la rama `feature/auth-login` (goal de `goal_login.md`), con 18 de los 20 elementos de su matriz en `Cumple`; le faltan las capturas adjuntas al PR y la revisión del PR por otra persona. HU-001 sigue `Aprobada`.
+> - HU-002 está `En validación`: implementada en la rama `feature/auth-login` (fusionada en `main` el 2026-10-12, `718e0a8`, sin Pull Request) (goal de `goal_login.md`), con 18 de los 20 elementos de su matriz en `Cumple`; le faltan las capturas adjuntas al PR y la revisión del PR por otra persona. HU-001 sigue `Aprobada`.
 > - Lo que esta épica describe como abierto ya está resuelto para HU-002: el enrutador quedó decidido en [[adr-0010-enrutador-react-router]] (aceptada el 2026-10-09) y Testing Library + jsdom se incorporaron ese mismo día ([[estrategia-de-pruebas]]). Sigue abierta la decisión de CI (HU-001).
 > - El tercer criterio de completitud (401 → entrada, 403 → «sin permiso», superficies separadas por rol) tiene evidencia en CHU-04 y CHU-06 de HU-002; no se marca hasta que la HU esté `Completada`.
 

@@ -19,13 +19,13 @@ El detalle de cada épica e historia de usuario (HU) está en la wiki: [tablero 
 Estados Scrum de una HU: `Pendiente de aprobación` → `Aprobada` → `En desarrollo` → `En validación` → `Completada` (o `Bloqueada`).
 Al crear el backlog (2026-10-07), todas las HU quedaron en `Pendiente de aprobación`.
 El 2026-10-09 la persona líder del proyecto aprobó todas las épicas y HU: su estado actual es `Aprobada`.
-Desde el 2026-10-12, HU-002, HU-003 y HU-004 están `En validación`: su matriz de evidencia está completa en cada nota y falta el PR revisado por otra persona del equipo.
+Desde el 2026-10-12, HU-002, HU-003 y HU-004 están `En validación`: su matriz de evidencia está completa en cada nota y la rama `feature/auth-login` se fusionó en `main` el 2026-10-12 (`718e0a8`) sin Pull Request, y falta la revisión de otra persona del equipo.
 
 ## Ejecución automatizada en curso
 
 | Archivo de control | Alcance | Estado |
 |---|---|---|
-| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | En ejecución (rama `feature/auth-login`): B0–B7 hechos y B8 (cierre) en curso; las tres HU `En validación` desde el 2026-10-12 |
+| [goal_login.md](goal_login.md) | HU-002, HU-003, HU-004 (`/goal`) | Ejecutado (B0–B8) y fusionado en `main` el 2026-10-12 (`718e0a8`); las tres HU `En validación` hasta la revisión de otra persona del equipo |
 | [loop_chat.md](loop_chat.md) | EP-009: HU-026 a HU-032 (`/loop`, después del goal) | Listo para ejecutar |
 | [loop_core.md](loop_core.md) | 35 HU restantes de las fases 0 a 4 (`/loop` en paralelo con el chat; se ejecuta en un worktree creado desde `main`) | Listo para ejecutar |
 
