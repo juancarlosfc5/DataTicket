@@ -27,8 +27,9 @@ frontend/src/
 │   ├── models/              tipos, normalización de datos externos, gateways (xxxGateway.ts)
 │   ├── controllers/         hooks useXController: estado + acciones
 │   └── views/               componentes puros (props → JSX)
-├── modules/session/         CurrentUser, navigationFor, canAccessSection, sanitizeReturnUrl, useSessionController,
-│                            AppLayout (+ ShellNavigation, ShellUser), ForbiddenView
+├── modules/session/         CurrentUser, navigationFor, canAccessSection, sanitizeReturnUrl, sessionGateway, sessionState ·
+│                            useSessionController · AppLayout (+ ShellNavigation, ShellUser), ForbiddenView,
+│                            SessionErrorView y vistas marcador (SectionPlaceholderView, PublicPlaceholderView)
 ├── modules/auth/            loginForm, loginState, authGateway · useLoginController, useLogoutController · LoginView, LoginField
 ├── shared/ui/               InternalLink, BrandMark, LoadingView (genéricos, sin router ni core)
 ├── styles/tokens.css        tokens claro/oscuro de [[sistema-de-diseno]]

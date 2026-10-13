@@ -3,7 +3,7 @@ title: Glosario
 type: concepto
 status: vigente
 tags: [dominio, glosario]
-sources: ["PRD.md §5", "PRD.md §6", "PRD.md §7", "PRD.md §8", "PRD.md §9", "PRD.md §10", "PRD.md §12", "backend/src (nombres implementados en B3 y B4 del goal del login)"]
+sources: ["PRD.md §5", "PRD.md §6", "PRD.md §7", "PRD.md §8", "PRD.md §9", "PRD.md §10", "PRD.md §12", "backend/src (nombres implementados en B3, B4 y B7 del goal del login)", "frontend/src/modules/session/models/navigation.ts"]
 aliases: [Lenguaje ubicuo, Diccionario de términos]
 created: 2026-10-07
 updated: 2026-10-12
@@ -33,7 +33,9 @@ Lenguaje ubicuo de DataTicket: cada término de negocio en español con su nombr
 | Perfil del usuario actual | `GetCurrentUserProfile` (caso de uso; puerto `IGetCurrentUserProfile`; resultado `CurrentUserProfile` con `CurrentUserCompany`) | Compone lo que devuelve `GET /api/auth/me` desde `ICurrentUser` y el nombre de la empresa. No recibe parámetros; devuelve `null` si la sesión no tiene un perfil válido | [[autenticacion-identity]] |
 | Directorio de empresas | `ICompanyDirectory` (puerto de salida; `FindNameAsync`; adaptador `CompanyDirectory`) | Consulta de datos básicos de las empresas cliente; hoy solo el nombre por identificador (`null` si no existe) | [[backend-hexagonal]] |
 | Acceso por superficie (frontend) | `SurfaceAccess` (`client`, `internal`, `none`) | `surface` normalizado de `/me`; un valor desconocido es `none` (sin acceso) | [[frontend-mvc]] |
-| Navegación por rol (frontend) | `navigationFor`, `canAccessSection`, `sanitizeReturnUrl`, `signInPathFor` | Funciones puras del módulo `session`: ayuda de navegación, nunca la barrera de seguridad | [[frontend-mvc]] |
+| Navegación por rol (frontend) | `navigationFor`, `canAccessSection`, `homePathFor`, `sanitizeReturnUrl`, `signInPathFor`; secciones identificadas por `SectionId` | Funciones puras del módulo `session`: ayuda de navegación, nunca la barrera de seguridad. Cada ruta protegida declara su `SectionId`; no se deduce de la URL | [[frontend-mvc]] |
+| Sembrador de Development | `DevelopmentSeeder` (con `DevelopmentSeedCatalog` y `DevelopmentSeedOptions`, en `Infrastructure/Seeding`; claves `Seed:Enabled` y `Seed:DefaultPassword`) | Crea al arrancar, solo en Development y solo si está activado, el subconjunto mínimo de `db.sql` §13 (una empresa y cinco cuentas, con los mismos identificadores). Es idempotente y nunca corre en otros entornos. No confundir con `TestDataSeeder`, que es de las pruebas | [[persistencia-postgresql]] |
+| Código de error antiforgery | `antiforgery_invalid` (extensión `code` del ProblemDetails `400`) | Identifica de forma estable que falta el token antiforgery o que no es válido; ante él el SPA pide un token nuevo y reintenta una sola vez | [[autenticacion-identity]] |
 | Error HTTP tipado (frontend) | `HttpError` (`status`, `problem?`) | Error del cliente HTTP; `problem` es el ProblemDetails (RFC 9457) si la respuesta lo trae | [[frontend-mvc]] |
 | Políticas de autorización | `ClientUser`, `InternalUser`, `Administrator`, `ProductManagerOrAdministrator` (constantes de `AuthorizationPolicies`) | Políticas con nombre del backend; la de reserva exige usuario autenticado. Son la primera barrera y ninguna concede contenido de tickets. Matriz por perfil en [[roles-y-permisos]] | [[autenticacion-identity]] |
 | Nombres de rol | `RoleNames` (`ProductManager`, `Administrator`, `Development`, `Production`, `Requester`, `CompanyCoordinator`; grupos `Client`, `Internal`, `All`, `Teams`, `Roles`) | Constantes de dominio con los seis roles de Identity. `Client` agrupa los roles de cliente e `Internal` los internos, incluidos los equipos. `RoleNames.Teams` son los equipos (`Development`, `Production`) y `RoleNames.Roles` los roles propiamente dichos (los otros cuatro): de ahí salen los campos `teams` y `roles` de `/api/auth/me` | [[autenticacion-identity]] |

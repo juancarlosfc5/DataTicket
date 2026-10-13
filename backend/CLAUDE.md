@@ -10,7 +10,7 @@ Reglas mínimas para trabajar en el backend .NET 10. El contrato completo (arqui
 cd backend && dotnet build                 # 0 advertencias: TreatWarningsAsErrors está activo
 cd backend && dotnet test                  # incluye DataTicket.ArchitectureTests
 cd backend && dotnet ef migrations add <Nombre> --project src/DataTicket.Infrastructure --startup-project src/DataTicket.Api --output-dir Persistence/Migrations
-docker build --target test .               # pruebas sin SDK local
+docker build --target test .               # pruebas sin SDK local (excluye Category=RequiresDocker; la batería completa es dotnet test)
 ```
 
 ## Capas (las dependencias apuntan al dominio)

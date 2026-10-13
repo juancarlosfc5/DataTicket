@@ -3,7 +3,7 @@ title: Pendientes, dudas y contradicciones
 type: pendientes
 status: vigente
 tags: [pendientes, decision]
-sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)", "Revisión del código de B3 del goal del login (2026-10-12)", "Revisión del código de B4 del goal del login (2026-10-12)"]
+sources: ["PRD.md §16", "Revisión del PRD durante el setup (2026-10-07)", "Revisión del código de B3 del goal del login (2026-10-12)", "Revisión del código de B4 del goal del login (2026-10-12)", "Validación de HU-002, HU-003 y HU-004 en B8 del goal del login (2026-10-12)"]
 aliases: [Preguntas abiertas, Decisiones pendientes, Contradicciones]
 created: 2026-10-07
 updated: 2026-10-12
@@ -162,6 +162,25 @@ Entorno y datos de desarrollo, detectado en B7 del goal del login (2026-10-12):
 - [ ] **Sembrador: arranques concurrentes e idempotencia solo por id.** Dos backends que arranquen a la vez sobre una base vacía harían caer al segundo con `23505` (sin duplicados: la transacción revierte y el reinicio omite lo existente); y una cuenta o empresa con el mismo correo o nombre pero otro id impediría arrancar en Development. Tenerlo en cuenta al ampliar el sembrador en [[hu-010-datos-sinteticos-de-desarrollo]] (p. ej. `pg_advisory_xact_lock`). Además, ninguna prueba fija las fechas `created_at` de `db.sql` §13.
 - [ ] **`/ingresar` con el backend caído**: si falla el `/me` inicial se muestra «Algo salió mal / Reintentar» en vez del formulario; es razonable, pero solo tiene prueba el fallo tras el login → [[frontend-mvc]].
 - [ ] **Ratificar las propuestas de B4 en uso** (P-23 de §3b y la contradicción del `403` de `/me` en §1): alcance de la política de reserva (`404` en rutas inexistentes), nombre del claim `display_name` y respuesta de `/me` con perfil no válido → [[autenticacion-identity]].
+
+Validación de HU-002, HU-003 y HU-004, detectado en B8 del goal del login (2026-10-12). Ninguno impide el estado `En validación`; los tres primeros condicionan pasar a `Completada`:
+
+- [ ] **PR revisado por otra persona del equipo** (DoD-10 de HU-002, DoD-11 de HU-003 y DoD-10 de HU-004): el PR de `feature/auth-login` está sin abrir → [[flujo-de-trabajo-github]].
+- [ ] **Capturas de 360 px y 1280 px adjuntas al PR** (DoD-07 de [[hu-002-shell-y-navegacion-por-rol]]): la medición ya está hecha; faltan las capturas en el PR.
+- [ ] **Ratificar P-18, P-22 y P-23** con el equipo: están en uso y las matrices de las HU las citan como *propuesta*. Mientras tanto [[autenticacion-identity]] conserva `status: propuesta`, aunque casi todo su contenido está implementado; decidir si pasa a `vigente` al ratificarlas.
+- [ ] **Anchos de la revisión responsiva sin unificar.** CHU-10 de HU-002 pide 360 px y 1280 px; [[sistema-de-diseno]] fija 375, 768 y 1440 px. Se midió a 360, 375, 1280 y 1440 px (a 360 y 1280 px, solo el shell interno); 768 px no se midió. Elegir un único juego de anchos para las HU siguientes.
+- [ ] **Redacción de CHU-04 de [[hu-004-contexto-de-usuario-y-autorizacion]]**: pide `401` «con una cookie de una sesión cerrada». Se cumple en el navegador que cerró la sesión (la cookie expira), pero una copia guardada antes del logout sigue valiendo hasta su expiración o la revalidación del sello: es el riesgo aceptado de P-22. Conviene que el criterio lo diga para que no se lea como revocación en servidor.
+- [ ] **Rojo de TDD sin registrar en el frontend.** `goal_login.md` y [[log]] guardan el rojo de B3 (a posteriori) y de B4, pero no el de B5 ni el de B6: el «escritas primero» de DoD-02 de HU-002 y DoD-03 de HU-003 se apoya en la regla del goal. Para el loop del chat, pegar la salida en rojo en el archivo de control → [[estrategia-de-pruebas]].
+
+Hallazgos BAJO de la revisión final de la rama `feature/auth-login` (`quality-reviewer`, 2026-10-12; 0 CRÍTICO y 0 ALTO). Ninguno bloquea el PR:
+
+- [ ] **Contraseña sintética escrita en los criterios de [[hu-003-iniciar-y-cerrar-sesion]] y [[hu-005-invitar-y-activar-cuentas]].** Viene de `main`; desde B7 es la de las cuentas sembradas en local. La regla del goal pide no escribir credenciales en la wiki: decidir si se sustituye por una referencia a `Seed:DefaultPassword` / `db.sql` §13 (son criterios ya aprobados, decide la persona líder).
+- [ ] **Identidad obsoleta entre pestañas.** Si en otra pestaña se cierra sesión y entra otra cuenta, la siguiente mutación de la primera pestaña se ejecuta con la cuenta nueva mientras la interfaz muestra la anterior. Hoy solo existen login y logout; antes de la primera HU con mutaciones de negocio, revalidar `/me` al recuperar el foco o tras un `antiforgery_invalid` y abortar si cambió el usuario → [[frontend-mvc]].
+- [ ] **Error de `/me` sin salida.** `SessionErrorView` solo ofrece «Reintentar»; con un `403` (perfil que se vuelve no válido) convendría ofrecer también «Cerrar sesión» → [[frontend-mvc]].
+- [ ] **Validación local del correo más laxa que la del servidor** (`ana@empresa` pasa en el SPA y el backend exige un punto en el dominio): produce un `400` evitable y dos textos para el mismo error. Hoy es deliberado ([[autenticacion-identity]]); decidir si se alinea.
+- [ ] **Títulos en inglés de los ProblemDetails del framework** (`404 "Not Found"`, `400 "Bad Request"`): `userMessageFor` mostraría ese título si un 4xx así llegara a una pantalla → [[autenticacion-identity]].
+- [ ] **Limpieza menor del frontend**: `LoginView` tiene una función de 99 líneas (casi todo JSX; extraer la cabecera o la tarjeta) y `AppLayout.test.tsx` imprime «Not implemented: navigation to another Document» (ruido de jsdom; la prueba pasa).
+- [ ] **Decidir cómo obtiene `ICurrentUser` el hub de SignalR** antes de `loop_chat.md`: el adaptador actual depende de `IHttpContextAccessor`, que no es fiable dentro de las invocaciones del hub, y el principal queda fijado al conectar → [[tiempo-real-signalr]].
 
 ## 5. Equipo y colaboración
 

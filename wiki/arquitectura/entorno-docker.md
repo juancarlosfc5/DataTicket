@@ -81,6 +81,8 @@ En Development el backend **aplica las migraciones de EF Core al arrancar**, ant
 | `backend/Dockerfile` | `restore` → `dev` · `test` · `build` → `runtime` (`aspnet:10.0`, usuario `app` no root) | `docker build --target test ./backend` ejecuta las pruebas que no necesitan Docker (filtra `Category=RequiresDocker`); las de integración con Testcontainers corren con `cd backend && dotnet test` en el anfitrión |
 | `frontend/Dockerfile` | `deps` → `dev` · `build` → `runtime` (`nginxinc/nginx-unprivileged:1.30-alpine`) | nginx sirve el SPA y hace proxy de `/api` y `/hubs` (WebSocket) a `${BACKEND_UPSTREAM}` |
 
+La imagen `runtime` del backend **no incluye `appsettings.Development.json`** (desde B7, 2026-10-12): `DataTicket.Api.csproj` lo excluye de la publicación (`CopyToPublishDirectory="Never"`), porque activa la migración al arrancar y el sembrador de Development y trae su contraseña sintética. `dotnet publish` solo emite `appsettings.json`.
+
 Al crear un proyecto .NET nuevo (también de `tests/`), agrega su `.csproj` a la etapa `restore`: desde 2026-10-09 esa etapa restaura toda la solución `DataTicket.slnx`.
 
 Las pruebas de integración crean contenedores efímeros de Testcontainers (`postgres:18.6` y `testcontainers/ryuk:0.14.0`) que se eliminan solos; nunca usan el servicio `db` de Compose.

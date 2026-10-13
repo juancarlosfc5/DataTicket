@@ -15,8 +15,9 @@ El login usa **ASP.NET Core Identity** sobre PostgreSQL (decisión del equipo, 2
 
 - **Implementado en el backend (B3, HU-003):** antiforgery, login, logout, cookie de sesión, bloqueo por intentos fallidos, revalidación del sello de seguridad y respuestas `401`/`403` sin `Location`. Detalle en *Implementación en el backend (B3)*.
 - **Implementado en el backend (B4, HU-004):** `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claims, las políticas con nombre y la política de reserva (*fallback*) con su lista exacta de endpoints públicos. Detalle en *Implementación en el backend (B4)*; tres puntos quedan por ratificar en [[pendientes]].
+- **Integrado y verificado en el stack (B7, 2026-10-12):** sembrador mínimo solo de Development y flujo completo comprobado con `curl` y en el navegador contra Compose ([[entorno-docker]]). HU-002, HU-003 y HU-004 están `En validación` desde ese día.
 
-La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13 ([[persistencia-postgresql]]).
+La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[sistema-de-diseno]]. Los datos semilla de referencia (cuentas `Active`, `Invited` y `Deactivated` con contraseña sintética) están en `db.sql` §13; el sembrador de Development crea un subconjunto mínimo de ellos ([[persistencia-postgresql]]).
 
 ## Requisitos del PRD que condicionan el diseño
 
@@ -253,6 +254,8 @@ Un `401` de cualquier petición a `/api` lleva a `/ingresar?returnUrl=<ruta actu
 - La validación local del correo (una `@`, sin espacios, ≤ 256) es deliberadamente más laxa que la del servidor.
 - `returnUrl` nunca apunta a `/ingresar` ni a `/sin-permiso`; tras un cierre de sesión explícito no se recuerda la ruta anterior.
 - La entrada se muestra siempre en tema claro ([[sistema-de-diseno]]).
+- Desde B7 (2026-10-12): el enlace «¿Olvidaste tu contraseña?» va debajo de «Ingresar» (orden de foco Correo → Contraseña → Ingresar → enlace) y el formulario declara `method="post"`, para que la contraseña nunca pueda acabar en la URL si fallara el JavaScript.
+- El cierre de sesión vive en `useLogoutController`, del módulo `auth` ([[frontend-mvc]]): con `401` descarta igualmente la sesión local; con otro error la conserva y avisa.
 
 ### Otros endpoints previstos (HU posteriores)
 
