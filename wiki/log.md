@@ -416,3 +416,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Contradicción: cerrar sin revisión de otra persona se aparta de `AGENTS.md` §8 y de la regla de cierre de `scrum-spec-orchestrator`; se aplicó la instrucción explícita de la persona usuaria (`AGENTS.md` §3), anotado en [[pendientes]] §1.
 - Wiki: [[pendientes]], [[autenticacion-identity]], [[hu-002-shell-y-navegacion-por-rol]], [[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]], [[tablero-scrum]], [[ep-001-fundaciones-tecnicas]], [[ep-002-identidad-y-acceso]], [[tiempo-real-signalr]], [[vision-general]], [[index]]; fuera de la bóveda, `PLAN-DE-TRABAJO.md` y `goal_login.md` §4.
 - Pendiente: goal del login cerrado; siguen `loop_core.md` y `loop_chat.md`. Quedan en el backlog, sin bloquear: endurecimiento del login (limitador, cifrado de claves, `UseForwardedHeaders`, empresas inactivas en HU-007), contraseña sintética escrita en los criterios de HU-003 y HU-005, alineación de `db.sql` §12 con los IDs fijos de los roles y los BAJO de la revisión final.
+
+## [2026-10-14] setup | Loop del core — P0 arranque
+- Autor: LauraVargas22
+- Cambios: worktree `DataGlobal2-core` en `feature/core`; stack aislado `dataticket-core` (puertos 55432/18080/15173/18025/11025/11000) arriba; línea base verde (oxlint, vitest 152, build, `dotnet test` 169 en contenedor SDK 10 porque la máquina solo tiene SDK 9).
+- Wiki: [[entorno-docker]]
+- Pendiente: instalar SDK .NET 10 local o seguir con `dt-core-tests-check`.

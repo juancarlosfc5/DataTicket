@@ -26,7 +26,7 @@ git worktree add "../DataGlobal2-core" -b feature/core main
 4. Pega este comando tal cual (sin intervalo: Claude decide cuándo hacer la siguiente iteración):
 
 ```text
-/loop Ejecuta UNA iteración de loop_core.md siguiendo al pie de la letra su sección «2. Protocolo de cada iteración»: relee el archivo, sincroniza la rama, toma la primera HU disponible sin marcar, constrúyela y verifícala, márcala, regístrala, haz su commit y decide si continuar, esperar o detener el loop.
+/loop Ejecuta DOS ITERACIONES de loop_core.md siguiendo al pie de la letra su sección «2. Protocolo de cada iteración»: relee el archivo, sincroniza la rama, toma la primera HU disponible sin marcar, constrúyela y verifícala, márcala, regístrala, haz su commit y decide si continuar, esperar o detener el loop.
 ```
 
 5. **Seguimiento:** este archivo (casillas, hitos y «5. Registro de iteraciones»), `git log --oneline feature/core` y `PLAN-DE-TRABAJO.md`.
@@ -95,10 +95,10 @@ git worktree add "../DataGlobal2-core" -b feature/core main
 ## 4. Lista de control
 
 ### P0 — Arranque
-- [ ] Sesión en el worktree `DataGlobal2-core`, rama `feature/core` creada desde `main` con el login ya fusionado · Evidencia:
-- [ ] `.env.core` creado y stack aislado `dataticket-core` arriba (`docker compose -p dataticket-core ps`) · Evidencia:
-- [ ] `npm --prefix frontend ci` en el worktree; línea base en verde (`dotnet test`, `lint`, `test`, `build`) · Evidencia:
-- [ ] Primer commit de `feature/core` con este archivo marcado (P0) · Evidencia:
+- [x] Sesión en el worktree `DataGlobal2-core`, rama `feature/core` creada desde `main` con el login ya fusionado · Evidencia: 2026-10-14, worktree `D:\Documentos\Data Global\DataTicket\DataGlobal2-core` sobre `feature/core` (=`main` 2f070b2, `goal_login.md` sin `[ ]`); la carpeta principal volvió a `main`
+- [x] `.env.core` creado y stack aislado `dataticket-core` arriba (`docker compose -p dataticket-core ps`) · Evidencia: 5 servicios Up, db y mailpit healthy; `curl :18080/api/health` → Healthy
+- [x] `npm --prefix frontend ci` en el worktree; línea base en verde (`dotnet test`, `lint`, `test`, `build`) · Evidencia: oxlint 0 hallazgos; vitest 152/152; build OK; `dotnet test` 169/169 (en contenedor desechable `dt-core-tests-check` con SDK 10: la máquina solo tiene SDK 9)
+- [x] Primer commit de `feature/core` con este archivo marcado (P0) · Evidencia: commit `chore(core): P0 arranque del loop del core`
 
 ### Etapa A — Fundaciones (Fase 0 restante + auditoría)
 - [ ] **HU-001** Integración continua en cada PR (GitHub Actions: backend con PostgreSQL, lint/test/build del frontend) · Contrato · Implementación · Workflow validado localmente (`act` o revisión de sintaxis) · Evidencia:
@@ -169,3 +169,4 @@ Una fila por iteración (también las de espera). La añade Claude; no se borran
 | Fecha | Iteración | HU / hito | Resultado | Commit | Nota |
 |---|---|---|---|---|---|
 | — | 0 | — | — | — | Loop creado el 2026-10-09 en `main`, sin ejecutar |
+| 2026-10-14 | 1 | P0 | Hecho | chore(core): P0 | Worktree creado, Docker arrancado, línea base verde; `dotnet test` vía contenedor SDK 10 |
