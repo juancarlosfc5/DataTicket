@@ -1,12 +1,12 @@
 ---
 title: Autenticación con ASP.NET Core Identity
 type: arquitectura
-status: propuesta
+status: vigente
 tags: [arquitectura/backend, seguridad, identity]
 sources: ["PRD.md §5, §12", "Decisión de la persona líder (2026-10-07): usar Identity para el login", "backend/src/DataTicket.Api/Auth", "backend/src/DataTicket.Api/Endpoints/Auth", "backend/src/DataTicket.Api/Health", "backend/src/DataTicket.Application/Authentication", "backend/src/DataTicket.Application/Ports", "backend/src/DataTicket.Infrastructure/Identity", "backend/src/DataTicket.Infrastructure/Persistence/CompanyDirectory.cs", "backend/tests/DataTicket.IntegrationTests/Auth", "backend/tests/DataTicket.IntegrationTests/Conventions"]
 aliases: [Identity, Login, Autenticación]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Autenticación con ASP.NET Core Identity
@@ -40,7 +40,7 @@ La vista `/ingresar` es la de HU-003 (un único formulario), con el estilo de [[
 
 ## Contrato ratificado (T-01 de HU-002, HU-003 y HU-004 — 2026-10-09)
 
-Fijado en el bloque B1 de `goal_login.md`. Los valores marcados *propuesta* son los valores por defecto del goal: se aplican ya y quedan por ratificar con el equipo en [[pendientes]] §3b (P-22).
+Fijado en el bloque B1 de `goal_login.md`. Los valores marcados *propuesta* son los valores por defecto del goal: la persona líder los ratificó el 2026-10-14 (P-18, P-22 y P-23 en [[pendientes]] §3b), así que quedan vigentes.
 
 ### Parámetros de la sesión
 
@@ -86,7 +86,7 @@ Ninguna política concede contenido de tickets por ser `Administrator` (PRD §5 
 | `GET /api/auth/antiforgery` | Público | `200` `{ "headerName": "X-XSRF-TOKEN", "token": "…" }` + cookie `dataticket.xsrf`; `Cache-Control: no-store` |
 | `POST /api/auth/login` | Público + antiforgery | `204` + `Set-Cookie: dataticket.auth`; `400` validación (`errors.email`, `errors.password`); `400` antiforgery (sin `errors`); `401` genérico «Correo o contraseña incorrectos.» (correo inexistente, clave incorrecta, `Invited`, `Deactivated`, bloqueada o perfil inválido; JSON idéntico salvo `traceId`) |
 | `POST /api/auth/logout` | Autenticado + antiforgery | `204` + `Set-Cookie` que expira `dataticket.auth`; `401` sin sesión; `400` antiforgery |
-| `GET /api/auth/me` | Autenticado | `200` (JSON abajo); `401` sin sesión. Ignora query y cabeceras |
+| `GET /api/auth/me` | Autenticado | `200` (JSON abajo); `401` sin sesión; `403` si la sesión no tiene un perfil válido (ratificado el 2026-10-14, P-23 c). Ignora query y cabeceras |
 
 Petición de login: `{ "email": string (requerido, formato de correo, ≤ 256), "password": string (requerida) }`.
 
@@ -170,6 +170,7 @@ B4 implementa `GET /api/auth/me`, el puerto `ICurrentUser`, la fábrica de claim
 
 > [!warning] Contradicción — el contrato de `/me` no lista el `403`
 > La tabla *Endpoints* del contrato T-01 (y la HU-004) solo prevén `200` y `401` para `GET /api/auth/me`. El código responde además `403` cuando la sesión no tiene perfil válido. Es coherente con «falla cerrado» (CHU-07 de HU-004), pero no está ratificado, y el SPA no lo distingue: `fetchCurrentUser` solo trata el `401` como «sin sesión», así que un `403` de `/me` acaba hoy en el estado de error de carga y no en la vista «sin permiso». No se ha cambiado ni el contrato ni el código → [[pendientes]] §1.
+> **Resuelto el 2026-10-14:** la persona líder ratifica el `403`; la tabla *Endpoints* ya lo incluye.
 
 #### Claims de la cookie y `DataTicketClaimsPrincipalFactory`
 

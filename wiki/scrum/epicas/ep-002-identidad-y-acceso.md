@@ -11,7 +11,7 @@ criterios_prd: ["CA-01"]
 historias: ["[[hu-003-iniciar-y-cerrar-sesion]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]"]
 dependencias: ["[[ep-001-fundaciones-tecnicas]]"]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # EP-002 — Identidad y acceso
@@ -82,7 +82,7 @@ Fase 0 — Base técnica (PRD §13). Prioridad: bloqueante.
 - [[hu-006-restablecer-contrasena|HU-006 — Restablecer contraseña sin enumeración]]
 
 > [!info] Avance al 2026-10-12
-> - HU-003 y HU-004 están `En validación`: implementadas en la rama `feature/auth-login` (fusionada en `main` el 2026-10-12, `718e0a8`, sin Pull Request) (goal de `goal_login.md`), con 23 de 24 y 19 de 20 elementos de su matriz en `Cumple`; a cada una le falta la revisión del PR por otra persona. HU-005 y HU-006 siguen `Aprobada`.
+> - HU-003 y HU-004 están `Completada` (2026-10-14): implementadas en la rama `feature/auth-login`, fusionada en `main` el 2026-10-12 (`718e0a8`); la persona líder dispensó la revisión por otra persona ([[hu-003-iniciar-y-cerrar-sesion]], [[hu-004-contexto-de-usuario-y-autorizacion]], [[pendientes]] §1).
 > - [[adr-0004-autenticacion-cookie-mismo-origen]] quedó **aceptada** el 2026-10-09: la dependencia y el riesgo «ADR-0004 sin aceptar» de esta épica ya no aplican.
 > - Roles frente a equipos: en uso la opción provisional (equipos = roles de Identity `Development` y `Production`, expuestos en `teams`); el modelo definitivo sigue abierto para HU-009 ([[pendientes]] §1).
 > - El intervalo de revalidación del sello (5 min) y el resto de valores de la sesión están en uso como *propuesta* (P-18, P-22 y P-23 de [[pendientes]]), por ratificar con el equipo.

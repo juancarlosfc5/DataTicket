@@ -2,7 +2,7 @@
 title: "HU-003 — Iniciar y cerrar sesión"
 type: historia-de-usuario
 status: vigente
-estado: En validación
+estado: Completada
 tags: [scrum, scrum/historia, seguridad, identity, arquitectura/backend, arquitectura/frontend]
 sources: ["PRD.md §5", "PRD.md §12", "PRD.md §13"]
 aliases: ["HU-003", "Iniciar y cerrar sesión"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 0"
 dependencias: ["[[hu-002-shell-y-navegacion-por-rol]]"]
 relacionadas: ["[[hu-004-contexto-de-usuario-y-autorizacion]]", "[[hu-005-invitar-y-activar-cuentas]]", "[[hu-006-restablecer-contrasena]]", "[[hu-008-administrar-usuarios-cliente]]", "[[hu-001-integracion-continua]]"]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # HU-003 — Iniciar y cerrar sesión
@@ -243,7 +243,7 @@ Comportamiento común de la API (todas las rutas `/api/**`): sin sesión → `40
 - [x] **DoD-08** — [[adr-0004-autenticacion-cookie-mismo-origen]] en estado `aceptada` (o reemplazado) antes de fusionar, y tachado en [[pendientes]] §4.
 - [x] **DoD-09** — Wiki actualizada vía Notas para la wiki: [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]], [[glosario]] (estado de la cuenta).
 - [x] **DoD-10** — Revisión de `quality-reviewer` sin hallazgos CRÍTICO/ALTO abiertos (enumeración, cookies, antiforgery, `MapIdentityApi`).
-- [ ] **DoD-11** — PR revisado y aprobado por otra persona del equipo; trazabilidad de HU y épica actualizada.
+- [x] **DoD-11** — PR revisado y aprobado por otra persona del equipo; trazabilidad de HU y épica actualizada. *(dispensado por la persona líder el 2026-10-14)*
 
 ## Evidencia de validación
 
@@ -287,7 +287,7 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 | DoD-08 | Cumple | [[adr-0004-autenticacion-cookie-mismo-origen]] con `status: aceptada` (2026-10-09); tachado en [[pendientes]] §4 | — |
 | DoD-09 | Cumple | [[autenticacion-identity]], [[persistencia-postgresql]], [[backend-hexagonal]], [[estrategia-de-pruebas]] y [[glosario]] (`AccountStatus`), al día el 2026-10-12 | [[autenticacion-identity]] conserva `status: propuesta` mientras P-22 y P-23 sigan por ratificar |
 | DoD-10 | Cumple | Revisión final de `quality-reviewer` sobre la rama `feature/auth-login` (B8, 2026-10-12): 0 CRÍTICO y 0 ALTO abiertos. Antes, por bloque: B2, B3, B6 y B7 con 0 CRÍTICO / 0 ALTO, y los 4 MEDIO de B3 corregidos con prueba ([[log]]) | Veredicto final recibido el 2026-10-12. Sus 2 MEDIO eran de documentación (tablero y épicas sin actualizar, y estas matrices) y se atendieron en B8; los 8 BAJO quedaron registrados |
-| DoD-11 | Pendiente | — | Depende de personas: la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) por instrucción de la persona líder, sin Pull Request; sigue faltando la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado |
+| DoD-11 | Dispensado | Decisión de la persona líder del 2026-10-14 | Depende de personas: la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) por instrucción de la persona líder, sin Pull Request; sigue faltando la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado |
 
 ## Historial
 
@@ -297,6 +297,7 @@ Validación del 2026-10-12 sobre la rama `feature/auth-login` (bloques B0–B7 d
 - 2026-10-09 — Estado `En desarrollo`: inicia el `/goal` de `goal_login.md` en la rama `feature/auth-login` (bloque B0).
 - 2026-10-12 — Estado `En validación` (bloque B8 de `goal_login.md`): tareas T-02 a T-10 hechas en B2, B3, B6 y B7, y matriz de evidencia completada. Resultado: 23 `Cumple` y 1 `Pendiente` (DoD-11, revisión del PR por otra persona). Quedan por ratificar con el equipo los valores por defecto P-18 y P-22. Revisión final de `quality-reviewer` sobre la rama: 0 CRÍTICO y 0 ALTO abiertos.
 - 2026-10-12 — La rama `feature/auth-login` se fusionó en `main` (`718e0a8`) y se publicó en `origin`, por instrucción de la persona líder y sin Pull Request. La HU **sigue `En validación`**: falta la revisión y aprobación de otra persona del equipo, ahora sobre lo ya fusionado ([[pendientes]] §1).
+- 2026-10-14 — Estado `Completada` por decisión de la persona líder: dispensa la revisión por otra persona del equipo (filas `Dispensado` en la matriz) y ratifica P-18, P-22 y P-23 ([[pendientes]] §1).
 
 ## Notas y decisiones
 

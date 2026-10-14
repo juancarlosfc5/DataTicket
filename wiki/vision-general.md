@@ -6,7 +6,7 @@ tags: [vision, producto, arquitectura]
 sources: ["PRD.md §1–§4, §13, §17"]
 aliases: [DataTicket, Overview, Resumen del proyecto]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # DataTicket — visión general
@@ -38,7 +38,7 @@ Vista de conjunto en [[arquitectura-general]]; versiones en [[stack-y-versiones]
 
 ## Dónde estamos (2026-10-12)
 
-- **Fase 0 — base técnica** (bloqueante): esqueleto creado y verificado (proyectos, pruebas de arquitectura, Compose completo). Al 2026-10-12, el shell y la navegación por rol (HU-002), el inicio y cierre de sesión con Identity (HU-003) y el contexto de usuario con políticas y `/api/auth/me` (HU-004) están **en validación**, ya fusionados en `main` (`718e0a8`, desde la rama `feature/auth-login`) ([[tablero-scrum]], [[autenticacion-identity]]). Faltan invitación y activación de cuentas, restablecimiento de contraseña, administración de empresas y usuarios, y el resto del Sprint 0.
+- **Fase 0 — base técnica** (bloqueante): esqueleto creado y verificado (proyectos, pruebas de arquitectura, Compose completo). Al 2026-10-12, el shell y la navegación por rol (HU-002), el inicio y cierre de sesión con Identity (HU-003) y el contexto de usuario con políticas y `/api/auth/me` (HU-004) están **completados** (2026-10-14) y fusionados en `main` (`718e0a8`, desde la rama `feature/auth-login`) ([[tablero-scrum]], [[autenticacion-identity]]). Faltan invitación y activación de cuentas, restablecimiento de contraseña, administración de empresas y usuarios, y el resto del Sprint 0.
 - Fases siguientes y alcance en [[fases-y-alcance]]; checklist del MVP en [[criterios-de-aceptacion]].
 - Preguntas abiertas en [[pendientes]].
 

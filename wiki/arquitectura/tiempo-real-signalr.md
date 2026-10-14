@@ -6,7 +6,7 @@ tags: [arquitectura/backend, arquitectura/frontend, signalr, producto/chat]
 sources: ["PRD.md §7", "Decisión de la persona líder (2026-10-07): usar SignalR para el chat"]
 aliases: [SignalR, Hub de tickets, Diseño técnico del chat]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-14
 ---
 
 # Tiempo real con SignalR
@@ -59,6 +59,15 @@ sequenceDiagram
 - **Persistir antes de publicar** (PRD §7.2).
 - **Revocación**: al retirar un participante se desconectan o desautorizan sus conexiones activas (registro conexión → usuario) y no puede reconectarse (CA-06).
 - Notificaciones dentro de la app por mensaje nuevo; **sin correo por mensaje** ([[notificaciones]]).
+
+## Usuario actual en el hub
+
+> [!info] Decisión técnica (2026-10-14, orquestador; sin impacto de producto)
+> El adaptador HTTP de `ICurrentUser` (`HttpContextCurrentUser`, B4) lee la petición HTTP en curso; dentro de un hub de SignalR esa petición no existe en cada invocación, y la identidad de la conexión se fija una sola vez, al conectar. Por eso el hub `/hubs/tickets` (`loop_chat.md`):
+> - obtiene el usuario de `Context.User` (la misma cookie `dataticket.auth`, validada al conectar) mediante un adaptador de `ICurrentUser` propio del hub, en `Api`, que reutiliza la lectura de claims de `PrincipalProfile`;
+> - **revalida en cada operación** (`JoinTicket`, enviar, marcar leído…) contra la base que la cuenta sigue `Active` y que es participante vigente del ticket (invariante 3 de `AGENTS.md` §7): nunca confía solo en lo capturado al conectar;
+> - si la cuenta se desactiva o deja de ser participante, la operación falla cerrada y la conexión sale del grupo con `TicketAccessRevoked` (P-13).
+> Para la persona usuaria no cambia nada visible; es cómo el chat sabe, en cada mensaje, quién escribe y si todavía puede hacerlo.
 
 ## Red y despliegue
 

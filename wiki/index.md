@@ -6,7 +6,7 @@ tags: [indice]
 sources: []
 aliases: [Índice, Inicio, Home]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Índice de la wiki de DataTicket
@@ -74,7 +74,7 @@ Catálogo de todas las páginas. **Agentes: leer primero.** Personas: empezar po
 
 ## Scrum
 
-- [[tablero-scrum]] — Backlog: 13 épicas y 47 HU por fase (HU-002, HU-003 y HU-004 `En validación` desde el 2026-10-12), sprints sugeridos, cobertura de los CA y decisiones que lo condicionan. Seguimiento en `PLAN-DE-TRABAJO.md` (raíz).
+- [[tablero-scrum]] — Backlog: 13 épicas y 47 HU por fase (HU-002, HU-003 y HU-004 `Completada` el 2026-10-14), sprints sugeridos, cobertura de los CA y decisiones que lo condicionan. Seguimiento en `PLAN-DE-TRABAJO.md` (raíz).
 - [[ep-001-fundaciones-tecnicas]] — EP-001 (Fase 0): CI en cada PR y shell de la app con navegación por rol.
 - [[ep-002-identidad-y-acceso]] — EP-002 (Fase 0): login con cookie, autorización por rol, invitación y restablecimiento.
 - [[ep-003-empresas-usuarios-y-equipos]] — EP-003 (Fase 0): empresas cliente, usuarios cliente e internos, equipos y datos sintéticos.

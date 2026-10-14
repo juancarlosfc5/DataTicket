@@ -6,7 +6,7 @@ tags: [scrum, proceso]
 sources: ["PRD.md §13", "PRD.md §14"]
 aliases: [Tablero Scrum, Backlog, Product Backlog]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Tablero Scrum de DataTicket
@@ -16,7 +16,7 @@ Mapa del backlog: 13 épicas y 47 historias de usuario (HU), alineadas con las f
 > [!info] Estado del backlog
 > El 2026-10-09 la persona líder del proyecto (juancarlosfc5) aprobó explícitamente en bloque las 13 épicas y las 47 HU (`status: vigente`). La aprobación no cierra las decisiones abiertas de la sección final: cada HU las sigue ratificando en su tarea T-01 antes de implementar lo que dependa de ellas.
 >
-> **Estado al 2026-10-12:** 3 HU `En validación` y 44 `Aprobada`. [[hu-002-shell-y-navegacion-por-rol|HU-002]], [[hu-003-iniciar-y-cerrar-sesion|HU-003]] y [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] se implementaron en la rama `feature/auth-login` (goal de `goal_login.md`) y tienen su matriz de evidencia completa; la rama se fusionó en `main` el 2026-10-12 (`718e0a8`) sin Pull Request, y les falta la revisión de otra persona del equipo (y, en HU-002, las capturas de 360/1280 px) para pasar a `Completada` ([[pendientes]] §1). Las 13 épicas siguen en `Aprobada`.
+> **Estado al 2026-10-14:** 3 HU `Completada` y 44 `Aprobada`. [[hu-002-shell-y-navegacion-por-rol|HU-002]], [[hu-003-iniciar-y-cerrar-sesion|HU-003]] y [[hu-004-contexto-de-usuario-y-autorizacion|HU-004]] se implementaron en la rama `feature/auth-login` (goal de `goal_login.md`) y tienen su matriz de evidencia completa; se fusionaron en `main` el 2026-10-12 (`718e0a8`) y la persona líder las dio por completadas el 2026-10-14, dispensando la revisión por otra persona y las capturas adjuntas al PR ([[pendientes]] §1). Las 13 épicas siguen en `Aprobada`.
 
 ## Objetivo
 
@@ -50,7 +50,7 @@ Los sprints son incrementos ordenados por dependencias. No estiman duración ni 
 
 | Sprint | Fase | HU | Incremento |
 |---|---|---|---|
-| 0 | 0 | [[hu-001-integracion-continua\|HU-001]], [[hu-002-shell-y-navegacion-por-rol\|HU-002]], [[hu-003-iniciar-y-cerrar-sesion\|HU-003]], [[hu-004-contexto-de-usuario-y-autorizacion\|HU-004]] | CI, shell, login y autorización base (HU-002, HU-003 y HU-004 `En validación` desde el 2026-10-12; HU-001 `Aprobada`) |
+| 0 | 0 | [[hu-001-integracion-continua\|HU-001]], [[hu-002-shell-y-navegacion-por-rol\|HU-002]], [[hu-003-iniciar-y-cerrar-sesion\|HU-003]], [[hu-004-contexto-de-usuario-y-autorizacion\|HU-004]] | CI, shell, login y autorización base (HU-002, HU-003 y HU-004 `Completada` el 2026-10-14; HU-001 `Aprobada`) |
 | 1 | 0 (+ HU-011 de la Fase 1) | [[hu-005-invitar-y-activar-cuentas\|HU-005]], [[hu-006-restablecer-contrasena\|HU-006]], [[hu-007-administrar-empresas-cliente\|HU-007]], [[hu-008-administrar-usuarios-cliente\|HU-008]], [[hu-009-administrar-usuarios-internos-y-equipos\|HU-009]], [[hu-010-datos-sinteticos-de-desarrollo\|HU-010]], [[hu-011-registrar-eventos-auditables\|HU-011]] | Cuentas, empresas, equipos, datos sintéticos y puerto de auditoría |
 | 2 | 1 | [[hu-013-radicar-ticket\|HU-013]], [[hu-014-adjuntos-en-radicacion\|HU-014]], [[hu-016-cola-global-de-triage\|HU-016]] | Radicar con adjuntos y verlo en la cola de la PM |
 | 3 | 1 | [[hu-015-ajustar-prioridad-manualmente\|HU-015]], [[hu-017-cola-de-cobertura-y-tomar-ticket\|HU-017]], [[hu-018-asignar-y-agregar-participantes\|HU-018]], [[hu-019-reasignar-y-retirar-participantes\|HU-019]], [[hu-020-detalle-interno-del-ticket\|HU-020]] | Triage completo y detalle interno |
@@ -91,7 +91,7 @@ Las HU no resuelven estas decisiones; las registran como dependencias. Detalle e
 |---|---|
 | CI en GitHub Actions | HU-001 |
 | Roles frente a equipos (`Development`/`Production` frente a `Team.*`): en uso la opción provisional de `db.sql` (equipos = roles de Identity, expuestos en `teams`); el modelo definitivo sigue abierto | HU-009 (HU-004 aplica la provisional) |
-| Ratificar los valores por defecto de la sesión (P-18, P-22) y las propuestas de autorización en uso (P-23) | HU-002, HU-003, HU-004 |
+| ~~Ratificar los valores por defecto de la sesión (P-18, P-22) y las propuestas de autorización en uso (P-23)~~ Ratificadas por la persona líder el 2026-10-14 | HU-002, HU-003, HU-004 |
 | Catálogo de categorías (V-12) y formato del número de ticket (V-16) | HU-013 |
 | Máximo de archivos por solicitud; MIME y firma (V-06) | HU-014, HU-029, HU-033 |
 | Quién ajusta la prioridad (V-03) | HU-015 |
