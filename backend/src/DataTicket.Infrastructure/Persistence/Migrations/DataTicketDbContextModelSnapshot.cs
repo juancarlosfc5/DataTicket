@@ -146,6 +146,309 @@ namespace DataTicket.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Assignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("uuidv7()");
+
+                    b.Property<DateTimeOffset>("AssignedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("assigned_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("AssignedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assigned_by");
+
+                    b.Property<Guid>("AssigneeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("assignee_id");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ticket_id");
+
+                    b.Property<DateTimeOffset?>("UnassignedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("unassigned_at");
+
+                    b.Property<Guid?>("UnassignedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("unassigned_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_assignments");
+
+                    b.HasIndex("AssigneeId")
+                        .HasDatabaseName("ix_assignments_assignee_active")
+                        .HasFilter("unassigned_at IS NULL");
+
+                    b.HasIndex("TicketId")
+                        .HasDatabaseName("ix_assignments_ticket_id");
+
+                    b.HasIndex("TicketId", "AssigneeId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_assignments_active")
+                        .HasFilter("unassigned_at IS NULL");
+
+                    b.ToTable("assignments", "dataticket", t =>
+                        {
+                            t.HasComment("Assignment. Vigente = unassigned_at IS NULL; la reasignación cierra la anterior y abre otra.");
+
+                            t.HasCheckConstraint("ck_assignments_unassignment", "(unassigned_at IS NULL) = (unassigned_by IS NULL) AND (unassigned_at IS NULL OR unassigned_at >= assigned_at)");
+                        });
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("uuidv7()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id")
+                        .HasName("pk_categories");
+
+                    b.ToTable("categories", "dataticket", t =>
+                        {
+                            t.HasComment("Category del formulario común (PRD §6.1). Catálogo no definido en el PRD (V-12).");
+
+                            t.HasCheckConstraint("ck_categories_name", "name = btrim(name) AND char_length(name) >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("uuidv7()");
+
+                    b.Property<string>("CalculatedPriority")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("calculated_priority")
+                        .HasComment("CalculatedPriority derivada de la matriz; la base de datos verifica la coherencia.");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("closed_at");
+
+                    b.Property<Guid?>("ClosedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("closed_by");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("company_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("CurrentPriority")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("current_priority")
+                        .HasComment("Prioridad vigente: igual a la calculada salvo PriorityOverride (HU-015, propuesta).");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Impact")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("impact");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
+                        .HasColumnName("number")
+                        .HasComment("Número visible generado en servidor (formato provisional, V-16). Si el agregado lo necesita antes de guardar, el adaptador ejecuta SELECT dataticket.next_ticket_number().");
+
+                    b.Property<string>("PullRequestUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("pull_request_url")
+                        .HasComment("PullRequestUrl manual e interna; nunca visible al cliente (PRD §5, §6.3).");
+
+                    b.Property<Guid>("RequesterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("requester_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status")
+                        .HasComment("TicketStatus interno. ClientStatus se deriva, no se guarda (nunca se expone al cliente).");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Urgency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("urgency");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tickets");
+
+                    b.HasAlternateKey("Number")
+                        .HasName("ux_tickets_number");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_tickets_category_id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_tickets_created_at");
+
+                    b.HasIndex("RequesterId")
+                        .HasDatabaseName("ix_tickets_requester_id");
+
+                    b.HasIndex("CompanyId", "CreatedAt", "Id")
+                        .HasDatabaseName("ix_tickets_company_created");
+
+                    b.HasIndex("Status", "CreatedAt", "Id")
+                        .HasDatabaseName("ix_tickets_status_created");
+
+                    b.HasIndex("CompanyId", "RequesterId", "CreatedAt", "Id")
+                        .HasDatabaseName("ix_tickets_company_requester_created");
+
+                    b.ToTable("tickets", "dataticket", t =>
+                        {
+                            t.HasComment("Ticket (raíz de agregado). company_id y requester_id salen de la cuenta autenticada y no cambian (PRD §6.1).");
+
+                            t.HasCheckConstraint("ck_tickets_calculated_priority", "calculated_priority = dataticket.priority_matrix(urgency, impact)");
+
+                            t.HasCheckConstraint("ck_tickets_closure", "(status = 'Closed') = (closed_at IS NOT NULL) AND (closed_at IS NULL) = (closed_by IS NULL)");
+
+                            t.HasCheckConstraint("ck_tickets_current_priority", "current_priority IN ('VeryLow', 'Low', 'Medium', 'High', 'Critical')");
+
+                            t.HasCheckConstraint("ck_tickets_description", "char_length(btrim(description)) BETWEEN 1 AND 10000");
+
+                            t.HasCheckConstraint("ck_tickets_impact", "impact IN ('Low', 'Medium', 'High')");
+
+                            t.HasCheckConstraint("ck_tickets_pull_request_url", "pull_request_url IS NULL OR pull_request_url ~ '^https://'");
+
+                            t.HasCheckConstraint("ck_tickets_status", "status IN ('New', 'InDevelopment', 'PullRequestReview', 'InProduction', 'SolutionDelivered', 'Closed')");
+
+                            t.HasCheckConstraint("ck_tickets_title", "title = btrim(title) AND char_length(title) BETWEEN 1 AND 120");
+
+                            t.HasCheckConstraint("ck_tickets_urgency", "urgency IN ('Low', 'Medium', 'High')");
+                        });
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.TicketParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("uuidv7()");
+
+                    b.Property<DateTimeOffset>("AddedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("added_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("AddedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("added_by");
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("origin");
+
+                    b.Property<DateTimeOffset?>("RemovedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("removed_at");
+
+                    b.Property<Guid?>("RemovedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("removed_by");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ticket_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_ticket_participants");
+
+                    b.HasIndex("TicketId")
+                        .HasDatabaseName("ix_ticket_participants_ticket_id");
+
+                    b.HasIndex("TicketId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_ticket_participants_active")
+                        .HasFilter("removed_at IS NULL");
+
+                    b.HasIndex("UserId", "RemovedAt")
+                        .HasDatabaseName("ix_ticket_participants_user_removed");
+
+                    b.ToTable("ticket_participants", "dataticket", t =>
+                        {
+                            t.HasComment("TicketParticipant. Vigente = removed_at IS NULL. Origen: Assignment, Participant o CoverageTake (HU-017/018).");
+
+                            t.HasCheckConstraint("ck_ticket_participants_origin", "origin IN ('Assignment', 'Participant', 'CoverageTake')");
+
+                            t.HasCheckConstraint("ck_ticket_participants_removal", "(removed_at IS NULL) = (removed_by IS NULL) AND (removed_at IS NULL OR removed_at >= added_at)");
+                        });
+                });
+
             modelBuilder.Entity("DataTicket.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -512,6 +815,63 @@ namespace DataTicket.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_audit_entries_actor");
+
+                    b.HasOne("DataTicket.Domain.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_audit_entries_ticket");
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Assignment", b =>
+                {
+                    b.HasOne("DataTicket.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("AssigneeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_assignments_assignee");
+
+                    b.HasOne("DataTicket.Domain.Tickets.Ticket", null)
+                        .WithMany("Assignments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_assignments_ticket");
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Ticket", b =>
+                {
+                    b.HasOne("DataTicket.Domain.Tickets.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_tickets_category");
+
+                    b.HasOne("DataTicket.Domain.Companies.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_tickets_company");
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.TicketParticipant", b =>
+                {
+                    b.HasOne("DataTicket.Domain.Tickets.Ticket", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_ticket_participants_ticket");
+
+                    b.HasOne("DataTicket.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_ticket_participants_user");
                 });
 
             modelBuilder.Entity("DataTicket.Infrastructure.Identity.ApplicationUser", b =>
@@ -578,6 +938,13 @@ namespace DataTicket.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_tokens_user");
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Tickets.Ticket", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }

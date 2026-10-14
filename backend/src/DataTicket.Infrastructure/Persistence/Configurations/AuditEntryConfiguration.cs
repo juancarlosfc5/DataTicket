@@ -1,4 +1,5 @@
 using DataTicket.Domain.Auditing;
+using DataTicket.Domain.Tickets;
 using DataTicket.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,7 +9,7 @@ namespace DataTicket.Infrastructure.Persistence.Configurations;
 /// <summary>
 /// <c>dataticket.audit_entries</c> (<c>db.sql</c> §11, HU-011). En la migración, con SQL: el DEFAULT
 /// <c>'Succeeded'</c> de <c>result</c>, la función <c>reject_mutation</c> y los triggers append-only. La FK
-/// <c>ticket_id → tickets</c> llega con la migración que crea <c>dataticket.tickets</c>.
+/// <c>ticket_id → tickets</c> la añade la migración que crea <c>dataticket.tickets</c> (núcleo N1).
 /// </summary>
 internal sealed class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEntry>
 {
@@ -48,6 +49,13 @@ internal sealed class AuditEntryConfiguration : IEntityTypeConfiguration<AuditEn
             .WithMany()
             .HasForeignKey(entry => entry.ActorId)
             .HasConstraintName("fk_audit_entries_actor")
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // La añade la migración del núcleo de tickets (HuN1_NucleoTickets), que crea dataticket.tickets.
+        builder.HasOne<Ticket>()
+            .WithMany()
+            .HasForeignKey(entry => entry.TicketId)
+            .HasConstraintName("fk_audit_entries_ticket")
             .OnDelete(DeleteBehavior.Restrict);
 
         // Bitácora del ticket en orden determinista (HU-012).

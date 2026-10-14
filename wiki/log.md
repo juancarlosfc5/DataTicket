@@ -428,3 +428,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: `AuditEntry`/`AuditAction`/`AuditResult`/`AuditValue` (Domain), puerto `IAuditLog` y adaptador `EfAuditLog`, migración `Hu011_AddAuditEntries` con trigger append-only; 202/202 pruebas. HU-001 diferida a la fase final por decisión de la persona líder.
 - Wiki: [[auditoria]], [[persistencia-postgresql]], [[glosario]], [[hu-011-registrar-eventos-auditables]]
 - Pendiente: FK `fk_audit_entries_ticket` en N1; puerto de unidad de trabajo; avisos NU1903 de `System.Security.Cryptography.Xml`.
+
+## [2026-10-14] feature | Loop del core — N1 núcleo compartido de tickets
+- Autor: LauraVargas22
+- Cambios: `Ticket`, `TicketParticipant`, `Assignment`, `Category`, `PriorityMatrix`; puertos `ITicketRepository`, `ITicketAccessPolicy` (regla «participante vigente o PM») e `IChatConnectionRevoker` con adaptador nulo; migración `HuN1_NucleoTickets` (incluye `fk_audit_entries_ticket`); fixtures T03. 292/292 pruebas. Etiqueta `core-nucleo-v1`.
+- Wiki: [[modelo-de-dominio]], [[glosario]], [[backend-hexagonal]], [[persistencia-postgresql]], [[roles-y-permisos]], [[tiempo-real-signalr]], [[pendientes]]
+- Pendiente: fusionar `feature/core` en `main` para el loop del chat; alinear HU-019 (`UnassignedAt`); unidad de trabajo (HU-013); avisos NU1902/NU1903.

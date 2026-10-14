@@ -75,6 +75,12 @@ sequenceDiagram
 - Runtime: `frontend/nginx/default.conf.template` → `Upgrade`/`Connection`, `proxy_read_timeout 1h`, `proxy_buffering off`.
 - Una sola instancia: sin Redis/backplane en el MVP; al escalar, Redis o Azure SignalR (PRD §7, [[pendientes]]).
 
+## Núcleo disponible para el chat (N1, etiqueta `core-nucleo-v1`)
+
+- Puerto `IChatConnectionRevoker.RevokeTicketAccessAsync(ticketId, userId, ct)` con adaptador nulo; HU-032 lo reemplaza con `services.Replace` y actualiza la prueba de composición que exige un único registro.
+- La validación por operación del hub usa `ITicketAccessPolicy` (sustituye al `ChatAccessPolicy` propuesto en HU-026 T-03).
+- Fixtures T03 (`TicketSeed`, `TestTickets`) con los IDs de `db.sql` §13: Laura y Juan David vigentes, Brayan retirado, Kevin no participante.
+
 ## Relacionado
 
 - [[chat-interno]] · [[adr-0005-signalr-para-chat]] · [[autenticacion-identity]] · [[backend-hexagonal]] · [[frontend-mvc]]

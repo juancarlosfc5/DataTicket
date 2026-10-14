@@ -1,5 +1,6 @@
 using DataTicket.Domain.Auditing;
 using DataTicket.Domain.Companies;
+using DataTicket.Domain.Tickets;
 using DataTicket.Infrastructure.Identity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,14 @@ public sealed class DataTicketDbContext(DbContextOptions<DataTicketDbContext> op
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 
     public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
+
+    public DbSet<Category> Categories => Set<Category>();
+
+    public DbSet<Ticket> Tickets => Set<Ticket>();
+
+    public DbSet<TicketParticipant> TicketParticipants => Set<TicketParticipant>();
+
+    public DbSet<Assignment> Assignments => Set<Assignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

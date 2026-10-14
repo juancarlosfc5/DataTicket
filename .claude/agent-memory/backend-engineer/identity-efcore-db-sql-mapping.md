@@ -1,6 +1,6 @@
 ---
 name: identity-efcore-db-sql-mapping
-description: Trampas comprobadas al mapear ASP.NET Core Identity 10 + EF Core 10/Npgsql al esquema de db.sql (snake_case, passkeys, defaults, history table, Data Protection al arrancar)
+description: Trampas comprobadas al mapear Identity 10 y EF Core 10/Npgsql al esquema de db.sql (snake_case, passkeys, defaults, history table, claves de hijos de agregado, índices de FK, catálogo y search_path, SQLSTATE de RESTRICT)
 metadata:
   type: project
 ---
@@ -23,3 +23,12 @@ Comprobado el 2026-10-12 (B7, fallo de arranque 42P07 en el Compose):
 - `dotnet ef … --no-build` funciona con el manifiesto de `backend/.config` tras `dotnet tool restore`; `has-pending-model-changes` no conecta a la base.
 
 **How to apply:** al tocar Identity, migraciones o fixtures de integración; cualquier objeto SQL sin esquema explícito es sospechoso en el Compose. Ver [[integration-tests-recetas]] y [[aspnetcore10-timeprovider-identity]].
+
+Comprobado el 2026-10-14 (núcleo N1, migración `HuN1_NucleoTickets`):
+
+- **Hijos de un agregado con `HasDefaultValueSql("uuidv7()")` en la clave**: EF marca la clave como generada y, al descubrir por la navegación una fila nueva con Id ya asignado, la trataría como existente (UPDATE). Se añade `.ValueGeneratedNever()` DESPUÉS de `HasDefaultValueSql`: el DEFAULT sigue en la migración y la fila nueva se inserta (lo prueba `Participante_agregado_tarde_accede_al_ticket`).
+- **Índices de FK**: EF NO crea índice propio si otro índice empieza por las columnas de la FK (incluso uno filtrado, p. ej. `ix_assignments_assignee_active`). Las FK sin índice en db.sql (`added_by`, `closed_by`…) generarían índices extra: van con `migrationBuilder.Sql(ALTER TABLE … ADD CONSTRAINT …)`.
+- `UNIQUE (number)` de db.sql es restricción, no índice: `HasAlternateKey(...).HasName("ux_…")` (con `HasIndex().IsUnique()` sale como índice único).
+- Un CHECK o DEFAULT que llama a una función de la migración: el `migrationBuilder.Sql(CREATE FUNCTION …)` va al PRINCIPIO de `Up`, antes del `CreateTable` que la usa.
+- **`column_default` y `pg_get_constraintdef` omiten el esquema si está en el `search_path`** (usuario `dataticket` → `"$user"`): salen `next_ticket_number()` y `priority_matrix(…)` sin calificar. En las pruebas de catálogo se abre la conexión con `SearchPath = "public"` (`NpgsqlConnectionStringBuilder`).
+- `DELETE` bloqueado por una FK `ON DELETE RESTRICT` da SQLSTATE **23001** (`RestrictViolation`), no 23503.

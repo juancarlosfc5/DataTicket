@@ -7,9 +7,9 @@ using Npgsql;
 namespace DataTicket.IntegrationTests.Persistence;
 
 /// <summary>
-/// Las migraciones producen el esquema de <c>db.sql</c> §2–§3, §11 (auditoría, detalle en
-/// <see cref="AuditMigrationTests"/>) y §12 (nombres, restricciones, índices, valores por defecto y roles de
-/// referencia).
+/// Las migraciones producen el esquema de <c>db.sql</c> §2–§3, §4 y §6 (núcleo de tickets, detalle en
+/// <see cref="TicketsMigrationTests"/>), §11 (auditoría, detalle en <see cref="AuditMigrationTests"/>) y §12
+/// (nombres, restricciones, índices, valores por defecto, roles y categorías de referencia).
 /// </summary>
 [Trait(TestCategories.Name, TestCategories.RequiresDocker)]
 public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
@@ -25,7 +25,8 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
 
         string[] expected =
         [
-            "dataticket.audit_entries", "dataticket.companies", "identity.data_protection_keys", "identity.role_claims", "identity.roles",
+            "dataticket.assignments", "dataticket.audit_entries", "dataticket.categories", "dataticket.companies",
+            "dataticket.ticket_participants", "dataticket.tickets", "identity.data_protection_keys", "identity.role_claims", "identity.roles",
             "identity.user_claims", "identity.user_logins", "identity.user_roles", "identity.user_tokens", "identity.users",
         ];
         Assert.Equal(expected.Order(StringComparer.Ordinal), tables.Order(StringComparer.Ordinal));
@@ -48,6 +49,10 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
             "ck_users_access_failed_count", "pk_roles", "pk_user_roles", "fk_user_roles_user", "fk_user_roles_role",
             "pk_user_claims", "fk_user_claims_user", "pk_role_claims", "fk_role_claims_role", "pk_user_logins",
             "fk_user_logins_user", "pk_user_tokens", "fk_user_tokens_user", "pk_data_protection_keys",
+            "pk_categories", "ck_categories_name", "pk_tickets", "ux_tickets_number", "fk_tickets_company",
+            "fk_tickets_requester_company", "fk_tickets_category", "fk_tickets_closed_by", "ck_tickets_calculated_priority",
+            "ck_tickets_closure", "pk_ticket_participants", "fk_ticket_participants_ticket", "pk_assignments",
+            "fk_assignments_ticket", "fk_audit_entries_ticket",
         })
         {
             Assert.Contains(name, constraints);
@@ -82,6 +87,8 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
             "users.two_factor_enabled=false", "users.lockout_enabled=true", "users.access_failed_count=0",
             "users.account_status='Invited'::character varying", "users.created_at=now()", "roles.id=uuidv7()",
             "companies.id=uuidv7()", "companies.is_active=true", "companies.created_at=now()", "companies.updated_at=now()",
+            "categories.is_active=true", "tickets.number=dataticket.next_ticket_number()",
+            "tickets.status='New'::character varying", "ticket_participants.added_at=now()", "assignments.assigned_at=now()",
         })
         {
             Assert.Contains(expected, defaults);
@@ -96,6 +103,16 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
         Assert.Equal(
             new[] { "ADMINISTRATOR", "COMPANYCOORDINATOR", "DEVELOPMENT", "PRODUCTION", "PRODUCTMANAGER", "REQUESTER" },
             roles.Order(StringComparer.Ordinal));
+    }
+
+    [Fact]
+    public async Task Migracion_siembra_las_categorias_provisionales_de_referencia()
+    {
+        // db.sql §12 (V-12): semilla provisional, administrable como datos.
+        var categories = await QueryListAsync(
+            api.Database.ConnectionString, "SELECT name FROM dataticket.categories WHERE is_active ORDER BY sort_order");
+
+        Assert.Equal(["Incidente", "Requerimiento", "Consulta"], categories);
     }
 
     [Fact]
@@ -146,7 +163,9 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
 
     private static async Task<List<string>> QueryListAsync(string connectionString, string sql)
     {
-        await using var connection = new NpgsqlConnection(connectionString);
+        // search_path fijo: el catálogo muestra los objetos de otros esquemas calificados (p. ej.
+        // dataticket.next_ticket_number()) aunque la sesión de la aplicación tenga dataticket en su search_path.
+        await using var connection = new NpgsqlConnection(new NpgsqlConnectionStringBuilder(connectionString) { SearchPath = "public" }.ConnectionString);
         await connection.OpenAsync(Ct);
         await using var command = new NpgsqlCommand(sql, connection);
         await using var reader = await command.ExecuteReaderAsync(Ct);

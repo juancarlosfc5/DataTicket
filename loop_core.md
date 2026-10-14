@@ -103,11 +103,11 @@ git worktree add "../DataGlobal2-core" -b feature/core main
 ### Etapa A — Fundaciones (Fase 0 restante + auditoría)
 - [!] **HU-001** (diferida a la fase final por decisión de la persona líder el 2026-10-14: el CI no debe interferir con el loop del core; no bloquea las HU que la citan como dependencia) Integración continua en cada PR (GitHub Actions: backend con PostgreSQL, lint/test/build del frontend) · Contrato · Implementación · Workflow validado localmente (`act` o revisión de sintaxis) · Evidencia:
 - [x] **HU-011** Registrar eventos auditables (`IAuditLog`, `AuditEntry` append-only con trigger, transacción con la acción) · Contrato · Backend · Pruebas CHU · Revisión · Evidencia: `dotnet test` 202/202; migración `Hu011_AddAuditEntries` aplicada en `dataticket-core` (Healthy); quality-reviewer 0 CRÍTICO/ALTO
-- [ ] **N1 — Núcleo compartido de tickets** (adelanto de HU-013/018/019; desbloquea `loop_chat`):
-  - [ ] `Ticket` (campos de `db.sql` §6), `TicketParticipant` (vigente/retirado), `Assignment`; repositorios, configuraciones y migración `HuN1_NucleoTickets` (incluye la FK `fk_audit_entries_ticket` pendiente de HU-011) · Evidencia:
-  - [ ] Regla de acceso interno reutilizable («participante vigente o ProductManager»), con pruebas, y puerto `IChatConnectionRevoker` con adaptador nulo · Evidencia:
-  - [ ] Fixtures de integración con T03 de `db.sql` §13 (Laura y Juan David vigentes, Brayan retirado, Kevin no participante) · Evidencia:
-  - [ ] Etiqueta `core-nucleo-v1` creada y aviso en el resumen: «fusionar `feature/core` en `main` para que el chat use el núcleo» · Evidencia:
+- [x] **N1 — Núcleo compartido de tickets** (adelanto de HU-013/018/019; desbloquea `loop_chat`):
+  - [x] `Ticket` (campos de `db.sql` §6), `TicketParticipant` (vigente/retirado), `Assignment`; repositorios, configuraciones y migración `HuN1_NucleoTickets` (incluye la FK `fk_audit_entries_ticket` pendiente de HU-011) · Evidencia: `dotnet test` 292/292; `HuN1_NucleoTickets` aplicada en `dataticket-core` (Healthy, `\d` coincide con `db.sql` §6 salvo columnas de Fase 4)
+  - [x] Regla de acceso interno reutilizable («participante vigente o ProductManager»), con pruebas, y puerto `IChatConnectionRevoker` con adaptador nulo · Evidencia: `TicketAccessPolicy` (16 unitarias + integración T03), `NullChatConnectionRevoker` registrado; quality-reviewer 0 CRÍTICO/ALTO
+  - [x] Fixtures de integración con T03 de `db.sql` §13 (Laura y Juan David vigentes, Brayan retirado, Kevin no participante) · Evidencia: `TicketSeed`/`TestTickets` con IDs de `db.sql` §13; `TestTicketsCatalogTests` en verde
+  - [x] Etiqueta `core-nucleo-v1` creada y aviso en el resumen: «fusionar `feature/core` en `main` para que el chat use el núcleo» · Evidencia: `git tag core-nucleo-v1` sobre el commit de N1 (2026-10-14)
 - [ ] **HU-007** Administrar empresas cliente · Contrato · Backend · Frontend · Revisión · Evidencia:
 - [ ] **HU-005** Invitar y activar cuentas (correo a Mailpit del stack del core; enlace con `App:PublicBaseUrl`) · Contrato · Backend · Frontend · Revisión · Evidencia:
 - [ ] **HU-008** Administrar usuarios de empresas cliente (CA-01) · Contrato · Backend · Frontend · Revisión · Evidencia:
@@ -171,3 +171,4 @@ Una fila por iteración (también las de espera). La añade Claude; no se borran
 | — | 0 | — | — | — | Loop creado el 2026-10-09 en `main`, sin ejecutar |
 | 2026-10-14 | 1 | P0 | Hecho | chore(core): P0 | Worktree creado, Docker arrancado, línea base verde; `dotnet test` vía contenedor SDK 10 |
 | 2026-10-14 | 1 | HU-001 / HU-011 | HU-001 diferida (`[!]`); HU-011 hecha | feat(audit): HU-011 | 202/202; HU-001 aplazada a la fase final por decisión de la persona líder |
+| 2026-10-14 | 2 | N1 | Hecho; etiqueta `core-nucleo-v1` | feat(tickets): N1 | 292/292; loop detenido tras las 2 iteraciones pedidas. Avisar: fusionar `feature/core` en `main` para el chat |

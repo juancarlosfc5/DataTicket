@@ -6,7 +6,7 @@ tags: [dominio]
 sources: ["PRD.md §5", "PRD.md §6", "PRD.md §7", "PRD.md §8", "PRD.md §9", "PRD.md §12"]
 aliases: [Modelo de dominio propuesto, Agregados, Entidades]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-14
 ---
 
 # Modelo de dominio
@@ -165,6 +165,14 @@ classDiagram
 ## `Assignment` frente a `TicketParticipant`
 
 Propuesta: `Assignment` registra el acto de asignar responsables operativos (triage); asignar **implica** asociar como `TicketParticipant`, que es lo que concede acceso. Un participante puede no ser responsable (p. ej. el desarrollador que sigue asociado en Producción, PRD §6.3). El PRD no distingue explícitamente ambos conceptos; validar.
+
+## Núcleo de tickets implementado (N1, 2026-10-14)
+
+- `Ticket` (`Domain/Tickets`) con los campos de `db.sql` §6 salvo los de Fase 4: `Number`, `CompanyId`, `RequesterId`, `CategoryId`, `Title` (1–120), `Description` (1–10 000), `Urgency`, `Impact`, `CalculatedPriority`, `CurrentPriority`, `Status`, `PullRequestUrl`, `CreatedAt`, `UpdatedAt`, `ClosedAt`, `ClosedBy`. Nace con `Ticket.Submit` en `New` y prioridad de `PriorityMatrix.Calculate`.
+- `TicketParticipant`: `Origin` (`ParticipationOrigin`), `AddedBy/At`, `RemovedBy/At`, `IsActive`. Una sola participación vigente por persona; reincorporar crea fila nueva; nada se borra.
+- `Assignment`: `AssignedBy/At`, `UnassignedBy/At`, `IsActive`. Asignar implica participar (V-10, propuesta); retirar cierra la asignación vigente.
+- `Category` con `SortOrder` e `IsActive`.
+- Aún sin guardas de ticket cerrado (P-05) ni de retiro de la PM: llegan con HU-018/019.
 
 ## Relacionado
 

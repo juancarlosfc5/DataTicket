@@ -1,5 +1,6 @@
 using DataTicket.Application.Authentication;
 using DataTicket.Application.Ports.In.Authentication;
+using DataTicket.Application.Tickets;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DataTicket.Application;
@@ -14,6 +15,8 @@ public static class DependencyInjection
         services.AddScoped<ISignIn, SignIn>();
         services.AddScoped<ISignOut, SignOut>();
         services.AddScoped<IGetCurrentUserProfile, GetCurrentUserProfile>();
+
+        services.AddTicketsModule();
 
         return services;
     }

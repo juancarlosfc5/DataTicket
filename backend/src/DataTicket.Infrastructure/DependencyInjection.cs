@@ -45,6 +45,8 @@ public static class DependencyInjection
         // Bitácora append-only (HU-011): comparte el DbContext del ámbito con la acción auditada.
         services.AddScoped<IAuditLog, EfAuditLog>();
 
+        services.AddTicketsAdapters();
+
         // Sembrador de Development: se registra siempre, pero solo actúa en Development y con Seed:Enabled.
         services.AddOptions<DevelopmentSeedOptions>().Bind(configuration.GetSection(DevelopmentSeedOptions.SectionName));
         services.AddScoped<DevelopmentSeeder>();

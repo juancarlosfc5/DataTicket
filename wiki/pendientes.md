@@ -53,6 +53,9 @@ Registro vivo de lo que falta decidir o aclarar. Cuando algo se resuelve, se con
 > `AGENTS.md` §8 y [[flujo-de-trabajo-github]] piden que todo cambio entre por Pull Request con al menos una revisión de otra persona del equipo. El 2026-10-12 la persona líder fusionó `feature/auth-login` directamente en `main` (`718e0a8`, `git merge --no-ff`) y lo publicó en `origin`. Se aplicó la instrucción explícita de la persona usuaria (precedencia de `AGENTS.md` §3). Consecuencias: HU-002, HU-003 y HU-004 siguen `En validación`, porque su DoD de revisión por otra persona no está cumplido; la revisión debe hacerse sobre el código ya fusionado (rango `5bc3418..718e0a8`). El agente no ejecutó la fusión: el control de permisos de la sesión la bloqueó por ser una fusión sin revisión, y `gh` no está instalado para abrir el PR. Por decidir: si se añade protección a `main` y se instala `gh` para que el siguiente cambio (`loop_chat.md`, `loop_core.md`) entre por PR.
 > **Cerrada el 2026-10-14:** la persona líder dispensa la revisión por otra persona y las capturas adjuntas al PR, y da por completadas HU-002, HU-003 y HU-004. Esto también se aparta de la regla de `scrum-spec-orchestrator` (una HU pasa a `Completada` solo con toda su DoD en `Cumple`): las filas dispensadas figuran como `Dispensado` en las matrices. Para los siguientes cambios (`loop_chat.md`, `loop_core.md`) vuelve a aplicarse la regla del Pull Request con revisión.
 
+> [!warning] Contradicción — fin de la asignación (2026-10-14, N1)
+> P-17 y HU-019 llaman a los campos `EndedAt/EndedBy`; `db.sql` (ADR-0009, aceptada) los llama `unassigned_at/unassigned_by`. N1 aplicó `db.sql` (mayor precedencia). **Acción:** alinear HU-019 en su T-01.
+
 ## 2. Decisiones de producto pendientes antes de producción (PRD §16)
 
 - [ ] Infraestructura y responsable de despliegue, respaldos, monitoreo y actualizaciones (§16.1).

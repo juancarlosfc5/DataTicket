@@ -19,10 +19,10 @@ namespace DataTicket.IntegrationTests.Auditing;
 /// </summary>
 /// <remarks>
 /// La «acción» del caso de uso de ejemplo es crear una empresa (<c>dataticket.companies</c>), la única tabla de
-/// dominio que existe hoy; la entrada describe un cambio de estado de ticket. El mecanismo no depende de la
+/// dominio que existía en HU-011; la entrada describe un cambio de estado de ticket. El mecanismo no depende de la
 /// acción: ambas comparten el <see cref="DataTicketDbContext"/> del ámbito y un único <c>SaveChangesAsync</c>.
-/// La FK <c>ticket_id → tickets</c> aún no existe (llega con la migración del núcleo de tickets), así que el
-/// ticket de las entradas es un identificador sintético.
+/// Desde el núcleo N1 existe la FK <c>fk_audit_entries_ticket</c>: cada prueba radica su propio ticket
+/// (<see cref="TestTickets.SubmitAsync"/>) para que sus entradas no se mezclen con las de otra.
 /// </remarks>
 [Trait(TestCategories.Name, TestCategories.RequiresDocker)]
 public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
@@ -37,7 +37,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
     [Fact]
     public async Task Append_IsCommittedWithTheActionInSameTransaction()
     {
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
         var companyName = UniqueCompanyName();
 
         await using (var scope = api.Factory.Services.CreateAsyncScope())
@@ -73,7 +73,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
     [Fact]
     public async Task Append_DoesNotSaveChanges()
     {
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
 
         await using var scope = api.Factory.Services.CreateAsyncScope();
         var auditLog = scope.ServiceProvider.GetRequiredService<IAuditLog>();
@@ -98,7 +98,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
             await dbContext.SaveChangesAsync(Ct);
         }
 
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
         DbUpdateException failure;
         await using (var scope = api.Factory.Services.CreateAsyncScope())
         {
@@ -118,7 +118,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
     public async Task ActionIsRolledBackWhenAuditInsertFails()
     {
         var companyName = UniqueCompanyName();
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
         // Un actor que no existe en identity.users: la inserción de auditoría viola fk_audit_entries_actor.
         var unknownActor = Guid.CreateVersion7();
 
@@ -140,7 +140,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
     [Fact]
     public async Task UpdateOrDeleteOnAuditTable_IsRejectedByDatabase()
     {
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
         await using (var scope = api.Factory.Services.CreateAsyncScope())
         {
             await SampleAuditedActionAsync(scope.ServiceProvider, UniqueCompanyName(), ticketId, ActorId);
@@ -168,7 +168,7 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
     [Fact]
     public async Task EntriesOfSameTicketAndInstant_AreOrderedDeterministicallyById()
     {
-        var ticketId = Guid.CreateVersion7();
+        var ticketId = await NewTicketAsync();
         var occurredAt = FixedNow.UtcDateTime;
         var first = AuditEntry.Create(AuditAction.TicketSubmitted, ActorId, occurredAt, "Ticket", ticketId, ticketId);
         var second = AuditEntry.Create(AuditAction.ParticipantAdded, ActorId, occurredAt, "TicketParticipant", Guid.CreateVersion7(), ticketId);
@@ -225,6 +225,8 @@ public sealed class AuditLogTests(ApiFixture api) : IClassFixture<ApiFixture>
 
         await dbContext.SaveChangesAsync(Ct);
     }
+
+    private Task<Guid> NewTicketAsync() => TestTickets.SubmitAsync(api.Factory.Services, configure: null, Ct);
 
     private static AuditEntry NewEntry(Guid ticketId, Guid actorId) =>
         AuditEntry.Create(AuditAction.StatusChanged, actorId, FixedNow.UtcDateTime, "Ticket", ticketId, ticketId);

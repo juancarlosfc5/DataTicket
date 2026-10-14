@@ -52,3 +52,9 @@ Comprobado el 2026-10-14 (HU-011, worktree `DataGlobal2-core`):
 - Probar el `Down` de una migración: `dbContext.GetService<IMigrator>().MigrateAsync(<id anterior>)` sobre una base propia, afirmar que no quedan objetos y volver a `MigrateAsync()`.
 - Un heredoc largo de Git Bash con varios archivos C# falló con «unexpected EOF while looking for matching `''» sin escribir nada: para archivos nuevos usar Write.
 - Un `.cs` compartido entre proyectos de prueba se enlaza con `<Compile Include="../Shared/…" Link="…" />` y la clase `internal` (no choca aunque `ArchitectureTests` referencie `UnitTests`).
+
+Comprobado el 2026-10-14 (núcleo N1):
+
+- Tras `docker compose -p dataticket-core … up -d --build backend`, `dotnet watch` (SDK 10.0.402 de la imagen) imprimió `❌ Failed to read '…/obj\Debug/net10.0/staticwebassets.development.json'` y quedó en «Waiting for changes» SIN arrancar la app (health sin respuesta >1 min). Un `docker restart dataticket-core-backend-1` la arrancó (migró y respondió Healthy); el mensaje ❌ se repite pero ya no impide el arranque. No es del código.
+- Desde 2026-10-14 el build muestra además NU1902 (`System.Security.Cryptography.Pkcs` 10.0.12); como NU1903, no rompe el build.
+- Un fixture que siembra tickets en `TestDataSeeder` hace fallar TODAS las clases con `ApiFixture` en la fase roja (el modelo aún no tiene la entidad): es la razón correcta, pero conviene decirlo al reportar el rojo.

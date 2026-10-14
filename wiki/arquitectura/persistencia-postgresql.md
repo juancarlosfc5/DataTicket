@@ -145,6 +145,14 @@ Decisiones del diseño:
 
 Servicio `db` de Compose (`postgres:18.6`), volumen `postgres_data` montado en `/var/lib/postgresql` (requisito de la imagen 18). Desde el host: `localhost:5432`; desde contenedores: `db:5432`. `docker compose down -v` borra los datos ([[entorno-docker]]).
 
+## Migración `HuN1_NucleoTickets` (N1)
+
+- Crea `categories` (semilla V-12), `tickets`, `ticket_participants`, `assignments`, las funciones `priority_matrix` y `next_ticket_number` con la secuencia `ticket_number_seq`, y la FK `fk_audit_entries_ticket` pendiente de HU-011. `Down` reversible y probado.
+- Van por SQL: DEFAULT de `number`, `status` e `is_active`; FK compuesta `(requester_id, company_id)`; FK de autores (`added_by`, `removed_by`, `assigned_by`, `unassigned_by`, `closed_by`) sin índice extra, como en `db.sql`.
+- Diferido: columnas de Fase 4 (`form_template_version_id`, `custom_field_values` y sus índices/checks) con una migración aditiva en HU-045 a HU-047; token de concurrencia `xmin` hasta HU-015/021.
+- Antes de desplegar en un entorno con auditoría previa, comprobar que no haya `audit_entries.ticket_id` huérfanos (la FK fallaría).
+- Patrón de hijos de agregado: `HasDefaultValueSql("uuidv7()").ValueGeneratedNever()`.
+
 ## Relacionado
 
 - [[backend-hexagonal]] · [[modelo-de-dominio]] · [[entorno-docker]] · [[autenticacion-identity]] · [[pendientes]] · [[tablero-scrum]] · [[adr-0009-db-sql-diseno-de-referencia]]

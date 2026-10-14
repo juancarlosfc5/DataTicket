@@ -71,6 +71,8 @@ Lenguaje ubicuo de DataTicket: cada término de negocio en español con su nombr
 
 - **Acción auditable** ↔ `AuditAction` (TicketSubmitted, PriorityOverridden, StatusChanged, TicketAssigned, TicketReassigned, ParticipantAdded, ParticipantRemoved, FormalResponseDelivered, TicketClosed) · **Resultado** ↔ `AuditResult` · **Registro de auditoría** ↔ puerto `IAuditLog` (adaptador `EfAuditLog`) · serializador de valores ↔ `AuditValue` (HU-011).
 
+- **Origen de la participación** ↔ `ParticipationOrigin` (`Assignment`, `Participant`, `CoverageTake`) · **Matriz de prioridad** ↔ `PriorityMatrix.Calculate` · **Repositorio de tickets** ↔ `ITicketRepository` · **Regla de acceso interno** ↔ `ITicketAccessPolicy` / `TicketAccessPolicy.CanAccessInternalAsync` · **Revocar acceso al chat** ↔ `IChatConnectionRevoker.RevokeTicketAccessAsync` (adaptador nulo `NullChatConnectionRevoker` hasta HU-032) · **Fin de una asignación** ↔ `UnassignedAt/UnassignedBy` (N1; ver [[pendientes]]).
+
 ## Correspondencia de valores
 
 | Negocio | Código |

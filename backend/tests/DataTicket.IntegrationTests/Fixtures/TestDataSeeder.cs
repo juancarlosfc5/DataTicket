@@ -7,8 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace DataTicket.IntegrationTests.Fixtures;
 
 /// <summary>
-/// Persiste el catálogo de pruebas (<see cref="TestCompanies"/> y <see cref="TestAccounts"/>) con EF Core y
-/// <c>UserManager</c>, como hará el sembrador de Development. Las cuentas <c>Invited</c> quedan sin contraseña.
+/// Persiste el catálogo de pruebas (<see cref="TestCompanies"/>, <see cref="TestAccounts"/> y
+/// <see cref="TestTickets"/>) con EF Core y <c>UserManager</c>, como hará el sembrador de Development. Las cuentas
+/// <c>Invited</c> quedan sin contraseña.
 /// </summary>
 public static class TestDataSeeder
 {
@@ -32,6 +33,9 @@ public static class TestDataSeeder
         {
             await CreateAsync(userManager, account, account.HasPassword ? passwordHash : null, clock.GetUtcNow());
         }
+
+        // Núcleo N1: T03 de db.sql §13 con sus participantes (vigentes y retirado) y asignaciones.
+        await TestTickets.SeedAsync(services, cancellationToken);
     }
 
     /// <summary>

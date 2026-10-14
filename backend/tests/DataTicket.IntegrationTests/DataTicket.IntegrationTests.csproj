@@ -30,6 +30,8 @@
   <ItemGroup>
     <!-- Aserción de auditoría compartida con las pruebas de integración (HU-011 T-06). -->
     <Compile Include="../Shared/Auditing/AuditAssert.cs" Link="Shared/Auditing/AuditAssert.cs" />
+    <!-- Escenario de tickets de db.sql §13 (T03) compartido entre las pruebas unitarias y las de integración (núcleo N1). -->
+    <Compile Include="../Shared/Tickets/TicketSeed.cs" Link="Shared/Tickets/TicketSeed.cs" />
   </ItemGroup>
 
 </Project>

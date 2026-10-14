@@ -6,7 +6,7 @@ tags: [producto, producto/seguridad, producto/roles]
 sources: ["PRD.md §5", "PRD.md §6.2", "PRD.md §10", "PRD.md §12", "PRD.md §13", "PRD.md §14", "backend/src/DataTicket.Api/Auth/AuthorizationPolicies.cs", "backend/src/DataTicket.Api/Auth/PrincipalProfile.cs", "backend/tests/DataTicket.IntegrationTests/Auth/AuthorizationPolicyTests.cs"]
 aliases: [Reglas de autorización, Permisos, Multiempresa, Matriz de políticas]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Roles y permisos
@@ -110,6 +110,10 @@ La asociación ocurre **antes** de entregar el detalle (PRD §5, §14.3).
 - Todo acceso exige autenticación, salvo páginas de entrada expresamente públicas (PRD §12).
 - **MFA, SSO y federación** quedan fuera del MVP (PRD §5, §13).
 - La lista inicial de personas es para el piloto; las futuras se administran dentro de DataTicket (PRD §5).
+
+## Regla de acceso interno implementada (N1)
+
+`TicketAccessPolicy.CanAccessInternalAsync(ticketId, ICurrentUser)`: la PM accede si el ticket existe; cualquier otro interno, **administrador incluido**, solo con participación vigente (invariantes 3 y 5); un retirado, un equipo no participante, un cliente, un anónimo o un perfil no válido no acceden. Consulta la base en cada llamada, sin caché. Un ticket inexistente y uno no visible dan el mismo `false`, que es la base del 404 de P-01.
 
 ## Relacionado
 

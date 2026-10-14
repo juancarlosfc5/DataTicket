@@ -6,7 +6,7 @@ tags: [arquitectura/backend, hexagonal, dotnet]
 sources: ["PRD.md §7, §12, §13", "backend/"]
 aliases: [Backend, Puertos y adaptadores, Arquitectura hexagonal]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Backend hexagonal
@@ -111,6 +111,13 @@ Nombres según [[glosario]]. Es una guía de partida: se ajusta al implementar y
 | Fábrica de claims `DataTicketClaimsPrincipalFactory`; políticas con nombre y política de reserva (`AuthorizationPolicies`, `EndpointScopedAuthorizationResultHandler`); marcador `AntiforgeryValidationMetadata`; sondas de salud solo `GET` | Hecho (B4, HU-004); el alcance de la reserva está por ratificar ([[pendientes]]) |
 | Pruebas de convención de endpoints (lista pública exacta, antiforgery en toda mutación de `/api`, empresa fuera de la petición) | Hecho (B4) |
 | Resto del dominio y de los casos de uso (tickets, chat, auditoría), correo, almacenamiento y SignalR | Pendiente (fase 0–2) |
+
+## Módulo de tickets (N1)
+
+- Puertos: `Ports/In/Tickets/ITicketAccessPolicy`, `Ports/Out/ITicketRepository` (`FindAsync`, `ExistsAsync`, `IsActiveParticipantAsync`), `Ports/Out/IChatConnectionRevoker`.
+- Aplicación: `Application/Tickets/TicketAccessPolicy`. Adaptadores: `Persistence/TicketRepository`, `Realtime/NullChatConnectionRevoker`.
+- Registro por módulo: `AddTicketsModule()` (Application) y `AddTicketsAdapters()` (Infrastructure); `Program.cs` sin cambios. HU-032 debe sustituir el revocador con `services.Replace(...)`.
+- Pendiente: puerto de unidad de trabajo (`ITicketRepository` aún no tiene `Add`; la primera escritura desde un caso de uso es HU-013).
 
 ## Relacionado
 
