@@ -6,7 +6,7 @@ tags: [dominio, glosario]
 sources: ["PRD.md §5", "PRD.md §6", "PRD.md §7", "PRD.md §8", "PRD.md §9", "PRD.md §10", "PRD.md §12", "backend/src (nombres implementados en B3, B4 y B7 del goal del login)", "frontend/src/modules/session/models/navigation.ts"]
 aliases: [Lenguaje ubicuo, Diccionario de términos]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Glosario
@@ -68,6 +68,8 @@ Lenguaje ubicuo de DataTicket: cada término de negocio en español con su nombr
 | URL de pull request | `PullRequestUrl` | Enlace al PR registrado a mano; solo para internos (PRD §6.3) | [[flujo-del-ticket]] |
 | Bandeja | `Inbox` | Lista de trabajo de la PM, de un equipo o del portal (PRD §10) | [[dashboard-y-metricas]] |
 | Plantilla de formulario | `FormTemplate` | Formulario versionado por empresa cliente; Fase 4 (PRD §9) | [[formularios-configurables]] |
+
+- **Acción auditable** ↔ `AuditAction` (TicketSubmitted, PriorityOverridden, StatusChanged, TicketAssigned, TicketReassigned, ParticipantAdded, ParticipantRemoved, FormalResponseDelivered, TicketClosed) · **Resultado** ↔ `AuditResult` · **Registro de auditoría** ↔ puerto `IAuditLog` (adaptador `EfAuditLog`) · serializador de valores ↔ `AuditValue` (HU-011).
 
 ## Correspondencia de valores
 

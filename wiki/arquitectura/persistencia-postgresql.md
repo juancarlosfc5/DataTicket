@@ -6,7 +6,7 @@ tags: [arquitectura/datos, postgresql, efcore]
 sources: ["PRD.md §7, §8, §12, §15", "backend/src/DataTicket.Infrastructure/Persistence", "backend/.config/dotnet-tools.json", "db.sql"]
 aliases: [Base de datos, PostgreSQL, EF Core]
 created: 2026-10-07
-updated: 2026-10-12
+updated: 2026-10-14
 ---
 
 # Persistencia en PostgreSQL
@@ -57,6 +57,15 @@ Implementa `db.sql` §2, §3 y los roles de §12, según [[adr-0009-db-sql-disen
 - Es idempotente: omite por id lo que ya existe sin modificarlo y repone lo que falte, en una transacción. La contraseña sintética es la de `db.sql` §13, se guarda solo como hash de Identity y no se escribe en el log.
 - `DevelopmentSeedCatalog` (producción, 5 cuentas) se compara fila a fila con el catálogo de pruebas `TestAccounts` (`Catalogo_del_sembrador_coincide_con_el_de_db_sql`); la fuente de verdad sigue siendo `db.sql` §13.
 - El juego completo de datos sintéticos es de [[hu-010-datos-sinteticos-de-desarrollo]], que amplía este sembrador.
+
+## Migración `Hu011_AddAuditEntries` (HU-011)
+
+- Tabla `dataticket.audit_entries` igual a `db.sql` §11 (columnas, checks, índices `ix_audit_entries_ticket_cursor`, `_actor_occurred`, `_object`, FK de actor RESTRICT).
+- Crea `dataticket.reject_mutation()` (SQLSTATE 42501) y los triggers `trg_audit_entries_no_update_delete` (fila) y `trg_audit_entries_no_truncate` (sentencia). `Down` reversible.
+- **Falta la FK `fk_audit_entries_ticket`**: la añade la migración del núcleo N1 al crear `tickets`.
+
+> [!danger] Riesgo aceptado
+> El usuario de la aplicación es dueño de la tabla y podría `DISABLE TRIGGER`; el `REVOKE UPDATE, DELETE, TRUNCATE` llega con un rol de aplicación separado (PRD §16.1, P-10).
 
 ## Diseño de referencia (`db.sql`)
 

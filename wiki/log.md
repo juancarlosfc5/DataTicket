@@ -422,3 +422,9 @@ Registro cronológico **append-only** de lo que cambia en el proyecto y en la wi
 - Cambios: worktree `DataGlobal2-core` en `feature/core`; stack aislado `dataticket-core` (puertos 55432/18080/15173/18025/11025/11000) arriba; línea base verde (oxlint, vitest 152, build, `dotnet test` 169 en contenedor SDK 10 porque la máquina solo tiene SDK 9).
 - Wiki: [[entorno-docker]]
 - Pendiente: instalar SDK .NET 10 local o seguir con `dt-core-tests-check`.
+
+## [2026-10-14] feature | Loop del core — HU-011 auditoría append-only
+- Autor: LauraVargas22
+- Cambios: `AuditEntry`/`AuditAction`/`AuditResult`/`AuditValue` (Domain), puerto `IAuditLog` y adaptador `EfAuditLog`, migración `Hu011_AddAuditEntries` con trigger append-only; 202/202 pruebas. HU-001 diferida a la fase final por decisión de la persona líder.
+- Wiki: [[auditoria]], [[persistencia-postgresql]], [[glosario]], [[hu-011-registrar-eventos-auditables]]
+- Pendiente: FK `fk_audit_entries_ticket` en N1; puerto de unidad de trabajo; avisos NU1903 de `System.Security.Cryptography.Xml`.

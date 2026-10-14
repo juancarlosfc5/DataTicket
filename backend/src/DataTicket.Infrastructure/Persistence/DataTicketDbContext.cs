@@ -1,3 +1,4 @@
+using DataTicket.Domain.Auditing;
 using DataTicket.Domain.Companies;
 using DataTicket.Infrastructure.Identity;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
@@ -19,6 +20,8 @@ public sealed class DataTicketDbContext(DbContextOptions<DataTicketDbContext> op
     public DbSet<Company> Companies => Set<Company>();
 
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
+
+    public DbSet<AuditEntry> AuditEntries => Set<AuditEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

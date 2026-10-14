@@ -101,10 +101,10 @@ git worktree add "../DataGlobal2-core" -b feature/core main
 - [x] Primer commit de `feature/core` con este archivo marcado (P0) · Evidencia: commit `chore(core): P0 arranque del loop del core`
 
 ### Etapa A — Fundaciones (Fase 0 restante + auditoría)
-- [ ] **HU-001** Integración continua en cada PR (GitHub Actions: backend con PostgreSQL, lint/test/build del frontend) · Contrato · Implementación · Workflow validado localmente (`act` o revisión de sintaxis) · Evidencia:
-- [ ] **HU-011** Registrar eventos auditables (`IAuditLog`, `AuditEntry` append-only con trigger, transacción con la acción) · Contrato · Backend · Pruebas CHU · Revisión · Evidencia:
+- [!] **HU-001** (diferida a la fase final por decisión de la persona líder el 2026-10-14: el CI no debe interferir con el loop del core; no bloquea las HU que la citan como dependencia) Integración continua en cada PR (GitHub Actions: backend con PostgreSQL, lint/test/build del frontend) · Contrato · Implementación · Workflow validado localmente (`act` o revisión de sintaxis) · Evidencia:
+- [x] **HU-011** Registrar eventos auditables (`IAuditLog`, `AuditEntry` append-only con trigger, transacción con la acción) · Contrato · Backend · Pruebas CHU · Revisión · Evidencia: `dotnet test` 202/202; migración `Hu011_AddAuditEntries` aplicada en `dataticket-core` (Healthy); quality-reviewer 0 CRÍTICO/ALTO
 - [ ] **N1 — Núcleo compartido de tickets** (adelanto de HU-013/018/019; desbloquea `loop_chat`):
-  - [ ] `Ticket` (campos de `db.sql` §6), `TicketParticipant` (vigente/retirado), `Assignment`; repositorios, configuraciones y migración `HuN1_NucleoTickets` · Evidencia:
+  - [ ] `Ticket` (campos de `db.sql` §6), `TicketParticipant` (vigente/retirado), `Assignment`; repositorios, configuraciones y migración `HuN1_NucleoTickets` (incluye la FK `fk_audit_entries_ticket` pendiente de HU-011) · Evidencia:
   - [ ] Regla de acceso interno reutilizable («participante vigente o ProductManager»), con pruebas, y puerto `IChatConnectionRevoker` con adaptador nulo · Evidencia:
   - [ ] Fixtures de integración con T03 de `db.sql` §13 (Laura y Juan David vigentes, Brayan retirado, Kevin no participante) · Evidencia:
   - [ ] Etiqueta `core-nucleo-v1` creada y aviso en el resumen: «fusionar `feature/core` en `main` para que el chat use el núcleo» · Evidencia:
@@ -170,3 +170,4 @@ Una fila por iteración (también las de espera). La añade Claude; no se borran
 |---|---|---|---|---|---|
 | — | 0 | — | — | — | Loop creado el 2026-10-09 en `main`, sin ejecutar |
 | 2026-10-14 | 1 | P0 | Hecho | chore(core): P0 | Worktree creado, Docker arrancado, línea base verde; `dotnet test` vía contenedor SDK 10 |
+| 2026-10-14 | 1 | HU-001 / HU-011 | HU-001 diferida (`[!]`); HU-011 hecha | feat(audit): HU-011 | 202/202; HU-001 aplazada a la fase final por decisión de la persona líder |

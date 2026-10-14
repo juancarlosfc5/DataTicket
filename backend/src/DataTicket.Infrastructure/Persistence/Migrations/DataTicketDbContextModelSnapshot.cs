@@ -22,6 +22,83 @@ namespace DataTicket.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DataTicket.Domain.Auditing.AuditEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("uuidv7()");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("action")
+                        .HasComment("AuditAction (catálogo en wiki auditoria): TicketSubmitted, PriorityOverridden, StatusChanged, TicketAssigned, TicketReassigned, ParticipantAdded, ParticipantRemoved, FormalResponseDelivered, TicketClosed…");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("actor_id");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("new_value");
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("object_id");
+
+                    b.Property<string>("ObjectType")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("object_type");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("old_value");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("result");
+
+                    b.Property<Guid?>("TicketId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ticket_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_audit_entries");
+
+                    b.HasIndex("ActorId", "OccurredAt")
+                        .HasDatabaseName("ix_audit_entries_actor_occurred");
+
+                    b.HasIndex("ObjectType", "ObjectId", "OccurredAt")
+                        .HasDatabaseName("ix_audit_entries_object");
+
+                    b.HasIndex("TicketId", "OccurredAt", "Id")
+                        .HasDatabaseName("ix_audit_entries_ticket_cursor");
+
+                    b.ToTable("audit_entries", "dataticket", t =>
+                        {
+                            t.HasComment("AuditEntry append-only: actor, fecha, acción, objeto, valores anterior/nuevo (jsonb camelCase) y resultado (PRD §12).");
+
+                            t.HasCheckConstraint("ck_audit_entries_action", "char_length(btrim(action)) >= 1");
+
+                            t.HasCheckConstraint("ck_audit_entries_object_type", "char_length(btrim(object_type)) >= 1");
+
+                            t.HasCheckConstraint("ck_audit_entries_result", "result IN ('Succeeded', 'Denied', 'Failed')");
+                        });
+                });
+
             modelBuilder.Entity("DataTicket.Domain.Companies.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -425,6 +502,16 @@ namespace DataTicket.Infrastructure.Persistence.Migrations
                         .HasName("pk_user_tokens");
 
                     b.ToTable("user_tokens", "identity");
+                });
+
+            modelBuilder.Entity("DataTicket.Domain.Auditing.AuditEntry", b =>
+                {
+                    b.HasOne("DataTicket.Infrastructure.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_audit_entries_actor");
                 });
 
             modelBuilder.Entity("DataTicket.Infrastructure.Identity.ApplicationUser", b =>

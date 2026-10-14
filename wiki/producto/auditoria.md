@@ -6,7 +6,7 @@ tags: [producto, producto/auditoria, producto/seguridad]
 sources: ["PRD.md §12", "PRD.md §6.1", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §7", "PRD.md §11", "PRD.md §14"]
 aliases: [Bitácora de auditoría, Bitácora, AuditEntry]
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-14
 ---
 
 # Auditoría
@@ -47,6 +47,14 @@ Bitácora **append-only** que registra quién hizo qué, cuándo y sobre qué ob
 
 - "Los movimientos internos, reasignaciones y cambios de participantes" se registran en la bitácora (PRD §6.4).
 - Cuando un administrador toma un ticket en cobertura queda asociado como participante; por tanto es una incorporación auditable (PRD §5, §6.2).
+
+## Implementación (HU-011, 2026-10-14)
+
+- `AuditEntry.Create(action, actorId, occurredAt UTC, objectType, objectId, ticketId?, oldValue?, newValue?, result)` en `Domain/Auditing`; inmutable, Id v7.
+- `AuditAction` (9 valores del catálogo, persistidos por **nombre**: renombrar rompe la bitácora) y `AuditResult` {`Succeeded`, `Denied`, `Failed`}; solo se usa `Succeeded` mientras V-11 siga abierta.
+- Valores anterior/nuevo: **objeto JSON** camelCase con enums por nombre (`{"status":"New"}`), vía `AuditValue.ToJson`; arrays y escalares se rechazan. Preferir objetos tipados: un `string` se guarda tal cual y no se verifica el camelCase.
+- Emisión: el caso de uso llama `IAuditLog.Append(AuditEntry.Create(...))` antes de confirmar su unidad de trabajo (misma transacción). Pruebas: doble `InMemoryAuditLog` y helper `AuditAssert.AssertAuditEntry`.
+- `ObjectType` es texto libre (≤ 40): `Ticket`, `Assignment`, `TicketParticipant`, `FormalResponse`, y objetos sin ticket (empresas, usuarios).
 
 ## Lo que no se registra
 

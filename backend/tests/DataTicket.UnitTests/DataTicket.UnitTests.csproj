@@ -20,4 +20,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Aserción de auditoría compartida con las pruebas de integración (HU-011 T-06). -->
+    <Compile Include="../Shared/Auditing/AuditAssert.cs" Link="Shared/Auditing/AuditAssert.cs" />
+  </ItemGroup>
+
 </Project>

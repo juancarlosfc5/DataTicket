@@ -2,7 +2,7 @@
 title: "HU-011 — Registrar eventos auditables"
 type: historia-de-usuario
 status: vigente
-estado: Aprobada
+estado: En validación
 tags: [scrum, scrum/historia, producto/auditoria, arquitectura/backend, arquitectura/datos]
 sources: ["PRD.md §12", "PRD.md §6.1", "PRD.md §6.2", "PRD.md §6.4", "PRD.md §6.5", "PRD.md §5", "PRD.md §14"]
 aliases: ["HU-011", "Registrar eventos auditables"]
@@ -14,7 +14,7 @@ sprint_sugerido: "Sprint 1"
 dependencias: ["[[hu-001-integracion-continua]]", "[[hu-004-contexto-de-usuario-y-autorizacion]]"]
 relacionadas: ["[[hu-012-consultar-bitacora-del-ticket]]", "[[hu-013-radicar-ticket]]", "[[hu-015-ajustar-prioridad-manualmente]]", "[[hu-017-cola-de-cobertura-y-tomar-ticket]]", "[[hu-018-asignar-y-agregar-participantes]]", "[[hu-019-reasignar-y-retirar-participantes]]", "[[hu-021-cambiar-estado-interno]]", "[[hu-033-emitir-respuesta-formal]]", "[[hu-036-cerrar-ticket-manualmente]]"]
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-14
 ---
 
 # HU-011 — Registrar eventos auditables
@@ -209,22 +209,22 @@ No aplica a REST ni al hub: esta HU no expone endpoints. El contrato que fija es
 
 | Elemento | Resultado | Evidencia | Observación |
 |---|---|---|---|
-| CHU-01 | Pendiente | — | — |
-| CHU-02 | Pendiente | — | — |
-| CHU-03 | Pendiente | — | — |
-| CHU-04 | Pendiente | — | — |
-| CHU-05 | Pendiente | — | — |
-| CHU-06 | Pendiente | — | — |
-| CHU-07 | Pendiente | — | — |
-| CHU-08 | Pendiente | — | — |
-| CHU-09 | Pendiente | — | — |
-| DoD-01 Pruebas TDD en verde | Pendiente | — | — |
-| DoD-02 ArchitectureTests | Pendiente | — | — |
-| DoD-03 Migración `AddAuditEntries` | Pendiente | — | — |
-| DoD-04 `docker compose up --build` | Pendiente | — | — |
-| DoD-05 Helper `AssertAuditEntry` | Pendiente | — | — |
-| DoD-06 Wiki actualizada | Pendiente | — | — |
-| DoD-07 quality-reviewer | Pendiente | — | — |
+| CHU-01 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-02 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-03 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-04 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-05 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-06 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-07 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-08 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| CHU-09 | Validado | `dotnet test` 202/202 (2026-10-14, contenedor SDK 10) | Pruebas de HU-011 |
+| DoD-01 Pruebas TDD en verde | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-02 ArchitectureTests | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-03 Migración `AddAuditEntries` | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-04 `docker compose up --build` | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-05 Helper `AssertAuditEntry` | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-06 Wiki actualizada | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
+| DoD-07 quality-reviewer | Validado | loop_core iteración 1 (2026-10-14) | Migración `Hu011_AddAuditEntries`; stack `dataticket-core` Healthy; revisión sin CRÍTICO/ALTO |
 | DoD-08 PR revisado | Pendiente | — | — |
 | DoD-09 Trazabilidad | Pendiente | — | — |
 
@@ -232,6 +232,8 @@ No aplica a REST ni al hub: esta HU no expone endpoints. El contrato que fija es
 
 - 2026-10-07 — HU creada en estado `Pendiente de aprobación` tras aprobación del plan de backlog por Juan David.
 - 2026-10-09 — HU aprobada (`Aprobada`) por juancarlosfc5, líder del proyecto, en la aprobación explícita en bloque de todas las épicas e HU del backlog. Las decisiones abiertas listadas en Riesgos siguen condicionando la implementación de las tareas afectadas.
+
+- 2026-10-14 — Implementada por `loop_core` (iteración 1): `En validación`. Falta PR revisado.
 
 ## Notas y decisiones
 

@@ -7,8 +7,9 @@ using Npgsql;
 namespace DataTicket.IntegrationTests.Persistence;
 
 /// <summary>
-/// La migración inicial produce el esquema de <c>db.sql</c> §2–§3 y §12 (nombres, restricciones, índices,
-/// valores por defecto y roles de referencia).
+/// Las migraciones producen el esquema de <c>db.sql</c> §2–§3, §11 (auditoría, detalle en
+/// <see cref="AuditMigrationTests"/>) y §12 (nombres, restricciones, índices, valores por defecto y roles de
+/// referencia).
 /// </summary>
 [Trait(TestCategories.Name, TestCategories.RequiresDocker)]
 public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
@@ -24,7 +25,7 @@ public sealed class SchemaTests(ApiFixture api) : IClassFixture<ApiFixture>
 
         string[] expected =
         [
-            "dataticket.companies", "identity.data_protection_keys", "identity.role_claims", "identity.roles",
+            "dataticket.audit_entries", "dataticket.companies", "identity.data_protection_keys", "identity.role_claims", "identity.roles",
             "identity.user_claims", "identity.user_logins", "identity.user_roles", "identity.user_tokens", "identity.users",
         ];
         Assert.Equal(expected.Order(StringComparer.Ordinal), tables.Order(StringComparer.Ordinal));

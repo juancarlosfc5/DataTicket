@@ -44,3 +44,11 @@ Comprobado el 2026-10-12 (B7, sembrador de Development):
 Versiones verificadas en NuGet (flatcontainer index.json, solo estables) el 2026-10-09: Testcontainers.PostgreSql 4.16.0 (net8/9/10), Microsoft.AspNetCore.Mvc.Testing 10.0.12, Microsoft.Extensions.TimeProvider.Testing 10.10.0, xunit.v3 4.0.1. SDK local 10.0.201, runtime ASP.NET Core local 10.0.5.
 
 **Why:** evitar repetir los diagnósticos; **How to apply:** al añadir pruebas de integración o tocar la etapa test del Dockerfile. Ver [[aspnetcore10-timeprovider-identity]].
+
+Comprobado el 2026-10-14 (HU-011, worktree `DataGlobal2-core`):
+
+- Esta máquina solo tiene SDK 9: build, `dotnet ef` y pruebas en un contenedor desechable `mcr.microsoft.com/dotnet/sdk:10.0` montando `backend/` en `/src` (con `-v /var/run/docker.sock:/var/run/docker.sock -e TESTCONTAINERS_HOST_OVERRIDE=host.docker.internal` para Testcontainers y `MSYS_NO_PATHCONV=1`). El build da 20 avisos NU1903 (`System.Security.Cryptography.Xml` 10.0.12), que no son error por `WarningsNotAsErrors`.
+- Rojo de pruebas de integración sin cambiar el modelo: añadir el `DbSet<T>` y, temporalmente, `modelBuilder.Ignore<T>()`. Sin el `Ignore`, el `DbSet` entra en el modelo, `MigrateAsync` lanzaría `PendingModelChangesWarning` (comportamiento documentado de EF 9+, no reproducido aquí) y fallarían TODAS las pruebas por la razón equivocada. Con el `Ignore` el rojo fue el correcto (servicio `IAuditLog` ausente, tabla inexistente).
+- Probar el `Down` de una migración: `dbContext.GetService<IMigrator>().MigrateAsync(<id anterior>)` sobre una base propia, afirmar que no quedan objetos y volver a `MigrateAsync()`.
+- Un heredoc largo de Git Bash con varios archivos C# falló con «unexpected EOF while looking for matching `''» sin escribir nada: para archivos nuevos usar Write.
+- Un `.cs` compartido entre proyectos de prueba se enlaza con `<Compile Include="../Shared/…" Link="…" />` y la clase `internal` (no choca aunque `ArchitectureTests` referencie `UnitTests`).
